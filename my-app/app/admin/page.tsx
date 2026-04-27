@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation";
 import { isAdmin } from "@/lib/admin";
-import AdminClient from "./AdminClient";
+import AdminWrapper from "./AdminWrapper";
 
-const AdminPage = () => {
+const AdminPage = async () => {
   if (!isAdmin()) {
     redirect("/");
   }
 
-  return <AdminClient />;
+  return <AdminWrapper />;
 };
 
 export default AdminPage;

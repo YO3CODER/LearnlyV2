@@ -32,13 +32,13 @@ export const List = ({ courses, activeCourseId }: Props) => {
   };
 
   return (
-    <div className="pt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fill,minmax(210px,1fr))] gap-4">
+    <div className="pt-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {courses.map((course) => (
         <Card
           key={course.id}
           id={course.id}
           title={course.title}
-          imageSrc={course.imageSrc}
+          imageSrc={course.imageSrc || "/placeholder.svg"}
           onClick={onClick}
           disabled={pending}
           active={course.id === activeCourseId}
