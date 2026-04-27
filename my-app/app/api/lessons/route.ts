@@ -1,0 +1,45 @@
+import { NextResponse } from "next/server";
+import db from "@/db/drizzle";
+import { isAdmin } from "@/lib/admin";
+import { lessons } from "@/db/schema";
+
+export const GET = async () => {
+  try {
+    if (!await isAdmin()) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const data = await db.query.lessons.findMany();
+
+    return new NextResponse(JSON.stringify(data), {
+      status: 200,
+      headers: {
+        'Content-Range': `lessons 0-${data.length - 1}/${data.length}`,
+        'Access-Control-Expose-Headers': 'Content-Range',
+      },
+    });
+  } catch (error) {
+    console.error("Error in GET /api/lessons:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+};
+
+export const POST = async (req: Request) => {
+  try {
+    if (!await isAdmin()) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const body = await req.json();
+    
+    // Supprimer l'id s'il est présent
+    const { id, ...cleanBody } = body;
+    
+    const data = await db.insert(lessons).values(cleanBody).returning();
+
+    return NextResponse.json(data[0]);
+  } catch (error) {
+    console.error("Error in POST /api/lessons:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+};
