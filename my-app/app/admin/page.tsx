@@ -1,4 +1,3 @@
-"use client"; 
 import { redirect } from "next/navigation";
 import { isAdmin } from "@/lib/admin";
 import AdminClient from "./AdminClient";
