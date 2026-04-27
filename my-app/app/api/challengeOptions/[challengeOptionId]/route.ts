@@ -6,7 +6,7 @@ import { isAdmin } from "@/lib/admin";
 
 export const GET = async (
   req: Request,
-  { params }: { params: { challengeOptionId: string } }, // ← string, pas number
+  { params }: { params: Promise<{ challengeOptionId: string }> }, // ← string, pas number
 ) => {
   try {
     if (!await isAdmin()) { // ← await
@@ -32,7 +32,7 @@ export const GET = async (
 
 export const PUT = async (
   req: Request,
-  { params }: { params: { challengeOptionId: string } }, // ← string
+  { params }: { params: Promise<{ challengeOptionId: string }> }, // ← string
 ) => {
   try {
     if (!await isAdmin()) { // ← await
@@ -63,7 +63,7 @@ export const PUT = async (
 
 export const DELETE = async (
   req: Request,
-  { params }: { params: { challengeOptionId: string } }, // ← string
+  { params }: { params: Promise<{ challengeOptionId: string }> }, // ← string
 ) => {
   try {
     if (!await isAdmin()) { // ← await
