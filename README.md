@@ -1,1 +1,1 @@
-# LearnlyV2
+# Learnly V2 - Plateforme éducative moderne
