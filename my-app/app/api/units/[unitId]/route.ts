@@ -6,14 +6,15 @@ import { isAdmin } from "@/lib/admin";
 
 export const GET = async (
   req: Request,
-  { params }: { params: Promise<{ unitId: string }> }, // ← string, pas number
+  { params }: { params: Promise<{ unitId: string }> },
 ) => {
   try {
-    if (!await isAdmin()) { // ← await
+    if (!await isAdmin()) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const unitId = parseInt(params.unitId); // ← convertir en number
+    const { unitId: unitIdStr } = await params;
+    const unitId = parseInt(unitIdStr);
     
     const data = await db.query.units.findFirst({
       where: eq(units.id, unitId),
@@ -25,24 +26,22 @@ export const GET = async (
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error in GET /api/units/[unitId]:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
 
 export const PUT = async (
   req: Request,
-  { params }: { params: Promise<{ unitId: string }> }, // ← string
+  { params }: { params: Promise<{ unitId: string }> },
 ) => {
   try {
-    if (!await isAdmin()) { // ← await
+    if (!await isAdmin()) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const unitId = parseInt(params.unitId); // ← convertir
+    const { unitId: unitIdStr } = await params;
+    const unitId = parseInt(unitIdStr);
     const body = await req.json();
-    
-    // Supprimer l'id du body
     const { id, ...cleanBody } = body;
     
     const data = await db.update(units)
@@ -56,21 +55,21 @@ export const PUT = async (
 
     return NextResponse.json(data[0]);
   } catch (error) {
-    console.error("Error in PUT /api/units/[unitId]:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
 
 export const DELETE = async (
   req: Request,
-  { params }: { params: Promise<{ unitId: string }> }, // ← string
+  { params }: { params: Promise<{ unitId: string }> },
 ) => {
   try {
-    if (!await isAdmin()) { // ← await
+    if (!await isAdmin()) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const unitId = parseInt(params.unitId); // ← convertir
+    const { unitId: unitIdStr } = await params;
+    const unitId = parseInt(unitIdStr);
     
     const data = await db.delete(units)
       .where(eq(units.id, unitId))
@@ -82,7 +81,6 @@ export const DELETE = async (
 
     return NextResponse.json(data[0]);
   } catch (error) {
-    console.error("Error in DELETE /api/units/[unitId]:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };

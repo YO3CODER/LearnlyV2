@@ -6,14 +6,15 @@ import { isAdmin } from "@/lib/admin";
 
 export const GET = async (
   req: Request,
-  { params }: { params: Promise<{ lessonId: string }> }, // ← string, pas number
+  { params }: { params: Promise<{ lessonId: string }> },
 ) => {
   try {
-    if (!await isAdmin()) { // ← await
+    if (!await isAdmin()) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const lessonId = parseInt(params.lessonId); // ← convertir en number
+    const { lessonId: lessonIdStr } = await params;
+    const lessonId = parseInt(lessonIdStr);
     
     const data = await db.query.lessons.findFirst({
       where: eq(lessons.id, lessonId),
@@ -25,24 +26,22 @@ export const GET = async (
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error in GET /api/lessons/[lessonId]:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
 
 export const PUT = async (
   req: Request,
-  { params }: { params: Promise<{ lessonId: string }> }, // ← string
+  { params }: { params: Promise<{ lessonId: string }> },
 ) => {
   try {
-    if (!await isAdmin()) { // ← await
+    if (!await isAdmin()) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const lessonId = parseInt(params.lessonId); // ← convertir
+    const { lessonId: lessonIdStr } = await params;
+    const lessonId = parseInt(lessonIdStr);
     const body = await req.json();
-    
-    // Supprimer l'id du body
     const { id, ...cleanBody } = body;
     
     const data = await db.update(lessons)
@@ -56,21 +55,21 @@ export const PUT = async (
 
     return NextResponse.json(data[0]);
   } catch (error) {
-    console.error("Error in PUT /api/lessons/[lessonId]:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
 
 export const DELETE = async (
   req: Request,
-  { params }: { params: Promise<{ lessonId: string }> }, // ← string
+  { params }: { params: Promise<{ lessonId: string }> },
 ) => {
   try {
-    if (!await isAdmin()) { // ← await
+    if (!await isAdmin()) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const lessonId = parseInt(params.lessonId); // ← convertir
+    const { lessonId: lessonIdStr } = await params;
+    const lessonId = parseInt(lessonIdStr);
     
     const data = await db.delete(lessons)
       .where(eq(lessons.id, lessonId))
@@ -82,7 +81,6 @@ export const DELETE = async (
 
     return NextResponse.json(data[0]);
   } catch (error) {
-    console.error("Error in DELETE /api/lessons/[lessonId]:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };

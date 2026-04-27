@@ -6,14 +6,15 @@ import { isAdmin } from "@/lib/admin";
 
 export const GET = async (
   req: Request,
-  { params }: { params: Promise<{ challengeOptionId: string }> }, // ← string, pas number
+  { params }: { params: Promise<{ challengeOptionId: string }> },
 ) => {
   try {
-    if (!await isAdmin()) { // ← await
+    if (!await isAdmin()) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const challengeOptionId = parseInt(params.challengeOptionId); // ← convertir
+    const { challengeOptionId: challengeOptionIdStr } = await params;
+    const challengeOptionId = parseInt(challengeOptionIdStr);
     
     const data = await db.query.challengeOptions.findFirst({
       where: eq(challengeOptions.id, challengeOptionId),
@@ -25,24 +26,22 @@ export const GET = async (
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error in GET /api/challengeOptions/[challengeOptionId]:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
 
 export const PUT = async (
   req: Request,
-  { params }: { params: Promise<{ challengeOptionId: string }> }, // ← string
+  { params }: { params: Promise<{ challengeOptionId: string }> },
 ) => {
   try {
-    if (!await isAdmin()) { // ← await
+    if (!await isAdmin()) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const challengeOptionId = parseInt(params.challengeOptionId); // ← convertir
+    const { challengeOptionId: challengeOptionIdStr } = await params;
+    const challengeOptionId = parseInt(challengeOptionIdStr);
     const body = await req.json();
-    
-    // Supprimer l'id du body pour PUT aussi
     delete body.id;
     
     const data = await db.update(challengeOptions)
@@ -56,21 +55,21 @@ export const PUT = async (
 
     return NextResponse.json(data[0]);
   } catch (error) {
-    console.error("Error in PUT /api/challengeOptions/[challengeOptionId]:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
 
 export const DELETE = async (
   req: Request,
-  { params }: { params: Promise<{ challengeOptionId: string }> }, // ← string
+  { params }: { params: Promise<{ challengeOptionId: string }> },
 ) => {
   try {
-    if (!await isAdmin()) { // ← await
+    if (!await isAdmin()) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const challengeOptionId = parseInt(params.challengeOptionId); // ← convertir
+    const { challengeOptionId: challengeOptionIdStr } = await params;
+    const challengeOptionId = parseInt(challengeOptionIdStr);
     
     const data = await db.delete(challengeOptions)
       .where(eq(challengeOptions.id, challengeOptionId))
@@ -82,7 +81,6 @@ export const DELETE = async (
 
     return NextResponse.json(data[0]);
   } catch (error) {
-    console.error("Error in DELETE /api/challengeOptions/[challengeOptionId]:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };

@@ -6,14 +6,15 @@ import { isAdmin } from "@/lib/admin";
 
 export const GET = async (
   req: Request,
-  { params }: { params: Promise<{ courseId: string }> },  // string, pas number
+  { params }: { params: Promise<{ courseId: string }> },
 ) => {
   try {
     if (!await isAdmin()) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const courseId = parseInt(params.courseId);
+    const { courseId: courseIdStr } = await params;
+    const courseId = parseInt(courseIdStr);
     
     const data = await db.query.courses.findFirst({
       where: eq(courses.id, courseId),
@@ -25,7 +26,6 @@ export const GET = async (
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error in GET /api/courses/[courseId]:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
@@ -39,10 +39,9 @@ export const PUT = async (
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const courseId = parseInt(params.courseId);
+    const { courseId: courseIdStr } = await params;
+    const courseId = parseInt(courseIdStr);
     const body = await req.json();
-    
-    // Enlever l'ID si présent dans le body
     const { id, ...data } = body;
     
     const result = await db.update(courses)
@@ -56,7 +55,6 @@ export const PUT = async (
 
     return NextResponse.json(result[0]);
   } catch (error) {
-    console.error("Error in PUT /api/courses/[courseId]:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
@@ -70,7 +68,8 @@ export const DELETE = async (
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const courseId = parseInt(params.courseId);
+    const { courseId: courseIdStr } = await params;
+    const courseId = parseInt(courseIdStr);
     
     const result = await db.delete(courses)
       .where(eq(courses.id, courseId))
@@ -82,7 +81,6 @@ export const DELETE = async (
 
     return NextResponse.json(result[0]);
   } catch (error) {
-    console.error("Error in DELETE /api/courses/[courseId]:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
