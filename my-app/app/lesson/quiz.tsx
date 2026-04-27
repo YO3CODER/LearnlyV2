@@ -44,14 +44,14 @@ export const Quiz = ({
 
   useMount(() => {
     if (initialPercentage === 100) {
-      openPracticeModal(initialLessonId); // 👈 fix
+      openPracticeModal(initialLessonId);
     }
   });
 
   const { width, height } = useWindowSize();
   const router = useRouter();
 
-  const [finishAudio] = useAudio({ src: "/finish.mp3", autoPlay: true });
+  const [finishAudio, , finishControls] = useAudio({ src: "/finish.mp3", autoPlay: false });
   const [correctAudio, _c, correctControls] = useAudio({ src: "/correct.wav" });
   const [incorrectAudio, _i, incorrectControls] = useAudio({ src: "/incorrect.wav" });
   const [pending, startTransition] = useTransition();
@@ -88,6 +88,14 @@ export const Quiz = ({
 
   const challenge = challenges[activeIndex];
   const options = challenge?.challengeOptions ?? [];
+
+  const isFinished = !challenges[activeIndex] && failedChallenges.length === 0;
+
+  useEffect(() => {
+    if (isFinished) {
+      finishControls.play();
+    }
+  }, [isFinished]);
 
   const onNext = () => {
     setSlideState("exit");

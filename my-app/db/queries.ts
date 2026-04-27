@@ -236,8 +236,9 @@ export const getUserSubscription = cache(async () => {
   };
 });
 
-export const getTopTenUsers = cache(async () => {
-  noStore(); // ✅ Jamais mis en cache
+// ✅ Pas de cache() ici — le leaderboard doit être frais à chaque requête
+export const getTopTenUsers = async () => {
+  noStore();
 
   const { userId } = await auth();
 
@@ -248,7 +249,7 @@ export const getTopTenUsers = cache(async () => {
   const data = await db.query.userProgress.findMany({
     orderBy: (userProgress, { desc, asc }) => [
       desc(userProgress.points),
-      asc(userProgress.userId), // ✅ Tri stable
+      asc(userProgress.userId),
     ],
     limit: 10,
     columns: {
@@ -265,4 +266,4 @@ export const getTopTenUsers = cache(async () => {
     userImageSrc: entry.userImageSrc ?? "/default-avatar.png",
     points: entry.points ?? 0,
   }));
-});
+};

@@ -1,6 +1,7 @@
 import { Sidebar } from "@/components/sidebar";
 import { MobileHeader } from "@/components/mobile-header";
 import { MobileNavbar } from "@/components/mobile-navbar";
+import { HeartsModal } from "@/components/modals/hearts-modal";
 import { PracticeModal } from "@/components/modals/practice-modal";
 import { getUserProgress } from "@/db/queries";
 import { redirect } from "next/navigation";
@@ -18,6 +19,7 @@ const MainLayout = async ({ children }: Props) => {
 
   return (
     <>
+      <HeartsModal />
       <PracticeModal />
       <MobileHeader
         activeCourse={userProgress.activeCourse}

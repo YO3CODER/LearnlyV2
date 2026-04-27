@@ -3,11 +3,11 @@
 import { toast } from "sonner";
 import Image from "next/image";
 import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { POINTS_TO_REFILL } from "@/constants";
 import { refillHearts } from "@/actions/user-progress";
-// import { createStripeUrl } from "@/actions/user-subscription"; // Commenté temporairement
 
 type Props = {
   hearts: number;
@@ -21,6 +21,7 @@ export const Items = ({
   hasActiveSubscription,
 }: Props) => {
   const [pending, startTransition] = useTransition();
+  const router = useRouter();
 
   const onRefillHearts = () => {
     if (pending || hearts === 5 || points < POINTS_TO_REFILL) {
@@ -29,12 +30,15 @@ export const Items = ({
 
     startTransition(() => {
       refillHearts()
+        .then(() => {
+          toast.success("Hearts refilled!");
+          router.refresh();
+        })
         .catch(() => toast.error("Something went wrong"));
     });
   };
 
   const onUpgrade = () => {
-    // Message d'indisponibilité temporaire
     toast.info("🔧 Paiement indisponible pour le moment. Cette fonctionnalité arrive bientôt !", {
       duration: 4000,
       icon: "💜",
@@ -57,11 +61,7 @@ export const Items = ({
         </div>
         <Button
           onClick={onRefillHearts}
-          disabled={
-            pending
-            || hearts === 5 
-            || points < POINTS_TO_REFILL
-          }
+          disabled={pending || hearts === 5 || points < POINTS_TO_REFILL}
         >
           {hearts === 5
             ? "full"
@@ -73,9 +73,7 @@ export const Items = ({
                   height={20}
                   width={20}
                 />
-                <p>
-                  {POINTS_TO_REFILL}
-                </p>
+                <p>{POINTS_TO_REFILL}</p>
               </div>
             )
           }
