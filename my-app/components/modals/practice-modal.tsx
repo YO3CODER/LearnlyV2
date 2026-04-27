@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import {
   Dialog,
@@ -16,25 +17,24 @@ import { usePracticeModal } from "@/store/use-practice-modal";
 
 export const PracticeModal = () => {
   const [isClient, setIsClient] = useState(false);
-  const { isOpen, close } = usePracticeModal();
+  const { isOpen, close, lessonId } = usePracticeModal();
+  const router = useRouter();
 
   useEffect(() => setIsClient(true), []);
 
-  if (!isClient) {
-    return null;
-  }
+  if (!isClient) return null;
+
+  const handleConfirm = () => {
+    close();
+    router.push(`/lesson/${lessonId}`);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={close}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <div className="flex items-center w-full justify-center mb-5">
-            <Image
-              src="/heart.svg"
-              alt="Heart"
-              height={100}
-              width={100}
-            />
+            <Image src="/heart.svg" alt="Heart" height={100} width={100} />
           </div>
           <DialogTitle className="text-center font-bold text-2xl">
             Practice lesson
@@ -46,10 +46,10 @@ export const PracticeModal = () => {
         <DialogFooter className="mb-4">
           <div className="flex flex-col gap-y-4 w-full">
             <Button
-              variant="primary" 
-              className="w-full" 
-              size="lg" 
-              onClick={close}
+              variant="primary"
+              className="w-full"
+              size="lg"
+              onClick={handleConfirm}
             >
               I understand
             </Button>

@@ -4,9 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Check, Crown, Star } from "lucide-react";
 import { CircularProgressbarWithChildren } from "react-circular-progressbar";
+import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { usePracticeModal } from "@/store/use-practice-modal";
 
 import "react-circular-progressbar/dist/styles.css";
 
@@ -51,6 +53,9 @@ export const LessonButton = ({
   isLastLesson,
   unitId,
 }: Props) => {
+  const router = useRouter();
+  const { open } = usePracticeModal();
+
   const cycleLength = 8;
   const cycleIndex = index % cycleLength;
 
@@ -68,16 +73,22 @@ export const LessonButton = ({
   const isGolden = isLastLesson;
 
   const Icon = isLastLesson ? Crown : isCompleted ? Check : Star;
-  const href = isCompleted ? `/lesson/${id}` : "/lesson";
-
   const colors = colorMap[unitColor] || colorMap.blue;
 
+  const handleClick = () => {
+    if (locked) return;
+    if (isCompleted) {
+      open(id); // 👈 passe l'id de la leçon
+      return;
+    }
+    router.push("/lesson");
+  };
+
   return (
-    <Link
-      href={href}
-      aria-disabled={locked}
+    <div
+      onClick={handleClick}
       style={{
-        pointerEvents: locked ? "none" : "auto",
+        cursor: locked ? "default" : "pointer",
         animationDelay: `${index * 60}ms`,
         animationFillMode: "both",
       }}
@@ -93,8 +104,8 @@ export const LessonButton = ({
         {current ? (
           <div className="h-[102px] w-[102px] relative">
 
-            {/* Badge COMMENCER en bas */}
-            <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 z-10
+            {/* Badge Start */}
+            <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-10
               px-4 py-2 rounded-xl
               bg-white border-2 border-b-4 border-slate-200
               text-slate-700 text-xs font-extrabold uppercase tracking-widest
@@ -133,14 +144,10 @@ export const LessonButton = ({
                   <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/25 to-transparent rounded-t-full" />
                 </div>
                 <div className="absolute inset-0 pointer-events-none">
-                  <span
-                    className="absolute top-1 right-2 text-white/80 text-[8px] animate-[twinkle_3s_ease-in-out_infinite]"
-                    style={{ animationDelay: `${index * 400}ms` }}
-                  >✦</span>
-                  <span
-                    className="absolute bottom-2 left-1 text-white/60 text-[6px] animate-[twinkle_3s_ease-in-out_infinite]"
-                    style={{ animationDelay: `${index * 400 + 500}ms` }}
-                  >✦</span>
+                  <span className="absolute top-1 right-2 text-white/80 text-[8px] animate-[twinkle_3s_ease-in-out_infinite]"
+                    style={{ animationDelay: `${index * 400}ms` }}>✦</span>
+                  <span className="absolute bottom-2 left-1 text-white/60 text-[6px] animate-[twinkle_3s_ease-in-out_infinite]"
+                    style={{ animationDelay: `${index * 400 + 500}ms` }}>✦</span>
                 </div>
                 <Icon className="h-9 w-9 fill-white text-white relative z-10" />
               </Button>
@@ -189,18 +196,12 @@ export const LessonButton = ({
               )}
               {!locked && (
                 <div className="absolute inset-0 pointer-events-none">
-                  <span
-                    className="absolute top-1 right-2 text-white/80 text-[8px] animate-[twinkle_3s_ease-in-out_infinite]"
-                    style={{ animationDelay: `${index * 400}ms` }}
-                  >✦</span>
-                  <span
-                    className="absolute bottom-2 left-1 text-white/60 text-[6px] animate-[twinkle_3s_ease-in-out_infinite]"
-                    style={{ animationDelay: `${index * 400 + 500}ms` }}
-                  >✦</span>
-                  <span
-                    className="absolute top-2 left-2 text-white/50 text-[5px] animate-[twinkle_3s_ease-in-out_infinite]"
-                    style={{ animationDelay: `${index * 400 + 1000}ms` }}
-                  >✧</span>
+                  <span className="absolute top-1 right-2 text-white/80 text-[8px] animate-[twinkle_3s_ease-in-out_infinite]"
+                    style={{ animationDelay: `${index * 400}ms` }}>✦</span>
+                  <span className="absolute bottom-2 left-1 text-white/60 text-[6px] animate-[twinkle_3s_ease-in-out_infinite]"
+                    style={{ animationDelay: `${index * 400 + 500}ms` }}>✦</span>
+                  <span className="absolute top-2 left-2 text-white/50 text-[5px] animate-[twinkle_3s_ease-in-out_infinite]"
+                    style={{ animationDelay: `${index * 400 + 1000}ms` }}>✧</span>
                 </div>
               )}
               <Icon
@@ -216,6 +217,6 @@ export const LessonButton = ({
           </div>
         )}
       </div>
-    </Link>
+    </div>
   );
 };

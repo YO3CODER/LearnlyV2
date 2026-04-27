@@ -3,17 +3,18 @@ import { redirect } from "next/navigation";
 import { getLesson, getUserProgress, getUserSubscription } from "@/db/queries";
 
 import { Quiz } from "../quiz";
+import { CloseModal } from "./close-modal";
 
 type Props = {
-  params: {
-    lessonId: number;
-  };
+  params: Promise<{
+    lessonId: string;
+  }>;
 };
 
-const LessonIdPage = async ({
-  params,
-}: Props) => {
-  const lessonData = getLesson(params.lessonId);
+const LessonIdPage = async ({ params }: Props) => {
+  const { lessonId } = await params;
+
+  const lessonData = getLesson(Number(lessonId));
   const userProgressData = getUserProgress();
   const userSubscriptionData = getUserSubscription();
 
@@ -35,15 +36,18 @@ const LessonIdPage = async ({
     .filter((challenge) => challenge.completed)
     .length / lesson.challenges.length * 100;
 
-  return ( 
-    <Quiz
-      initialLessonId={lesson.id}
-      initialLessonChallenges={lesson.challenges}
-      initialHearts={userProgress.hearts}
-      initialPercentage={initialPercentage}
-      userSubscription={userSubscription}
-    />
+  return (
+    <>
+      <CloseModal />
+      <Quiz
+        initialLessonId={lesson.id}
+        initialLessonChallenges={lesson.challenges}
+        initialHearts={userProgress.hearts}
+        initialPercentage={initialPercentage}
+        userSubscription={userSubscription}
+      />
+    </>
   );
 };
- 
+
 export default LessonIdPage;

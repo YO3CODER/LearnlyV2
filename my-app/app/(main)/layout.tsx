@@ -1,12 +1,12 @@
 import { Sidebar } from "@/components/sidebar";
 import { MobileHeader } from "@/components/mobile-header";
 import { MobileNavbar } from "@/components/mobile-navbar";
+import { PracticeModal } from "@/components/modals/practice-modal";
 import { getUserProgress } from "@/db/queries";
 import { redirect } from "next/navigation";
 
 type Props = {
   children: React.ReactNode;
-  // Next.js App Router passe les params au layout
 };
 
 const MainLayout = async ({ children }: Props) => {
@@ -18,6 +18,7 @@ const MainLayout = async ({ children }: Props) => {
 
   return (
     <>
+      <PracticeModal />
       <MobileHeader
         activeCourse={userProgress.activeCourse}
         hearts={userProgress.hearts}
