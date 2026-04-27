@@ -44,7 +44,7 @@ export const Quiz = ({
 
   useMount(() => {
     if (initialPercentage === 100) {
-      openPracticeModal();
+      openPracticeModal(initialLessonId); // 👈 fix
     }
   });
 
@@ -207,7 +207,6 @@ export const Quiz = ({
     }
   };
 
-  /* ── Fin du tour : relancer avec les questions ratées ── */
   if (!challenge && failedChallenges.length > 0) {
     setChallenges(failedChallenges);
     setFailedChallenges([]);
@@ -216,7 +215,6 @@ export const Quiz = ({
     return null;
   }
 
-  /* ── Écran de fin ── */
   if (!challenge) {
     return (
       <>
@@ -274,7 +272,6 @@ export const Quiz = ({
     );
   }
 
-  /* ── Quiz screen ── */
   const title = challenge.type === "ASSIST"
     ? "Select the correct meaning"
     : challenge.question;
@@ -300,7 +297,6 @@ export const Quiz = ({
         hasActiveSubscription={!!userSubscription?.isActive}
       />
 
-      {/* Toast "On a roll!" */}
       <div
         className={[
           "fixed top-6 left-1/2 -translate-x-1/2 z-50",
@@ -323,7 +319,6 @@ export const Quiz = ({
         </div>
       </div>
 
-      {/* Zone de contenu scrollable */}
       <div className="flex-1 overflow-y-auto">
         <div className="min-h-full flex items-center justify-center py-8">
           <div className="lg:w-[600px] w-full px-6 lg:px-0 overflow-hidden">
