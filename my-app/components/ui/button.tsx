@@ -10,18 +10,18 @@ const buttonVariants = cva(
     variants: {
       variant: {
         locked: "bg-neutral-200 text-primary-foreground hover:bg-neutral-200/90 border-neutral-400 border-b-4 active:border-b-0",
-        default: "bg-white text-black border-slate-200 border-2 border-b-4 active:border-b-2 hover:bg-slate-100 text-slate-500",
+        default: "bg-white dark:bg-slate-800 text-black dark:text-white border-slate-200 dark:border-slate-700 border-2 border-b-4 active:border-b-2 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500",
         primary: "bg-sky-400 text-primary-foreground hover:bg-sky-400/90 border-sky-500 border-b-4 active:border-b-0",
-        primaryOutline: "bg-white text-sky-500 hover:bg-slate-100",
+        primaryOutline: "bg-white dark:bg-slate-800 text-sky-500 hover:bg-slate-100 dark:hover:bg-slate-700",
         secondary: "bg-green-500 text-primary-foreground hover:bg-green-500/90 border-green-600 border-b-4 active:border-b-0",
-        secondaryOutline: "bg-white text-green-500 hover:bg-slate-100",
+        secondaryOutline: "bg-white dark:bg-slate-800 text-green-500 hover:bg-slate-100 dark:hover:bg-slate-700",
         danger: "bg-rose-500 text-primary-foreground hover:bg-rose-500/90 border-rose-600 border-b-4 active:border-b-0",
-        dangerOutline: "bg-white text-rose-500 hover:bg-slate-100",
+        dangerOutline: "bg-white dark:bg-slate-800 text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-700",
         super: "bg-blue-500 text-primary-foreground hover:bg-blue-500/90 border-blue-600 border-b-4 active:border-b-0",
-        superOutline: "bg-white text-blue-500 hover:bg-slate-100",
-        ghost: "bg-transparent text-slate-500 border-transparent border-0 hover:bg-slate-100",
-        sidebar: "bg-transparent text-slate-500 border-2 border-transparent hover:bg-slate-100 transition-none",
-        sidebarOutline: "bg-sky-500/15 text-sky-500 border-sky-300 border-2 hover:bg-sky-500/20 transition-none"
+        superOutline: "bg-white dark:bg-slate-800 text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-700",
+        ghost: "bg-transparent text-slate-500 dark:text-slate-400 border-transparent border-0 hover:bg-slate-100 dark:hover:bg-slate-800",
+        sidebar: "bg-transparent text-slate-500 dark:text-slate-400 border-2 border-transparent hover:bg-slate-100 dark:hover:bg-slate-800 transition-none",
+        sidebarOutline: "bg-sky-500/15 text-sky-500 border-sky-300 dark:border-sky-700 border-2 hover:bg-sky-500/20 transition-none",
       },
       size: {
         default: "h-11 px-4 py-2",

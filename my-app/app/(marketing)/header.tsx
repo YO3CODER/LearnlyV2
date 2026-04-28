@@ -10,8 +10,8 @@ export const Header = () => {
 
   return (
     <header className="h-20 w-full px-4
-      bg-white/80 backdrop-blur-sm
-      border-b border-slate-200/80
+      bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm
+      border-b border-slate-200/80 dark:border-slate-700/80
       sticky top-0 z-50"
     >
       <div className="lg:max-w-screen-lg mx-auto flex items-center justify-between h-full">
@@ -48,8 +48,8 @@ export const Header = () => {
               <Button
                 size="lg"
                 variant="ghost"
-                className="rounded-xl font-semibold text-slate-500
-                  hover:text-blue-500 hover:bg-blue-50
+                className="rounded-xl font-semibold text-slate-500 dark:text-slate-400
+                  hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30
                   transition-all duration-200"
               >
                 Login

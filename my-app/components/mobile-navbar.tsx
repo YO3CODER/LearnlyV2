@@ -17,7 +17,9 @@ export const MobileNavbar = () => {
 
   return (
     <nav className="lg:hidden fixed bottom-0 w-full z-50
-      bg-white border-t border-slate-200 shadow-[0_-1px_4px_rgba(0,0,0,0.06)]"
+      bg-white dark:bg-slate-900
+      border-t border-slate-200 dark:border-slate-700
+      shadow-[0_-1px_4px_rgba(0,0,0,0.06)] dark:shadow-[0_-1px_4px_rgba(0,0,0,0.3)]"
     >
       <div className="flex items-center justify-around h-[60px] px-2">
         {routes.map((route) => {
@@ -30,7 +32,7 @@ export const MobileNavbar = () => {
                 "flex flex-col items-center gap-y-1 px-3 py-1.5 rounded-xl transition-all duration-200",
                 isActive
                   ? "text-blue-500"
-                  : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"
+                  : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               )}
             >
               <Image
@@ -45,7 +47,7 @@ export const MobileNavbar = () => {
               />
               <span className={cn(
                 "text-[10px] font-bold tracking-wide uppercase",
-                isActive ? "text-blue-500" : "text-slate-400"
+                isActive ? "text-blue-500" : "text-slate-400 dark:text-slate-500"
               )}>
                 {route.label}
               </span>

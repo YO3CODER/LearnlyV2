@@ -99,6 +99,11 @@ export const userProgress = pgTable("user_progress", {
   activeCourseId: integer("active_course_id").references(() => courses.id, { onDelete: "cascade" }),
   hearts: integer("hearts").notNull().default(5),
   points: integer("points").notNull().default(0),
+  // Nouvelles colonnes
+  streak: integer("streak").notNull().default(0),
+  lastActivityDate: text("last_activity_date").default(""),
+  lessonsCompleted: integer("lessons_completed").notNull().default(0),
+  challengesCompleted: integer("challenges_completed").notNull().default(0),
 });
 
 export const userProgressRelations = relations(userProgress, ({ one }) => ({
@@ -116,3 +121,6 @@ export const userSubscription = pgTable("user_subscription", {
   stripePriceId: text("stripe_price_id").notNull(),
   stripeCurrentPeriodEnd: timestamp("stripe_current_period_end").notNull(),
 });
+
+
+

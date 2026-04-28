@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition, useEffect, useRef } from "react";
 import { useAudio, useWindowSize, useMount } from "react-use";
 
-import { reduceHearts } from "@/actions/user-progress";
+import { completeLesson, reduceHearts } from "@/actions/user-progress";
 import { useHeartsModal } from "@/store/use-hearts-modal";
 import { challengeOptions, challenges, userSubscription } from "@/db/schema";
 import { usePracticeModal } from "@/store/use-practice-modal";
@@ -94,6 +94,10 @@ export const Quiz = ({
   useEffect(() => {
     if (isFinished) {
       finishControls.play();
+      startTransition(() => {
+        completeLesson()
+          .catch(() => console.error("Failed to complete lesson"));
+      });
     }
   }, [isFinished]);
 
@@ -238,7 +242,7 @@ export const Quiz = ({
         />
         <div className="flex flex-col gap-y-6 lg:gap-y-10 max-w-lg mx-auto text-center items-center justify-center h-full px-6">
           <div className="relative">
-            <div className="absolute inset-0 bg-blue-200/40 rounded-full blur-2xl scale-150" />
+            <div className="absolute inset-0 bg-blue-200/40 dark:bg-blue-800/20 rounded-full blur-2xl scale-150" />
             <Image
               src="/finish.svg"
               alt="Finish"
@@ -258,7 +262,7 @@ export const Quiz = ({
             <p className="text-xs font-semibold tracking-widest uppercase text-blue-400">
               Lesson Complete
             </p>
-            <h1 className="text-2xl lg:text-4xl font-extrabold text-slate-800 tracking-tight leading-tight">
+            <h1 className="text-2xl lg:text-4xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight leading-tight">
               Great job! 🎉
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-500">
@@ -305,6 +309,7 @@ export const Quiz = ({
         hasActiveSubscription={!!userSubscription?.isActive}
       />
 
+      {/* Streak toast */}
       <div
         className={[
           "fixed top-6 left-1/2 -translate-x-1/2 z-50",
@@ -314,7 +319,7 @@ export const Quiz = ({
             : "opacity-0 -translate-y-3 pointer-events-none",
         ].join(" ")}
       >
-        <div className="flex items-center gap-x-3 bg-orange-500 text-white px-5 py-3 rounded-2xl shadow-lg shadow-orange-200">
+        <div className="flex items-center gap-x-3 bg-orange-500 text-white px-5 py-3 rounded-2xl shadow-lg shadow-orange-200 dark:shadow-orange-900">
           <span className="text-xl leading-none">🔥</span>
           <div className="flex flex-col leading-tight">
             <span className="text-[11px] font-bold uppercase tracking-widest text-orange-100">
@@ -333,21 +338,22 @@ export const Quiz = ({
             <div className={slideClasses}>
               <div className="flex flex-col gap-y-8">
 
+                {/* Retry round banner */}
                 {isRetryRound && (
-                  <div className="relative overflow-hidden rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 px-5 py-3.5">
+                  <div className="relative overflow-hidden rounded-2xl border border-amber-200 dark:border-amber-800 bg-gradient-to-r from-amber-50 dark:from-amber-950/30 via-orange-50 dark:via-orange-950/20 to-amber-50 dark:to-amber-950/30 px-5 py-3.5">
                     <div className="absolute left-0 top-0 h-full w-1 rounded-l-2xl bg-gradient-to-b from-amber-400 to-orange-400" />
                     <div className="flex flex-col gap-y-0.5 pl-2">
                       <p className="text-[11px] font-bold uppercase tracking-widest text-amber-400">
                         Review Round
                       </p>
-                      <p className="text-sm font-semibold text-amber-800">
+                      <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
                         Questions you missed — let&apos;s nail them this time.
                       </p>
                     </div>
                   </div>
                 )}
 
-                <h1 className="text-lg lg:text-3xl text-center lg:text-start font-extrabold text-slate-800 tracking-tight">
+                <h1 className="text-lg lg:text-3xl text-center lg:text-start font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">
                   {title}
                 </h1>
 

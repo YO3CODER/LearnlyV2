@@ -10,23 +10,29 @@ import { POINTS_TO_REFILL } from "@/constants";
 import { getCourseById, getUserProgress, getUserSubscription } from "@/db/queries";
 import { challengeProgress, challenges, userProgress } from "@/db/schema";
 
+// Helper pour calculer le streak
+const updateStreak = (lastActivityDate: string, currentStreak: number) => {
+  const today = new Date().toISOString().split("T")[0];
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
+
+  if (lastActivityDate === today) {
+    return { streak: currentStreak, lastActivityDate: today };
+  } else if (lastActivityDate === yesterday) {
+    return { streak: currentStreak + 1, lastActivityDate: today };
+  } else {
+    return { streak: 1, lastActivityDate: today };
+  }
+};
+
 export const upsertUserProgress = async (courseId: number) => {
   const { userId } = await auth();
   const user = await currentUser();
 
-  if (!userId || !user) {
-    throw new Error("Unauthorized");
-  }
+  if (!userId || !user) throw new Error("Unauthorized");
 
   const course = await getCourseById(courseId);
-
-  if (!course) {
-    throw new Error("Course not found");
-  }
-
-  if (!course.units.length || !course.units[0].lessons.length) {
-    throw new Error("Course is empty");
-  }
+  if (!course) throw new Error("Course not found");
+  if (!course.units.length || !course.units[0].lessons.length) throw new Error("Course is empty");
 
   const existingUserProgress = await getUserProgress();
 
@@ -35,7 +41,7 @@ export const upsertUserProgress = async (courseId: number) => {
       activeCourseId: courseId,
       userName: user.firstName || "User",
       userImageSrc: user.imageUrl || "/mascot.svg",
-    });
+    }).where(eq(userProgress.userId, userId));
 
     revalidatePath("/courses");
     revalidatePath("/learn");
@@ -54,12 +60,31 @@ export const upsertUserProgress = async (courseId: number) => {
   redirect("/learn");
 };
 
+export const completeLesson = async () => {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const currentUserProgress = await getUserProgress();
+  if (!currentUserProgress) throw new Error("User progress not found");
+
+  const { streak, lastActivityDate } = updateStreak(
+    currentUserProgress.lastActivityDate ?? "",
+    currentUserProgress.streak ?? 0
+  );
+
+  await db.update(userProgress).set({
+    lessonsCompleted: (currentUserProgress.lessonsCompleted ?? 0) + 1,
+    streak,
+    lastActivityDate,
+  }).where(eq(userProgress.userId, userId));
+
+  revalidatePath("/quests");
+  revalidatePath("/learn");
+};
+
 export const reduceHearts = async (challengeId: number) => {
   const { userId } = await auth();
-
-  if (!userId) {
-    throw new Error("Unauthorized");
-  }
+  if (!userId) throw new Error("Unauthorized");
 
   const currentUserProgress = await getUserProgress();
   const userSubscription = await getUserSubscription();
@@ -68,9 +93,7 @@ export const reduceHearts = async (challengeId: number) => {
     where: eq(challenges.id, challengeId),
   });
 
-  if (!challenge) {
-    throw new Error("Challenge not found");
-  }
+  if (!challenge) throw new Error("Challenge not found");
 
   const lessonId = challenge.lessonId;
 
@@ -82,25 +105,22 @@ export const reduceHearts = async (challengeId: number) => {
   });
 
   const isPractice = !!existingChallengeProgress;
+  if (isPractice) return { error: "practice" };
+  if (!currentUserProgress) throw new Error("User progress not found");
+  if (userSubscription?.isActive) return { error: "subscription" };
+  if (currentUserProgress.hearts === 0) return { error: "hearts" };
 
-  if (isPractice) {
-    return { error: "practice" }; 
-  }
-
-  if (!currentUserProgress) {
-    throw new Error("User progress not found");
-  }
-
-  if (userSubscription?.isActive) {
-    return { error: "subscription" };
-  }
-
-  if (currentUserProgress.hearts === 0) {
-    return { error: "hearts" };
-  }
+  // Incrémenter challengesCompleted
+  const { streak, lastActivityDate } = updateStreak(
+    currentUserProgress.lastActivityDate ?? "",
+    currentUserProgress.streak ?? 0
+  );
 
   await db.update(userProgress).set({
     hearts: Math.max(currentUserProgress.hearts - 1, 0),
+    challengesCompleted: (currentUserProgress.challengesCompleted ?? 0) + 1,
+    streak,
+    lastActivityDate,
   }).where(eq(userProgress.userId, userId));
 
   revalidatePath("/shop");
@@ -112,18 +132,9 @@ export const reduceHearts = async (challengeId: number) => {
 
 export const refillHearts = async () => {
   const currentUserProgress = await getUserProgress();
-
-  if (!currentUserProgress) {
-    throw new Error("User progress not found");
-  }
-
-  if (currentUserProgress.hearts === 5) {
-    throw new Error("Hearts are already full");
-  }
-
-  if (currentUserProgress.points < POINTS_TO_REFILL) {
-    throw new Error("Not enough points");
-  }
+  if (!currentUserProgress) throw new Error("User progress not found");
+  if (currentUserProgress.hearts === 5) throw new Error("Hearts are already full");
+  if (currentUserProgress.points < POINTS_TO_REFILL) throw new Error("Not enough points");
 
   await db.update(userProgress).set({
     hearts: 5,

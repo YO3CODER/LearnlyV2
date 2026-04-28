@@ -13,7 +13,9 @@ export const Quests = ({ points }: Props) => {
   return (
     <div className="rounded-2xl p-5 space-y-4
       bg-gradient-to-b from-white to-blue-50/30
-      border border-slate-200/80 shadow-sm"
+      dark:from-slate-800 dark:to-slate-800/80
+      border-2 border-b-4 border-slate-200/80 dark:border-slate-700
+      shadow-sm"
     >
       {/* Header */}
       <div className="flex items-center justify-between w-full">
@@ -21,7 +23,7 @@ export const Quests = ({ points }: Props) => {
           <p className="text-[10px] font-semibold tracking-widest uppercase text-blue-400 mb-0.5">
             Daily
           </p>
-          <h3 className="font-extrabold text-lg text-slate-800 tracking-tight">
+          <h3 className="font-extrabold text-lg text-slate-800 dark:text-slate-100 tracking-tight">
             Quests
           </h3>
         </div>
@@ -29,7 +31,7 @@ export const Quests = ({ points }: Props) => {
           <Button
             size="sm"
             variant="primaryOutline"
-            className="rounded-xl text-xs font-semibold border-blue-200 text-blue-500 hover:bg-blue-50"
+            className="rounded-xl text-xs font-semibold border-blue-200 dark:border-blue-800 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30"
           >
             View all
           </Button>
@@ -37,7 +39,7 @@ export const Quests = ({ points }: Props) => {
       </div>
 
       {/* Divider */}
-      <div className="h-px bg-gradient-to-r from-blue-100 via-blue-100 to-transparent" />
+      <div className="h-px bg-gradient-to-r from-blue-100 dark:from-slate-700 via-blue-100 dark:via-slate-700 to-transparent" />
 
       {/* Quest list */}
       <ul className="w-full space-y-4">
@@ -53,8 +55,8 @@ export const Quests = ({ points }: Props) => {
               {/* Icon */}
               <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center
                 ${isCompleted
-                  ? "bg-blue-100"
-                  : "bg-amber-50 border border-amber-100"
+                  ? "bg-blue-100 dark:bg-blue-900/40 border-2 border-b-4 border-blue-200 dark:border-slate-700"
+                  : "bg-amber-50 dark:bg-amber-950/30 border-2 border-b-4 border-amber-100 dark:border-slate-700"
                 }`}
               >
                 <Image
@@ -69,7 +71,7 @@ export const Quests = ({ points }: Props) => {
               {/* Info */}
               <div className="flex flex-col gap-y-1.5 w-full">
                 <div className="flex items-center justify-between">
-                  <p className="text-slate-700 text-sm font-semibold">
+                  <p className="text-slate-700 dark:text-slate-200 text-sm font-semibold">
                     {quest.title}
                   </p>
                   <span className={`text-[11px] font-bold

@@ -8,7 +8,7 @@ import {
 import { Loader } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-
+import { ThemeToggle } from "@/components/theme-toggle";
 import { SidebarItem } from "./sidebar-item";
 
 type Props = {
@@ -20,7 +20,8 @@ export const Sidebar = ({ className }: Props) => {
     <div className={cn(
       "flex h-full lg:w-[256px] lg:fixed left-0 top-0 flex-col",
       "bg-gradient-to-b from-white via-slate-50 to-blue-50/40",
-      "border-r border-slate-200/80 shadow-sm",
+      "dark:from-slate-900 dark:via-slate-900 dark:to-slate-800",
+      "border-r border-slate-200/80 dark:border-slate-700/80 shadow-sm",
       className,
     )}>
 
@@ -38,7 +39,7 @@ export const Sidebar = ({ className }: Props) => {
       </Link>
 
       {/* Divider */}
-      <div className="mx-4 h-px bg-gradient-to-r from-blue-100 via-blue-100 to-transparent mb-4" />
+      <div className="mx-4 h-px bg-gradient-to-r from-blue-100 via-blue-100 to-transparent dark:from-slate-700 dark:via-slate-700 mb-4" />
 
       {/* Nav items */}
       <div className="flex flex-col gap-y-1 flex-1 px-3">
@@ -64,14 +65,27 @@ export const Sidebar = ({ className }: Props) => {
         />
       </div>
 
+      {/* Theme Toggle */}
+      <div className="mx-3 mb-3 flex items-center justify-between px-2">
+        <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
+          Thème
+        </span>
+        <ThemeToggle />
+      </div>
+
+      {/* Divider */}
+      <div className="mx-4 h-px bg-gradient-to-r from-blue-100 via-blue-100 to-transparent dark:from-slate-700 dark:via-slate-700 mb-3" />
+
       {/* User */}
-      <div className="mx-3 mb-4 p-3 rounded-2xl bg-white/70 border border-slate-100 shadow-sm flex items-center gap-x-3">
+      <div className="mx-3 mb-4 p-3 rounded-2xl bg-white/70 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-700 shadow-sm flex items-center gap-x-3">
         <ClerkLoading>
           <Loader className="h-5 w-5 text-blue-300 animate-spin" />
         </ClerkLoading>
         <ClerkLoaded>
           <UserButton />
-          <span className="text-sm font-medium text-slate-500">My Account</span>
+          <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
+            My Account
+          </span>
         </ClerkLoaded>
       </div>
 

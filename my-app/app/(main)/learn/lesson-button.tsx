@@ -32,14 +32,14 @@ const colorMap: Record<string, {
   glow: string;
   progress: string[];
 }> = {
-  blue:   { bg: "!bg-blue-500",   hover: "hover:!bg-blue-600",   border: "!border-b-blue-700",   shadow: "shadow-blue-200",   glow: "bg-blue-300/40",   progress: ["#3b82f6", "#6366f1"] },
-  purple: { bg: "!bg-purple-500", hover: "hover:!bg-purple-600", border: "!border-b-purple-700", shadow: "shadow-purple-200", glow: "bg-purple-300/40", progress: ["#a855f7", "#8b5cf6"] },
-  green:  { bg: "!bg-green-500",  hover: "hover:!bg-green-600",  border: "!border-b-green-700",  shadow: "shadow-green-200",  glow: "bg-green-300/40",  progress: ["#22c55e", "#16a34a"] },
-  orange: { bg: "!bg-orange-500", hover: "hover:!bg-orange-600", border: "!border-b-orange-700", shadow: "shadow-orange-200", glow: "bg-orange-300/40", progress: ["#f97316", "#ea580c"] },
-  pink:   { bg: "!bg-pink-500",   hover: "hover:!bg-pink-600",   border: "!border-b-pink-700",   shadow: "shadow-pink-200",   glow: "bg-pink-300/40",   progress: ["#ec4899", "#db2777"] },
-  indigo: { bg: "!bg-indigo-500", hover: "hover:!bg-indigo-600", border: "!border-b-indigo-700", shadow: "shadow-indigo-200", glow: "bg-indigo-300/40", progress: ["#6366f1", "#4f46e5"] },
-  teal:   { bg: "!bg-teal-500",   hover: "hover:!bg-teal-600",   border: "!border-b-teal-700",   shadow: "shadow-teal-200",   glow: "bg-teal-300/40",   progress: ["#14b8a6", "#0d9488"] },
-  red:    { bg: "!bg-red-500",    hover: "hover:!bg-red-600",    border: "!border-b-red-700",    shadow: "shadow-red-200",    glow: "bg-red-300/40",    progress: ["#ef4444", "#dc2626"] },
+  blue:   { bg: "!bg-blue-500",   hover: "hover:!bg-blue-600",   border: "!border-b-blue-700",   shadow: "shadow-blue-200 dark:shadow-blue-900",   glow: "bg-blue-300/40",   progress: ["#3b82f6", "#6366f1"] },
+  purple: { bg: "!bg-purple-500", hover: "hover:!bg-purple-600", border: "!border-b-purple-700", shadow: "shadow-purple-200 dark:shadow-purple-900", glow: "bg-purple-300/40", progress: ["#a855f7", "#8b5cf6"] },
+  green:  { bg: "!bg-green-500",  hover: "hover:!bg-green-600",  border: "!border-b-green-700",  shadow: "shadow-green-200 dark:shadow-green-900",  glow: "bg-green-300/40",  progress: ["#22c55e", "#16a34a"] },
+  orange: { bg: "!bg-orange-500", hover: "hover:!bg-orange-600", border: "!border-b-orange-700", shadow: "shadow-orange-200 dark:shadow-orange-900", glow: "bg-orange-300/40", progress: ["#f97316", "#ea580c"] },
+  pink:   { bg: "!bg-pink-500",   hover: "hover:!bg-pink-600",   border: "!border-b-pink-700",   shadow: "shadow-pink-200 dark:shadow-pink-900",   glow: "bg-pink-300/40",   progress: ["#ec4899", "#db2777"] },
+  indigo: { bg: "!bg-indigo-500", hover: "hover:!bg-indigo-600", border: "!border-b-indigo-700", shadow: "shadow-indigo-200 dark:shadow-indigo-900", glow: "bg-indigo-300/40", progress: ["#6366f1", "#4f46e5"] },
+  teal:   { bg: "!bg-teal-500",   hover: "hover:!bg-teal-600",   border: "!border-b-teal-700",   shadow: "shadow-teal-200 dark:shadow-teal-900",   glow: "bg-teal-300/40",   progress: ["#14b8a6", "#0d9488"] },
+  red:    { bg: "!bg-red-500",    hover: "hover:!bg-red-600",    border: "!border-b-red-700",    shadow: "shadow-red-200 dark:shadow-red-900",    glow: "bg-red-300/40",    progress: ["#ef4444", "#dc2626"] },
 };
 
 export const LessonButton = ({
@@ -78,7 +78,7 @@ export const LessonButton = ({
   const handleClick = () => {
     if (locked) return;
     if (isCompleted) {
-      open(id); // 👈 passe l'id de la leçon
+      open(id);
       return;
     }
     router.push("/lesson");
@@ -107,8 +107,10 @@ export const LessonButton = ({
             {/* Badge Start */}
             <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-10
               px-4 py-2 rounded-xl
-              bg-white border-2 border-b-4 border-slate-200
-              text-slate-700 text-xs font-extrabold uppercase tracking-widest
+              bg-white dark:bg-slate-800
+              border-2 border-b-4 border-slate-200 dark:border-slate-600
+              text-slate-700 dark:text-slate-200
+              text-xs font-extrabold uppercase tracking-widest
               shadow-lg whitespace-nowrap"
             >
               Start
@@ -183,7 +185,7 @@ export const LessonButton = ({
               className={cn(
                 "relative h-[70px] w-[70px] border-b-[6px] overflow-hidden transition-all duration-300",
                 "hover:scale-110 hover:-translate-y-1 active:scale-95 active:translate-y-0",
-                isGolden && !locked && "!bg-gradient-to-br !from-yellow-400 !to-amber-500 !border-b-amber-600 shadow-md shadow-amber-200",
+                isGolden && !locked && "!bg-gradient-to-br !from-yellow-400 !to-amber-500 !border-b-amber-600 shadow-md shadow-amber-200 dark:shadow-amber-900",
                 !isGolden && !locked && `${colors.bg} ${colors.hover} ${colors.border} shadow-md ${colors.shadow}`,
                 locked && "opacity-60",
               )}

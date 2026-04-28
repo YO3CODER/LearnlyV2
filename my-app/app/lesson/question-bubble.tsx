@@ -10,7 +10,7 @@ export const QuestionBubble = ({ question }: Props) => {
 
       {/* Mascot */}
       <div className="relative shrink-0">
-        <div className="absolute inset-0 bg-blue-200/40 rounded-full blur-md scale-125" />
+        <div className="absolute inset-0 bg-blue-200/40 dark:bg-blue-800/30 rounded-full blur-md scale-125" />
         <Image
           src="/mascot.svg"
           alt="Mascot"
@@ -29,15 +29,17 @@ export const QuestionBubble = ({ question }: Props) => {
 
       {/* Bubble */}
       <div className="relative py-3 px-5
-        bg-white border border-slate-200
+        bg-white dark:bg-slate-800
+        border border-slate-200 dark:border-slate-700
         rounded-2xl shadow-sm
-        text-sm lg:text-base font-medium text-slate-700
+        text-sm lg:text-base font-medium text-slate-700 dark:text-slate-200
         max-w-lg"
       >
         {question}
         {/* Arrow */}
         <div className="absolute -left-2 top-1/2 -translate-y-1/2
-          w-3 h-3 bg-white border-l border-b border-slate-200
+          w-3 h-3 bg-white dark:bg-slate-800
+          border-l border-b border-slate-200 dark:border-slate-700
           rotate-45"
         />
       </div>

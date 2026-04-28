@@ -46,14 +46,14 @@ export const UnitBanner = ({
 
   const getShadowColor = () => {
     const shadows: Record<string, string> = {
-      blue: "shadow-blue-300/50",
-      purple: "shadow-purple-300/50",
-      green: "shadow-green-300/50",
-      red: "shadow-red-300/50",
-      orange: "shadow-orange-300/50",
-      pink: "shadow-pink-300/50",
-      indigo: "shadow-indigo-300/50",
-      teal: "shadow-teal-300/50",
+      blue: "shadow-blue-300/50 dark:shadow-blue-900/50",
+      purple: "shadow-purple-300/50 dark:shadow-purple-900/50",
+      green: "shadow-green-300/50 dark:shadow-green-900/50",
+      red: "shadow-red-300/50 dark:shadow-red-900/50",
+      orange: "shadow-orange-300/50 dark:shadow-orange-900/50",
+      pink: "shadow-pink-300/50 dark:shadow-pink-900/50",
+      indigo: "shadow-indigo-300/50 dark:shadow-indigo-900/50",
+      teal: "shadow-teal-300/50 dark:shadow-teal-900/50",
     };
     return shadows[color] || shadows.blue;
   };
@@ -75,7 +75,6 @@ export const UnitBanner = ({
         <h3 className="text-xl font-extrabold text-white tracking-tight drop-shadow-sm">
           {title}
         </h3>
-        {/* Description visible uniquement en grand écran */}
         <p className="hidden lg:block text-white/80 text-sm font-medium">
           {description}
         </p>
@@ -91,8 +90,9 @@ export const UnitBanner = ({
           variant="secondary"
           className="flex items-center justify-center
             bg-white hover:bg-white/90
-            text-slate-700
-            border-2 border-b-4 border-slate-200
+            dark:bg-white/15 dark:hover:bg-white/25
+            text-slate-700 dark:text-white
+            border-2 border-b-4 border-slate-200 dark:border-white/20
             rounded-xl
             transition-all duration-200
             shadow-md active:scale-95 active:border-b-2
