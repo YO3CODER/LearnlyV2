@@ -56,18 +56,16 @@ const LearnPage = async () => {
       {/* Feed — partie gauche */}
       <FeedWrapper>
 
-        {/* Header avec UserProgress intégré */}
-        <div className="sticky top-[56px] lg:top-0 z-50 bg-background border-b border-border mb-5 pt-3 pb-3 lg:pt-[28px] lg:mt-[-28px] flex items-center justify-between">
+        {/* Header desktop uniquement */}
+        <div className="hidden lg:flex sticky top-0 z-50 bg-background border-b border-border mb-5 pb-3 lg:pt-[28px] lg:mt-[-28px] items-center justify-between">
           <Header title={userProgress.activeCourse.title} />
-          <div className="hidden lg:flex">
-            <UserProgress
-              activeCourse={userProgress.activeCourse}
-              hearts={userProgress.hearts}
-              points={userProgress.points}
-              hasActiveSubscription={isPro}
-              streak={userProgress.streak ?? 0}
-            />
-          </div>
+          <UserProgress
+            activeCourse={userProgress.activeCourse}
+            hearts={userProgress.hearts}
+            points={userProgress.points}
+            hasActiveSubscription={isPro}
+            streak={userProgress.streak ?? 0}
+          />
         </div>
 
         <StickyUnitBanner

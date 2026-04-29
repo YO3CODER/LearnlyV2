@@ -34,7 +34,7 @@ export const StickyUnitBanner = ({ units }: Props) => {
             setIsVisible(true);
           }
         },
-        { threshold: 0.1, rootMargin: "-80px 0px 0px 0px" }
+        { threshold: 0.3, rootMargin: "-56px 0px -40% 0px" }
       );
 
       observer.observe(el);
@@ -49,7 +49,7 @@ export const StickyUnitBanner = ({ units }: Props) => {
   const activeUnit = units[activeUnitIndex];
 
   return (
-    <div className="sticky top-[120px] lg:top-[88px] z-40 mb-6 transition-all duration-300 animate-in slide-in-from-top">
+    <div className="sticky top-[60px] lg:top-[88px] z-40 mb-2 lg:mb-6 transition-all duration-300 animate-in slide-in-from-top">
       <UnitBanner
         key={activeUnit.id}
         title={activeUnit.title}
