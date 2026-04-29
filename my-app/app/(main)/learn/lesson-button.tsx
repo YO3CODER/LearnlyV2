@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { usePracticeModal } from "@/store/use-practice-modal";
 
 import "react-circular-progressbar/dist/styles.css";
@@ -58,7 +57,6 @@ export const LessonButton = ({
   percentage,
   unitColor,
   isLastLesson,
-  unitId,
   title = "Leçon",
 }: Props) => {
   const router = useRouter();
@@ -111,24 +109,20 @@ export const LessonButton = ({
     router.push("/lesson");
   };
 
-  // Bouton style Duolingo — cercle plat avec bordure inférieure
   const DuoButton = ({
     bgHex,
     borderHex,
     children,
-    onClick,
     isLocked,
     isGoldenBtn,
   }: {
     bgHex: string;
     borderHex: string;
     children: React.ReactNode;
-    onClick?: () => void;
     isLocked?: boolean;
     isGoldenBtn?: boolean;
   }) => (
     <div
-      onClick={onClick}
       style={{
         width: 70,
         height: 70,
@@ -149,7 +143,6 @@ export const LessonButton = ({
         isLocked && "opacity-60",
       )}
     >
-      {/* Reflet blanc — grande ellipse */}
       {!isLocked && (
         <>
           {/* Reflet principal — demi-cercle en haut */}
@@ -166,24 +159,9 @@ export const LessonButton = ({
             }}
           />
 
-          {/* Reflet bas — petite ellipse */}
+          {/* Reflet secondaire — grande ellipse en bas */}
           <div
             style={{
-              position: "absolute",
-              top: 15,
-              left: "30%",
-              transform: "translateX(-50%) rotate(-60deg)",
-              width: 50,
-              height: 20,
-              background: "rgba(255,255,255,0.25)",
-              borderRadius: "100% 100% 0% 0%",
-            }}
-          />
-
-          {/* Reflet 2 — juste en dessous du premier */}
-          <div
-            style={{
-              
               position: "absolute",
               top: 39,
               left: "50%",
@@ -298,7 +276,15 @@ export const LessonButton = ({
                 borderHex={colors.borderHex}
                 isLocked={locked}
               >
-                <Icon className="h-9 w-9 fill-white text-white relative z-10" />
+                <Icon
+                  className={cn(
+                    "h-9 w-9 relative z-10",
+                    locked
+                      ? "fill-white text-white stroke-white opacity-60"
+                      : "fill-white text-white drop-shadow-sm",
+                    isCompleted && !isGolden && "fill-none stroke-white stroke-[4]",
+                  )}
+                />
               </DuoButton>
             </CircularProgressbarWithChildren>
           </div>
@@ -333,7 +319,7 @@ export const LessonButton = ({
                 className={cn(
                   "h-9 w-9 relative z-10",
                   locked
-                    ? "fill-neutral-300 text-neutral-300 stroke-neutral-300"
+                    ? "fill-white text-white stroke-white opacity-60"
                     : "fill-white text-white drop-shadow-sm",
                   isCompleted && !isGolden && "fill-none stroke-white stroke-[4]",
                 )}
