@@ -20,7 +20,7 @@ export const MobileNavbar = () => {
       className="
         lg:hidden fixed bottom-0 w-full z-50
         bg-background
-        border-t-2 border-border
+        border-t-2 border-[#353535]
         shadow-[0_-1px_4px_rgba(0,0,0,0.6)]
       "
     >
@@ -33,8 +33,7 @@ export const MobileNavbar = () => {
               key={route.href}
               href={route.href}
               className={cn(
-                "flex flex-col items-center gap-y-1 px-3 py-1.5 rounded-xl transition-all duration-200",
-
+                "flex flex-col items-center px-3 py-1.5 rounded-xl transition-all duration-200",
                 isActive
                   ? "text-lime-400"
                   : "text-gray-400 hover:text-gray-200 hover:bg-card"
@@ -43,22 +42,13 @@ export const MobileNavbar = () => {
               <Image
                 src={route.iconSrc}
                 alt={route.label}
-                width={24}
-                height={24}
+                width={28}
+                height={28}
                 className={cn(
                   "transition-transform duration-200",
                   isActive && "scale-110"
                 )}
               />
-
-              <span
-                className={cn(
-                  "text-[10px] font-bold tracking-wide uppercase",
-                  isActive ? "text-lime-400" : "text-gray-500"
-                )}
-              >
-                {route.label}
-              </span>
             </Link>
           );
         })}
