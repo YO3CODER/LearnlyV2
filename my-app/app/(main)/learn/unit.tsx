@@ -43,11 +43,11 @@ export const Unit = ({
   const unitGif = GIFS[(id - 1) % GIFS.length];
 
   return (
-    <div id={`unit-${index}`} className="relative">
+    <div id={`unit-${index}`} style={{ position: "relative", overflow: "visible" }}>
 
-      {/* GIF mascotte fixe à droite de l'unité */}
-      <div className="absolute right-0 top-20 z-10
-        animate-[mascot-float_3s_ease-in-out_infinite]"
+      {/* GIF mascotte */}
+      <div
+        className="absolute right-0 top-20 z-10 animate-[mascot-float_3s_ease-in-out_infinite]"
         style={{ animationDelay: `${index * 300}ms` }}
       >
         <Image
@@ -60,7 +60,10 @@ export const Unit = ({
         />
       </div>
 
-      <div className="flex items-center flex-col relative">
+      <div
+        className="flex items-center flex-col relative"
+        style={{ overflow: "visible", zIndex: 0 }}
+      >
         {lessons.map((lesson, index) => {
           const isCurrent = lesson.id === activeLesson?.id;
           const isLocked = !lesson.completed && !isCurrent;
@@ -71,13 +74,14 @@ export const Unit = ({
               key={lesson.id}
               id={lesson.id}
               index={index}
-              totalCount={lessons.length - 1}
+              totalCount={lessons.length}
               current={isCurrent}
               locked={isLocked}
               percentage={activeLessonPercentage}
               unitColor={unitColor}
               isLastLesson={isLastLesson}
               unitId={id}
+              title={lesson.title}
             />
           );
         })}
