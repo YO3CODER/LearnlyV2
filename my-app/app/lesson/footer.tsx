@@ -82,7 +82,7 @@ export const Footer = ({
             variant="default"
             size={isMobile ? "sm" : "lg"}
             onClick={() => (window.location.href = `/lesson/${lessonId}`)}
-            className="rounded-xl font-bold border-none bg-card hover:bg-border text-white"
+            className="rounded-xl font-bold border-2 border-b-4 border-slate-600 bg-card hover:bg-border text-white"
           >
             Practice again
           </Button>
@@ -95,11 +95,11 @@ export const Footer = ({
           size={isMobile ? "sm" : "lg"}
           variant="secondary"
           className={cn(
-            "ml-auto rounded-xl font-bold tracking-wide transition-all duration-200 border-none",
-            status === "none" && "bg-green-500 hover:bg-green-600 text-white",
-            status === "correct" && "bg-green-500 hover:bg-green-600 text-white",
-            status === "wrong" && "bg-red-500 hover:bg-red-600 text-white opacity-70",
-            status === "completed" && "bg-green-500 hover:bg-green-600 text-white"
+            "ml-auto rounded-xl font-bold tracking-wide transition-all duration-200 border-2 border-b-4",
+            status === "none" && "bg-green-500 hover:bg-green-600 text-white border-green-600",
+            status === "correct" && "bg-green-500 hover:bg-green-600 text-white border-green-600",
+            status === "wrong" && "bg-red-500 hover:bg-red-600 text-white opacity-70 border-red-600",
+            status === "completed" && "bg-green-500 hover:bg-green-600 text-white border-green-600"
           )}
         >
           {buttonLabel()}
