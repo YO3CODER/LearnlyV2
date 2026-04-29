@@ -30,16 +30,7 @@ export const Header = () => {
         {/* Logo */}
         <div className="flex items-center gap-x-3 group">
           <div className="relative">
-            <div
-              className="
-                absolute inset-0
-                bg-background/5
-                rounded-full blur-md scale-125
-                opacity-0 group-hover:opacity-100
-                transition duration-300
-              "
-            />
-
+            <div className="absolute inset-0 bg-primary/10 rounded-full blur-md scale-125 opacity-0 group-hover:opacity-100 transition duration-300" />
             <Image
               src="/mascot.svg"
               height={38}
@@ -49,8 +40,7 @@ export const Header = () => {
             />
           </div>
 
-          {/* FIX IMPORTANT */}
-          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-foreground">
+          <h1 className="text-2xl font-extrabold tracking-tight text-blue-400">
             Learnly
           </h1>
         </div>
@@ -70,8 +60,8 @@ export const Header = () => {
                 variant="ghost"
                 className="
                   rounded-xl font-semibold
-                  text-slate-600 dark:text-muted-foreground
-                  hover:text-slate-900 dark:hover:text-foreground
+                  text-muted-foreground
+                  hover:text-foreground
                   hover:bg-accent
                   transition-all duration-200
                 "
