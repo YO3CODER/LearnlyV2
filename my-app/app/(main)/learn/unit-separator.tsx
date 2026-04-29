@@ -32,16 +32,16 @@ export const UnitSeparator = ({ nextUnitTitle, unitIndex }: Props) => {
 
   return (
     <div ref={ref} className="flex items-center gap-x-4 my-10 px-2">
-      {/* Trait gauche */}
-      <div className="flex-1 h-px bg-border" />
+      {/* Trait gauche — style bouton */}
+      <div className="flex-1 h-[2px] rounded-full bg-border" style={{ borderBottom: "2px solid hsl(var(--border))" }} />
 
       {/* Texte au centre */}
-      <span className="text-muted-foreground font-bold text-sm tracking-wide whitespace-nowrap">
+      <span className="text-muted-foreground font-extrabold text-base tracking-wide whitespace-nowrap">
         {nextUnitTitle}
       </span>
 
-      {/* Trait droit */}
-      <div className="flex-1 h-px bg-border" />
+      {/* Trait droit — style bouton */}
+      <div className="flex-1 h-[2px] rounded-full bg-border" style={{ borderBottom: "2px solid hsl(var(--border))" }} />
 
       {/* Bouton flèche */}
       <button
@@ -53,8 +53,8 @@ export const UnitSeparator = ({ nextUnitTitle, unitIndex }: Props) => {
           shadow-sm"
       >
         {isAbove
-          ? <ArrowDown className="h-5 w-5 text-blue-400" />
-          : <ArrowUp className="h-5 w-5 text-blue-400" />
+          ? <ArrowDown className="h-5 w-5 text-primary" />
+          : <ArrowUp className="h-5 w-5 text-primary" />
         }
       </button>
     </div>

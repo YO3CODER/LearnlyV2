@@ -27,7 +27,8 @@ type Props = {
 const colorMap: Record<string, {
   bg: string;
   hover: string;
-  border: string;
+  bgHex: string;
+  borderHex: string;
   shadow: string;
   glow: string;
   progress: string[];
@@ -38,14 +39,14 @@ const colorMap: Record<string, {
   popupButton: string;
   popupButtonText: string;
 }> = {
-  blue:   { bg: "!bg-blue-500",   hover: "hover:!bg-blue-600",   border: "!border-b-blue-700",   shadow: "shadow-blue-200 dark:shadow-blue-900",   glow: "bg-blue-300/40",   progress: ["#3b82f6", "#6366f1"], popup: "bg-blue-500",   popupBorder: "border-blue-600",   popupArrow: "#3b82f6", popupButtonBorder: "#1d4ed8", popupButton: "bg-white", popupButtonText: "text-blue-500" },
-  purple: { bg: "!bg-purple-500", hover: "hover:!bg-purple-600", border: "!border-b-purple-700", shadow: "shadow-purple-200 dark:shadow-purple-900", glow: "bg-purple-300/40", progress: ["#a855f7", "#8b5cf6"], popup: "bg-purple-500", popupBorder: "border-purple-600", popupArrow: "#a855f7", popupButtonBorder: "#7e22ce", popupButton: "bg-white", popupButtonText: "text-purple-500" },
-  green:  { bg: "!bg-green-500",  hover: "hover:!bg-green-600",  border: "!border-b-green-700",  shadow: "shadow-green-200 dark:shadow-green-900",  glow: "bg-green-300/40",  progress: ["#22c55e", "#16a34a"], popup: "bg-green-500",  popupBorder: "border-green-600",  popupArrow: "#22c55e", popupButtonBorder: "#15803d", popupButton: "bg-white", popupButtonText: "text-green-600" },
-  orange: { bg: "!bg-orange-500", hover: "hover:!bg-orange-600", border: "!border-b-orange-700", shadow: "shadow-orange-200 dark:shadow-orange-900", glow: "bg-orange-300/40", progress: ["#f97316", "#ea580c"], popup: "bg-orange-500", popupBorder: "border-orange-600", popupArrow: "#f97316", popupButtonBorder: "#c2410c", popupButton: "bg-white", popupButtonText: "text-orange-500" },
-  pink:   { bg: "!bg-pink-500",   hover: "hover:!bg-pink-600",   border: "!border-b-pink-700",   shadow: "shadow-pink-200 dark:shadow-pink-900",   glow: "bg-pink-300/40",   progress: ["#ec4899", "#db2777"], popup: "bg-pink-500",   popupBorder: "border-pink-600",   popupArrow: "#ec4899", popupButtonBorder: "#be185d", popupButton: "bg-white", popupButtonText: "text-pink-500" },
-  indigo: { bg: "!bg-indigo-500", hover: "hover:!bg-indigo-600", border: "!border-b-indigo-700", shadow: "shadow-indigo-200 dark:shadow-indigo-900", glow: "bg-indigo-300/40", progress: ["#6366f1", "#4f46e5"], popup: "bg-indigo-500", popupBorder: "border-indigo-600", popupArrow: "#6366f1", popupButtonBorder: "#4338ca", popupButton: "bg-white", popupButtonText: "text-indigo-500" },
-  teal:   { bg: "!bg-teal-500",   hover: "hover:!bg-teal-600",   border: "!border-b-teal-700",   shadow: "shadow-teal-200 dark:shadow-teal-900",   glow: "bg-teal-300/40",   progress: ["#14b8a6", "#0d9488"], popup: "bg-teal-500",   popupBorder: "border-teal-600",   popupArrow: "#14b8a6", popupButtonBorder: "#0f766e", popupButton: "bg-white", popupButtonText: "text-teal-500" },
-  red:    { bg: "!bg-red-500",    hover: "hover:!bg-red-600",    border: "!border-b-red-700",    shadow: "shadow-red-200 dark:shadow-red-900",    glow: "bg-red-300/40",    progress: ["#ef4444", "#dc2626"], popup: "bg-red-500",    popupBorder: "border-red-600",    popupArrow: "#ef4444", popupButtonBorder: "#b91c1c", popupButton: "bg-white", popupButtonText: "text-red-500" },
+  blue: { bg: "!bg-blue-500", hover: "hover:!bg-blue-600", bgHex: "#3b82f6", borderHex: "#1d4ed8", shadow: "shadow-blue-200 dark:shadow-blue-900", glow: "bg-blue-300/40", progress: ["#3b82f6", "#6366f1"], popup: "bg-blue-500", popupBorder: "border-blue-600", popupArrow: "#3b82f6", popupButtonBorder: "#1d4ed8", popupButton: "bg-white", popupButtonText: "text-blue-500" },
+  purple: { bg: "!bg-purple-500", hover: "hover:!bg-purple-600", bgHex: "#a855f7", borderHex: "#7e22ce", shadow: "shadow-purple-200 dark:shadow-purple-900", glow: "bg-purple-300/40", progress: ["#a855f7", "#8b5cf6"], popup: "bg-purple-500", popupBorder: "border-purple-600", popupArrow: "#a855f7", popupButtonBorder: "#7e22ce", popupButton: "bg-white", popupButtonText: "text-purple-500" },
+  green: { bg: "!bg-green-500", hover: "hover:!bg-green-600", bgHex: "#22c55e", borderHex: "#15803d", shadow: "shadow-green-200 dark:shadow-green-900", glow: "bg-green-300/40", progress: ["#22c55e", "#16a34a"], popup: "bg-green-500", popupBorder: "border-green-600", popupArrow: "#22c55e", popupButtonBorder: "#15803d", popupButton: "bg-white", popupButtonText: "text-green-600" },
+  orange: { bg: "!bg-orange-500", hover: "hover:!bg-orange-600", bgHex: "#f97316", borderHex: "#c2410c", shadow: "shadow-orange-200 dark:shadow-orange-900", glow: "bg-orange-300/40", progress: ["#f97316", "#ea580c"], popup: "bg-orange-500", popupBorder: "border-orange-600", popupArrow: "#f97316", popupButtonBorder: "#c2410c", popupButton: "bg-white", popupButtonText: "text-orange-500" },
+  pink: { bg: "!bg-pink-500", hover: "hover:!bg-pink-600", bgHex: "#ec4899", borderHex: "#be185d", shadow: "shadow-pink-200 dark:shadow-pink-900", glow: "bg-pink-300/40", progress: ["#ec4899", "#db2777"], popup: "bg-pink-500", popupBorder: "border-pink-600", popupArrow: "#ec4899", popupButtonBorder: "#be185d", popupButton: "bg-white", popupButtonText: "text-pink-500" },
+  indigo: { bg: "!bg-indigo-500", hover: "hover:!bg-indigo-600", bgHex: "#6366f1", borderHex: "#4338ca", shadow: "shadow-indigo-200 dark:shadow-indigo-900", glow: "bg-indigo-300/40", progress: ["#6366f1", "#4f46e5"], popup: "bg-indigo-500", popupBorder: "border-indigo-600", popupArrow: "#6366f1", popupButtonBorder: "#4338ca", popupButton: "bg-white", popupButtonText: "text-indigo-500" },
+  teal: { bg: "!bg-teal-500", hover: "hover:!bg-teal-600", bgHex: "#14b8a6", borderHex: "#0f766e", shadow: "shadow-teal-200 dark:shadow-teal-900", glow: "bg-teal-300/40", progress: ["#14b8a6", "#0d9488"], popup: "bg-teal-500", popupBorder: "border-teal-600", popupArrow: "#14b8a6", popupButtonBorder: "#0f766e", popupButton: "bg-white", popupButtonText: "text-teal-500" },
+  red: { bg: "!bg-red-500", hover: "hover:!bg-red-600", bgHex: "#ef4444", borderHex: "#b91c1c", shadow: "shadow-red-200 dark:shadow-red-900", glow: "bg-red-300/40", progress: ["#ef4444", "#dc2626"], popup: "bg-red-500", popupBorder: "border-red-600", popupArrow: "#ef4444", popupButtonBorder: "#b91c1c", popupButton: "bg-white", popupButtonText: "text-red-500" },
 };
 
 export const LessonButton = ({
@@ -110,6 +111,95 @@ export const LessonButton = ({
     router.push("/lesson");
   };
 
+  // Bouton style Duolingo — cercle plat avec bordure inférieure
+  const DuoButton = ({
+    bgHex,
+    borderHex,
+    children,
+    onClick,
+    isLocked,
+    isGoldenBtn,
+  }: {
+    bgHex: string;
+    borderHex: string;
+    children: React.ReactNode;
+    onClick?: () => void;
+    isLocked?: boolean;
+    isGoldenBtn?: boolean;
+  }) => (
+    <div
+      onClick={onClick}
+      style={{
+        width: 70,
+        height: 70,
+        borderRadius: "50%",
+        backgroundColor: isGoldenBtn ? "#f59e0b" : isLocked ? "#d1d5db" : bgHex,
+        borderBottom: `6px solid ${isGoldenBtn ? "#b45309" : isLocked ? "#9ca3af" : borderHex}`,
+        cursor: isLocked ? "default" : "pointer",
+        position: "relative",
+        overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        transition: "transform 0.2s, border-bottom 0.1s",
+        boxShadow: isLocked ? "none" : `0 4px 12px ${bgHex}55`,
+      }}
+      className={cn(
+        !isLocked && "hover:translate-y-[2px] hover:border-b-[3px] active:translate-y-[4px] active:border-b-[2px]",
+        isLocked && "opacity-60",
+      )}
+    >
+      {/* Reflet blanc — grande ellipse */}
+      {!isLocked && (
+        <>
+          {/* Reflet principal — demi-cercle en haut */}
+          <div
+            style={{
+              position: "absolute",
+              top: 15,
+              left: "30%",
+              transform: "translateX(-50%) rotate(-60deg)",
+              width: 50,
+              height: 20,
+              background: "rgba(255,255,255,0.25)",
+              borderRadius: "100% 100% 0% 0%",
+            }}
+          />
+
+          {/* Reflet bas — petite ellipse */}
+          <div
+            style={{
+              position: "absolute",
+              top: 15,
+              left: "30%",
+              transform: "translateX(-50%) rotate(-60deg)",
+              width: 50,
+              height: 20,
+              background: "rgba(255,255,255,0.25)",
+              borderRadius: "100% 100% 0% 0%",
+            }}
+          />
+
+          {/* Reflet 2 — juste en dessous du premier */}
+          <div
+            style={{
+              
+              position: "absolute",
+              top: 39,
+              left: "50%",
+              transform: "translateX(-53%) rotate(-60deg)",
+              width: 93,
+              height: 17,
+              background: "rgba(255,255,255,0.25)",
+              borderRadius: "90% 90% 0% 0%",
+            }}
+          />
+        </>
+      )}
+      {children}
+    </div>
+  );
+
   return (
     <div
       style={{
@@ -131,7 +221,7 @@ export const LessonButton = ({
           zIndex: showPopup ? 50 : "auto",
         }}
       >
-        {/* Popup — affiché EN BAS du bouton */}
+        {/* Popup */}
         {showPopup && !locked && (
           <div
             ref={popupRef}
@@ -143,7 +233,6 @@ export const LessonButton = ({
             )}
             style={{ zIndex: 999 }}
           >
-            {/* Flèche pointant vers le HAUT */}
             <div
               className="absolute -top-[10px] left-1/2 -translate-x-1/2 w-0 h-0"
               style={{
@@ -152,22 +241,16 @@ export const LessonButton = ({
                 borderBottom: `10px solid ${colors.popupArrow}`,
               }}
             />
-
-            {/* Bouton fermer */}
             <button
               onClick={(e) => { e.stopPropagation(); setShowPopup(false); }}
               className="absolute top-2 right-2 text-white/70 hover:text-white transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
-
-            {/* Contenu */}
             <p className="text-white font-extrabold text-sm mb-1 pr-6">{title}</p>
             <p className="text-white/80 text-xs mb-4">
               Leçon {index + 1} sur {totalCount}
             </p>
-
-            {/* Bouton Start */}
             <button
               onClick={handleStart}
               className={cn(
@@ -187,10 +270,8 @@ export const LessonButton = ({
           <div className="h-[102px] w-[102px] relative" onClick={handleClick}>
             <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-10
               px-4 py-2 rounded-xl
-              bg-background
-              border-2 border-b-4 border-border
-              text-foreground
-              text-xs font-extrabold uppercase tracking-widest
+              bg-background border-2 border-b-4 border-border
+              text-foreground text-xs font-extrabold uppercase tracking-widest
               shadow-lg whitespace-nowrap"
             >
               Start
@@ -212,35 +293,21 @@ export const LessonButton = ({
                 </defs>
               </svg>
 
-              <Button
-                size="rounded"
-                variant={locked ? "locked" : "secondary"}
-                className={cn(
-                  "h-[70px] w-[70px] border-b-[6px] transition-all duration-300 active:scale-95",
-                  "relative overflow-hidden group",
-                  !locked && `${colors.bg} ${colors.hover} ${colors.border} shadow-lg ${colors.shadow}`,
-                )}
+              <DuoButton
+                bgHex={colors.bgHex}
+                borderHex={colors.borderHex}
+                isLocked={locked}
               >
-                <div className="absolute inset-0 pointer-events-none rounded-full overflow-hidden">
-                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-4 bg-background/30 rounded-full blur-sm" />
-                  <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/25 to-transparent rounded-t-full" />
-                </div>
-                <div className="absolute inset-0 pointer-events-none">
-                  <span className="absolute top-1 right-2 text-white/80 text-[8px] animate-[twinkle_3s_ease-in-out_infinite]"
-                    style={{ animationDelay: `${index * 400}ms` }}>✦</span>
-                  <span className="absolute bottom-2 left-1 text-white/60 text-[6px] animate-[twinkle_3s_ease-in-out_infinite]"
-                    style={{ animationDelay: `${index * 400 + 500}ms` }}>✦</span>
-                </div>
                 <Icon className="h-9 w-9 fill-white text-white relative z-10" />
-              </Button>
+              </DuoButton>
             </CircularProgressbarWithChildren>
           </div>
 
         ) : (
-          <div className="relative group" onClick={handleClick}>
+          <div className="relative" onClick={handleClick}>
             {!locked && (
               <div className={cn(
-                "absolute inset-0 rounded-full blur-md scale-125 opacity-0 group-hover:opacity-100 transition-all duration-500",
+                "absolute inset-0 rounded-full blur-md scale-125 opacity-0 hover:opacity-100 transition-all duration-500",
                 isGolden ? "bg-yellow-300/50" : colors.glow
               )} />
             )}
@@ -256,43 +323,22 @@ export const LessonButton = ({
               </div>
             )}
 
-            <Button
-              size="rounded"
-              variant={locked ? "locked" : "secondary"}
-              className={cn(
-                "relative h-[70px] w-[70px] border-b-[6px] overflow-hidden transition-all duration-300",
-                "hover:scale-110 hover:-translate-y-1 active:scale-95 active:translate-y-0",
-                isGolden && !locked && "!bg-gradient-to-br !from-yellow-400 !to-amber-500 !border-b-amber-600 shadow-md shadow-amber-200 dark:shadow-amber-900",
-                !isGolden && !locked && `${colors.bg} ${colors.hover} ${colors.border} shadow-md ${colors.shadow}`,
-                locked && "opacity-60",
-              )}
+            <DuoButton
+              bgHex={isGolden ? "#f59e0b" : colors.bgHex}
+              borderHex={isGolden ? "#b45309" : colors.borderHex}
+              isLocked={locked}
+              isGoldenBtn={isGolden && !locked}
             >
-              {!locked && (
-                <div className="absolute inset-0 pointer-events-none rounded-full overflow-hidden">
-                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-4 bg-background/30 rounded-full blur-sm" />
-                  <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/25 to-transparent rounded-t-full" />
-                </div>
-              )}
-              {!locked && (
-                <div className="absolute inset-0 pointer-events-none">
-                  <span className="absolute top-1 right-2 text-white/80 text-[8px] animate-[twinkle_3s_ease-in-out_infinite]"
-                    style={{ animationDelay: `${index * 400}ms` }}>✦</span>
-                  <span className="absolute bottom-2 left-1 text-white/60 text-[6px] animate-[twinkle_3s_ease-in-out_infinite]"
-                    style={{ animationDelay: `${index * 400 + 500}ms` }}>✦</span>
-                  <span className="absolute top-2 left-2 text-white/50 text-[5px] animate-[twinkle_3s_ease-in-out_infinite]"
-                    style={{ animationDelay: `${index * 400 + 1000}ms` }}>✧</span>
-                </div>
-              )}
               <Icon
                 className={cn(
-                  "h-9 w-9 relative z-10 transition-transform duration-300 group-hover:scale-110",
+                  "h-9 w-9 relative z-10",
                   locked
                     ? "fill-neutral-300 text-neutral-300 stroke-neutral-300"
                     : "fill-white text-white drop-shadow-sm",
                   isCompleted && !isGolden && "fill-none stroke-white stroke-[4]",
                 )}
               />
-            </Button>
+            </DuoButton>
           </div>
         )}
       </div>
