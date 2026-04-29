@@ -49,7 +49,7 @@ export const StickyUnitBanner = ({ units }: Props) => {
   const activeUnit = units[activeUnitIndex];
 
   return (
-    <div className="sticky top-[56px] lg:top-[88px] z-40 mb-6 transition-all duration-300 animate-in slide-in-from-top">
+    <div className="sticky top-[120px] lg:top-[88px] z-40 mb-6 transition-all duration-300 animate-in slide-in-from-top">
       <UnitBanner
         key={activeUnit.id}
         title={activeUnit.title}

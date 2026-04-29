@@ -107,9 +107,9 @@ export const LessonButton = ({
             {/* Badge Start */}
             <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-10
               px-4 py-2 rounded-xl
-              bg-white dark:bg-slate-800
-              border-2 border-b-4 border-slate-200 dark:border-slate-600
-              text-slate-700 dark:text-slate-200
+              bg-background dark:bg-background-800
+              border-2 border-b-4 border-border-200 dark:border-border-600
+              text-muted-foreground-700 dark:text-muted-foreground-200
               text-xs font-extrabold uppercase tracking-widest
               shadow-lg whitespace-nowrap"
             >
@@ -142,7 +142,7 @@ export const LessonButton = ({
                 )}
               >
                 <div className="absolute inset-0 pointer-events-none rounded-full overflow-hidden">
-                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-4 bg-white/30 rounded-full blur-sm" />
+                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-4 bg-background/30 rounded-full blur-sm" />
                   <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/25 to-transparent rounded-t-full" />
                 </div>
                 <div className="absolute inset-0 pointer-events-none">
@@ -192,7 +192,7 @@ export const LessonButton = ({
             >
               {!locked && (
                 <div className="absolute inset-0 pointer-events-none rounded-full overflow-hidden">
-                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-4 bg-white/30 rounded-full blur-sm" />
+                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-4 bg-background/30 rounded-full blur-sm" />
                   <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/25 to-transparent rounded-t-full" />
                 </div>
               )}

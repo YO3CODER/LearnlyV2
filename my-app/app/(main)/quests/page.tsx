@@ -10,17 +10,17 @@ import { quests } from "@/constants";
 import {
   BoltIcon, CheckCircleIcon, FireIcon,
   StarIcon, TrophyIcon, SparklesIcon,
-  BookOpenIcon, ShieldCheckIcon, LockClosedIcon,
+  BookOpenIcon, ShieldCheckIcon,
 } from "@heroicons/react/24/solid";
 
 const getQuestIcon = (type: string, value: number) => {
-  if (type === "streak")     return { Icon: FireIcon,        color: "text-red-500",    bg: "bg-red-50 dark:bg-red-950/30",       border: "border-red-200 dark:border-slate-700" };
-  if (type === "lessons")    return { Icon: BookOpenIcon,    color: "text-blue-500",   bg: "bg-blue-50 dark:bg-blue-950/30",     border: "border-blue-200 dark:border-slate-700" };
-  if (type === "challenges") return { Icon: ShieldCheckIcon, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-950/30", border: "border-purple-200 dark:border-slate-700" };
-  if (value >= 1000) return { Icon: SparklesIcon, color: "text-yellow-500", bg: "bg-yellow-50 dark:bg-yellow-950/30", border: "border-yellow-200 dark:border-slate-700" };
-  if (value >= 500)  return { Icon: TrophyIcon,   color: "text-orange-500", bg: "bg-orange-50 dark:bg-orange-950/30", border: "border-orange-200 dark:border-slate-700" };
-  if (value >= 100)  return { Icon: StarIcon,      color: "text-blue-500",   bg: "bg-blue-50 dark:bg-blue-950/30",     border: "border-blue-200 dark:border-slate-700" };
-  return                    { Icon: BoltIcon,      color: "text-green-500",  bg: "bg-green-50 dark:bg-green-950/30",   border: "border-green-200 dark:border-slate-700" };
+  if (type === "streak")     return { Icon: FireIcon,        color: "text-red-500",    bg: "bg-red-50 dark:bg-red-950/30",       border: "border-red-200 dark:border-red-800" };
+  if (type === "lessons")    return { Icon: BookOpenIcon,    color: "text-blue-500",   bg: "bg-blue-50 dark:bg-blue-950/30",     border: "border-blue-200 dark:border-blue-800" };
+  if (type === "challenges") return { Icon: ShieldCheckIcon, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-950/30", border: "border-purple-200 dark:border-purple-800" };
+  if (value >= 1000) return { Icon: SparklesIcon, color: "text-yellow-500", bg: "bg-yellow-50 dark:bg-yellow-950/30", border: "border-yellow-200 dark:border-yellow-800" };
+  if (value >= 500)  return { Icon: TrophyIcon,   color: "text-orange-500", bg: "bg-orange-50 dark:bg-orange-950/30", border: "border-orange-200 dark:border-orange-800" };
+  if (value >= 100)  return { Icon: StarIcon,      color: "text-blue-500",   bg: "bg-blue-50 dark:bg-blue-950/30",     border: "border-blue-200 dark:border-blue-800" };
+  return                    { Icon: BoltIcon,      color: "text-green-500",  bg: "bg-green-50 dark:bg-green-950/30",   border: "border-green-200 dark:border-green-800" };
 };
 
 const getUserValue = (
@@ -73,6 +73,7 @@ const QuestsPage = async () => {
           hearts={userProgress.hearts}
           points={userProgress.points}
           hasActiveSubscription={isPro}
+          streak={userProgress.streak ?? 0}
         />
         {!isPro && <Promo />}
       </StickyWrapper>
@@ -86,29 +87,29 @@ const QuestsPage = async () => {
             <Image src="/question.svg" alt="Quests" height={90} width={90} className="relative drop-shadow-md" />
           </div>
           <p className="text-xs font-semibold tracking-widest uppercase text-orange-400 mb-1">Défis</p>
-          <h1 className="font-extrabold text-slate-800 dark:text-slate-100 text-3xl tracking-tight mb-1">Quêtes</h1>
-          <p className="text-slate-400 dark:text-slate-500 text-center text-sm mb-4 max-w-sm">
+          <h1 className="font-extrabold text-foreground text-3xl tracking-tight mb-1">Quêtes</h1>
+          <p className="text-muted-foreground text-center text-sm mb-4 max-w-sm">
             Complétez des quêtes en apprenant chaque jour.
           </p>
 
           {/* Stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full mb-6">
-            <div className="flex flex-col items-center p-3 rounded-2xl bg-green-50 dark:bg-green-950/30 border-2 border-b-4 border-green-100 dark:border-slate-700">
+            <div className="flex flex-col items-center p-3 rounded-2xl bg-green-50 dark:bg-green-950/30 border-2 border-b-4 border-green-200 dark:border-green-800">
               <BoltIcon className="h-5 w-5 text-green-500 mb-1" />
               <p className="font-extrabold text-green-700 dark:text-green-400 text-lg">{userProgress.points}</p>
               <p className="text-xs text-green-600 dark:text-green-500">XP Total</p>
             </div>
-            <div className="flex flex-col items-center p-3 rounded-2xl bg-red-50 dark:bg-red-950/30 border-2 border-b-4 border-red-100 dark:border-slate-700">
+            <div className="flex flex-col items-center p-3 rounded-2xl bg-red-50 dark:bg-red-950/30 border-2 border-b-4 border-red-200 dark:border-red-800">
               <FireIcon className="h-5 w-5 text-red-500 mb-1" />
               <p className="font-extrabold text-red-700 dark:text-red-400 text-lg">{streak}</p>
               <p className="text-xs text-red-600 dark:text-red-500">Jours streak</p>
             </div>
-            <div className="flex flex-col items-center p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border-2 border-b-4 border-blue-100 dark:border-slate-700">
+            <div className="flex flex-col items-center p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border-2 border-b-4 border-blue-200 dark:border-blue-800">
               <BookOpenIcon className="h-5 w-5 text-blue-500 mb-1" />
               <p className="font-extrabold text-blue-700 dark:text-blue-400 text-lg">{lessonsCompleted}</p>
               <p className="text-xs text-blue-600 dark:text-blue-500">Leçons</p>
             </div>
-            <div className="flex flex-col items-center p-3 rounded-2xl bg-purple-50 dark:bg-purple-950/30 border-2 border-b-4 border-purple-100 dark:border-slate-700">
+            <div className="flex flex-col items-center p-3 rounded-2xl bg-purple-50 dark:bg-purple-950/30 border-2 border-b-4 border-purple-200 dark:border-purple-800">
               <ShieldCheckIcon className="h-5 w-5 text-purple-500 mb-1" />
               <p className="font-extrabold text-purple-700 dark:text-purple-400 text-lg">{challengesCompleted}</p>
               <p className="text-xs text-purple-600 dark:text-purple-500">Défis</p>
@@ -116,14 +117,14 @@ const QuestsPage = async () => {
           </div>
 
           {/* Progress global */}
-          <div className="flex items-center gap-2 mb-6 px-4 py-2 rounded-2xl bg-orange-50 dark:bg-orange-950/30 border-2 border-b-4 border-orange-100 dark:border-slate-700 w-full justify-center">
+          <div className="flex items-center gap-2 mb-6 px-4 py-2 rounded-2xl bg-orange-50 dark:bg-orange-950/30 border-2 border-b-4 border-orange-200 dark:border-orange-800 w-full justify-center">
             <TrophyIcon className="h-5 w-5 text-orange-500" />
             <p className="text-sm font-bold text-orange-600 dark:text-orange-400">
               {completedCount} / {quests.length} quêtes complétées
             </p>
           </div>
 
-          <div className="h-px w-full bg-gradient-to-r from-orange-100 dark:from-slate-700 via-orange-100 dark:via-slate-700 to-transparent mb-6 rounded-full" />
+          <div className="h-px w-full bg-border mb-6 rounded-full" />
 
           {/* Quests par catégorie */}
           {questCategories.map(({ key, label, Icon, color }) => {
@@ -133,7 +134,7 @@ const QuestsPage = async () => {
               <div key={key} className="w-full mb-8">
                 <div className="flex items-center gap-2 mb-3">
                   <Icon className={`h-5 w-5 ${color}`} />
-                  <h2 className="font-extrabold text-slate-700 dark:text-slate-200 text-lg">{label}</h2>
+                  <h2 className="font-extrabold text-foreground text-lg">{label}</h2>
                 </div>
                 <ul className="space-y-3">
                   {categoryQuests.map((quest) => {
@@ -147,11 +148,11 @@ const QuestsPage = async () => {
                         key={quest.title}
                         className={`flex items-center w-full p-4 gap-x-4 rounded-2xl border-2 border-b-4 transition-all duration-200
                           ${completed
-                            ? "bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-slate-700"
-                            : "bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 hover:border-slate-200 dark:hover:border-slate-600 hover:shadow-sm"
+                            ? "bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800"
+                            : "bg-background border-border hover:border-border hover:shadow-sm"
                           }`}
                       >
-                        <div className={`p-3 rounded-xl border-2 border-b-4 shrink-0 ${completed ? "bg-green-100 dark:bg-green-900/40 border-green-200 dark:border-slate-700" : `${bg} ${border}`}`}>
+                        <div className={`p-3 rounded-xl border-2 border-b-4 shrink-0 ${completed ? "bg-green-100 dark:bg-green-900/40 border-green-200 dark:border-green-800" : `${bg} ${border}`}`}>
                           {completed
                             ? <CheckCircleIcon className="h-6 w-6 text-green-500" />
                             : <QIcon className={`h-6 w-6 ${qColor}`} />
@@ -160,22 +161,22 @@ const QuestsPage = async () => {
                         <div className="flex flex-col gap-y-2 w-full">
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className={`text-sm font-bold ${completed ? "text-green-700 dark:text-green-400" : "text-slate-700 dark:text-slate-200"}`}>
+                              <p className={`text-sm font-bold ${completed ? "text-green-700 dark:text-green-400" : "text-foreground"}`}>
                                 {quest.title}
                               </p>
-                              <p className="text-xs text-slate-400 dark:text-slate-500">{quest.description}</p>
+                              <p className="text-xs text-muted-foreground">{quest.description}</p>
                             </div>
                             {completed ? (
                               <span className="text-xs font-bold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/40 px-2 py-0.5 rounded-full shrink-0">
                                 Complétée !
                               </span>
                             ) : (
-                              <span className="text-xs font-bold text-slate-400 dark:text-slate-500 shrink-0">
+                              <span className="text-xs font-bold text-muted-foreground shrink-0">
                                 {Math.min(userVal, quest.value)} / {quest.value}
                               </span>
                             )}
                           </div>
-                          <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                          <div className="w-full h-2.5 bg-background rounded-full overflow-hidden border border-border">
                             <div
                               className={`h-full rounded-full transition-all duration-700
                                 ${completed

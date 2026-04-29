@@ -25,6 +25,7 @@ export const Items = ({
 
   const onRefillHearts = () => {
     if (pending || hearts === 5 || points < POINTS_TO_REFILL) return;
+
     startTransition(() => {
       refillHearts()
         .then(() => {
@@ -36,54 +37,69 @@ export const Items = ({
   };
 
   const onUpgrade = () => {
-    toast.info("🔧 Paiement indisponible pour le moment. Cette fonctionnalité arrive bientôt !", {
-      duration: 4000,
-      icon: "💜",
-    });
+    toast.info(
+      "🔧 Paiement indisponible pour le moment. Cette fonctionnalité arrive bientôt !",
+      {
+        duration: 4000,
+        icon: "💙",
+      }
+    );
   };
 
   return (
     <ul className="w-full">
-      <div className="flex items-center w-full p-4 gap-x-4 border-t-2 dark:border-slate-700">
+
+      {/* REFILL HEARTS */}
+      <li className="flex items-center w-full p-4 gap-x-4 border-t-2 border-border">
+
         <Image src="/heart.svg" alt="Heart" height={60} width={60} />
+
         <div className="flex-1">
-          <p className="text-neutral-700 dark:text-slate-200 text-base lg:text-xl font-bold">
+          <p className="text-slate-700 dark:text-foreground text-base lg:text-xl font-bold">
             Refill hearts
           </p>
         </div>
+
         <Button
           onClick={onRefillHearts}
           disabled={pending || hearts === 5 || points < POINTS_TO_REFILL}
+          variant="primary"
         >
-          {hearts === 5
-            ? "full"
-            : (
-              <div className="flex items-center">
-                <Image src="/points.svg" alt="Points" height={20} width={20} />
-                <p>{POINTS_TO_REFILL}</p>
-              </div>
-            )
-          }
+          {hearts === 5 ? (
+            "Full"
+          ) : (
+            <div className="flex items-center gap-x-2">
+              <Image src="/points.svg" alt="Points" height={20} width={20} />
+              <p>{POINTS_TO_REFILL}</p>
+            </div>
+          )}
         </Button>
-      </div>
-      <div className="flex items-center w-full p-4 pt-8 gap-x-4 border-t-2 dark:border-slate-700">
+      </li>
+
+      {/* UNLIMITED HEARTS */}
+      <li className="flex items-center w-full p-4 pt-8 gap-x-4 border-t-2 border-border">
+
         <Image src="/unlimited.svg" alt="Unlimited" height={60} width={60} />
+
         <div className="flex-1">
-          <p className="text-neutral-700 dark:text-slate-200 text-base lg:text-xl font-bold">
+          <p className="text-slate-700 dark:text-foreground text-base lg:text-xl font-bold">
             Unlimited hearts
           </p>
-          <p className="text-sm text-muted-foreground dark:text-slate-500">
+
+          <p className="text-sm text-slate-500 dark:text-muted-foreground">
             🔧 Bientôt disponible
           </p>
         </div>
+
         <Button
           onClick={onUpgrade}
           disabled={pending}
           variant="primary"
         >
-          {hasActiveSubscription ? "settings" : "indisponible"}
+          {hasActiveSubscription ? "Settings" : "Upgrade"}
         </Button>
-      </div>
+      </li>
+
     </ul>
   );
 };

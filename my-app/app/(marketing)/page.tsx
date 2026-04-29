@@ -40,28 +40,32 @@ export default function Home() {
 
           {/* Text */}
           <div className="space-y-3 text-center lg:text-left">
+
             <p className="text-xs font-semibold tracking-widest uppercase text-blue-400">
               Welcome to Learnly
             </p>
-            <h1 className="text-3xl lg:text-5xl font-extrabold text-slate-800 dark:text-slate-100
-              tracking-tight leading-tight max-w-[480px]"
-            >
+
+            <h1 className="text-3xl lg:text-5xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-tight max-w-[480px]">
               Learn, practice, and{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-500">
                 master
               </span>{" "}
               new skills with Learnly.
             </h1>
-            <p className="text-slate-400 dark:text-slate-500 text-sm lg:text-base font-medium max-w-[380px]">
+
+            <p className="text-slate-600 dark:text-slate-400 text-sm lg:text-base font-medium max-w-[380px]">
               Join thousands of learners and start your journey today — for free.
             </p>
+
           </div>
 
           {/* Buttons */}
           <div className="flex flex-col items-center gap-y-3 w-full max-w-[330px]">
+
             <ClerkLoading>
               <Loader className="h-5 w-5 text-blue-300 animate-spin" />
             </ClerkLoading>
+
             <ClerkLoaded>
               {isSignedIn ? (
                 <Button
@@ -86,14 +90,15 @@ export default function Home() {
                       Get Started — it&apos;s free
                     </Button>
                   </SignUpButton>
+
                   <SignInButton mode="modal">
                     <Button
                       size="lg"
-                      variant="primaryOutline"
+                      variant="primary"
                       className="w-full rounded-xl font-semibold
-                        border-slate-200 dark:border-slate-700
-                        text-slate-500 dark:text-slate-400
-                        hover:bg-slate-50 dark:hover:bg-slate-800
+                        border-border
+                        text-slate-600 dark:text-slate-300
+                        hover:bg-slate-100 dark:hover:bg-slate-800
                         transition-all duration-200"
                     >
                       I already have an account
@@ -102,6 +107,7 @@ export default function Home() {
                 </>
               )}
             </ClerkLoaded>
+
           </div>
 
         </div>

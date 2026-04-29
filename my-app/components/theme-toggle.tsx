@@ -15,14 +15,14 @@ export const ThemeToggle = () => {
   return (
     <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 
-        bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700
+      className="p-2 rounded-xl border border-border-200 dark:border-border-700 
+        bg-background dark:bg-background-800 hover:bg-background-50 dark:hover:bg-background-700
         transition-all duration-200 shadow-sm"
     >
       {theme === "dark" ? (
         <SunIcon className="h-5 w-5 text-yellow-500" />
       ) : (
-        <MoonIcon className="h-5 w-5 text-slate-600" />
+        <MoonIcon className="h-5 w-5 text-muted-foreground-600" />
       )}
     </button>
   );

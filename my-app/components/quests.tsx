@@ -11,27 +11,37 @@ type Props = {
 
 export const Quests = ({ points }: Props) => {
   return (
-    <div className="rounded-2xl p-5 space-y-4
-      bg-gradient-to-b from-white to-blue-50/30
-      dark:from-slate-800 dark:to-slate-800/80
-      border-2 border-b-4 border-slate-200/80 dark:border-slate-700
-      shadow-sm"
+    <div
+      className="
+        rounded-2xl p-5 space-y-5
+        bg-card
+        border-2 border-b-4 border-border
+        shadow-sm
+      "
     >
       {/* Header */}
       <div className="flex items-center justify-between w-full">
         <div>
-          <p className="text-[10px] font-semibold tracking-widest uppercase text-blue-400 mb-0.5">
+          <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground mb-1">
             Daily
           </p>
-          <h3 className="font-extrabold text-lg text-slate-800 dark:text-slate-100 tracking-tight">
+
+          <h3 className="font-extrabold text-lg text-foreground tracking-tight">
             Quests
           </h3>
         </div>
+
         <Link href="/quests">
           <Button
             size="sm"
             variant="primaryOutline"
-            className="rounded-xl text-xs font-semibold border-blue-200 dark:border-blue-800 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30"
+            className="
+              rounded-xl text-xs font-bold
+              border-border
+              text-foreground
+              bg-background
+              hover:bg-accent
+            "
           >
             View all
           </Button>
@@ -39,54 +49,74 @@ export const Quests = ({ points }: Props) => {
       </div>
 
       {/* Divider */}
-      <div className="h-px bg-gradient-to-r from-blue-100 dark:from-slate-700 via-blue-100 dark:via-slate-700 to-transparent" />
+      <div className="h-px bg-border" />
 
-      {/* Quest list */}
+      {/* List */}
       <ul className="w-full space-y-4">
         {quests.map((quest) => {
           const progress = Math.min((points / quest.value) * 100, 100);
           const isCompleted = progress >= 100;
 
           return (
-            <div
-              className="flex items-center w-full gap-x-3"
+            <li
               key={quest.title}
+              className="flex items-center gap-x-3 w-full"
             >
               {/* Icon */}
-              <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center
-                ${isCompleted
-                  ? "bg-blue-100 dark:bg-blue-900/40 border-2 border-b-4 border-blue-200 dark:border-slate-700"
-                  : "bg-amber-50 dark:bg-amber-950/30 border-2 border-b-4 border-amber-100 dark:border-slate-700"
-                }`}
+              <div
+                className={`
+                  shrink-0 w-10 h-10 rounded-xl
+                  flex items-center justify-center
+                  border-2 border-b-4 border-border
+                  ${
+                    isCompleted
+                      ? "bg-muted"
+                      : "bg-background"
+                  }
+                `}
               >
                 <Image
                   src="/points.svg"
                   alt="Points"
                   width={24}
                   height={24}
-                  className={isCompleted ? "opacity-80" : ""}
+                  className="opacity-90"
                 />
               </div>
 
-              {/* Info */}
+              {/* Content */}
               <div className="flex flex-col gap-y-1.5 w-full">
                 <div className="flex items-center justify-between">
-                  <p className="text-slate-700 dark:text-slate-200 text-sm font-semibold">
+                  <p className="text-sm font-semibold text-foreground">
                     {quest.title}
                   </p>
-                  <span className={`text-[11px] font-bold
-                    ${isCompleted ? "text-blue-400" : "text-amber-400"}`}
+
+                  <span
+                    className={`text-[11px] font-bold ${
+                      isCompleted
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    }`}
                   >
-                    {isCompleted ? "✓ Done" : `${Math.floor(progress)}%`}
+                    {isCompleted
+                      ? "✓ Done"
+                      : `${Math.floor(progress)}%`}
                   </span>
                 </div>
+
                 <Progress
                   value={progress}
-                  className={`h-2 rounded-full
-                    ${isCompleted ? "[&>div]:bg-blue-400" : "[&>div]:bg-amber-400"}`}
+                  className={`
+                    h-2 rounded-full bg-muted
+                    ${
+                      isCompleted
+                        ? "[&>div]:bg-primary"
+                        : "[&>div]:bg-muted-foreground"
+                    }
+                  `}
                 />
               </div>
-            </div>
+            </li>
           );
         })}
       </ul>

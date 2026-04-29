@@ -51,19 +51,24 @@ const LearnPage = async () => {
   const isPro = !!userSubscription?.isActive;
 
   return (
-    <div className="flex flex-row-reverse gap-[48px] px-6">
-      <StickyWrapper>
-        <UserProgress
-          activeCourse={userProgress.activeCourse}
-          hearts={userProgress.hearts}
-          points={userProgress.points}
-          hasActiveSubscription={isPro}
-        />
-        {!isPro && <Promo />}
-        <Quests points={userProgress.points} />
-      </StickyWrapper>
+    <div className="flex gap-[48px] px-6">
+
+      {/* Feed — partie gauche */}
       <FeedWrapper>
-        <Header title={userProgress.activeCourse.title} />
+
+        {/* Header avec UserProgress intégré */}
+        <div className="sticky top-[56px] lg:top-0 z-50 bg-background border-b border-border mb-5 pt-3 pb-3 lg:pt-[28px] lg:mt-[-28px] flex items-center justify-between">
+          <Header title={userProgress.activeCourse.title} />
+          <div className="hidden lg:flex">
+            <UserProgress
+              activeCourse={userProgress.activeCourse}
+              hearts={userProgress.hearts}
+              points={userProgress.points}
+              hasActiveSubscription={isPro}
+              streak={userProgress.streak ?? 0}
+            />
+          </div>
+        </div>
 
         <StickyUnitBanner
           units={units.map((unit, index) => ({
@@ -89,7 +94,6 @@ const LearnPage = async () => {
               index={index}
               isLast={index === units.length - 1}
             />
-
             {index !== units.length - 1 && (
               <UnitSeparator
                 nextUnitTitle={units[index + 1]?.title}
@@ -99,6 +103,13 @@ const LearnPage = async () => {
           </div>
         ))}
       </FeedWrapper>
+
+      {/* Sticky sidebar droite */}
+      <StickyWrapper>
+        {!isPro && <Promo />}
+        <Quests points={userProgress.points} />
+      </StickyWrapper>
+
     </div>
   );
 };

@@ -24,7 +24,7 @@ export const Header = ({
       <button
         onClick={open}
         className="flex items-center justify-center w-9 h-9 rounded-xl
-          text-slate-300 dark:text-slate-600
+          text-muted-foreground-300 dark:text-muted-foreground-600
           hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50
           transition-all duration-200 cursor-pointer shrink-0 group"
       >
@@ -35,7 +35,7 @@ export const Header = ({
       <div className="flex-1 flex items-center gap-x-3">
         <Progress
           value={percentage}
-          className="h-3 rounded-full bg-slate-100 dark:bg-slate-700 shadow-inner"
+          className="h-3 rounded-full bg-background-100 dark:bg-background-700 shadow-inner"
         />
       </div>
 

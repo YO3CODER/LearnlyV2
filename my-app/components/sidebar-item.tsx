@@ -7,34 +7,33 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 type Props = {
-  label: string;
   iconSrc: string;
   href: string;
+  label?: string;
 };
 
 export const SidebarItem = ({
-  label,
   iconSrc,
   href,
+  label,
 }: Props) => {
   const pathname = usePathname();
   const active = pathname === href;
 
   return (
     <Button
-      variant={active ? "sidebarOutline"  : "sidebar"}
-      className="justify-start h-[52px]"
+      variant={active ? "sidebarOutline" : "sidebar"}
+      className="justify-center h-[52px] w-full"
       asChild
     >
-      <Link href={href}>
+      <Link href={href} aria-label={label || "menu item"}>
         <Image
           src={iconSrc}
-          alt={label}
-          className="mr-5"
-          height={32}
-          width={32}
+          alt={label || "icon"}
+          height={28}
+          width={28}
+          className={active ? "scale-110 transition" : ""}
         />
-        {label}
       </Link>
     </Button>
   );

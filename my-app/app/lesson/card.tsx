@@ -49,13 +49,13 @@ export const Card = ({
     <div
       onClick={handleClick}
       className={cn(
-        "h-full border-2 rounded-xl border-b-4 hover:bg-black/5 dark:hover:bg-white/5 p-4 lg:p-6 cursor-pointer active:border-b-2 dark:border-slate-700 dark:bg-slate-800",
+        "h-full border-2 rounded-xl border-b-4 hover:bg-black/5 dark:hover:bg-background/5 p-4 lg:p-6 cursor-pointer active:border-b-2 dark:border-border-700 dark:bg-background-800",
         selected && "border-sky-300 bg-sky-100 hover:bg-sky-100 dark:bg-sky-900/30 dark:border-sky-500 dark:hover:bg-sky-900/30",
         selected && status === "correct" &&
           "border-green-300 bg-green-100 hover:bg-green-100 dark:bg-green-900/30 dark:border-green-500 dark:hover:bg-green-900/30",
         selected && status === "wrong" &&
           "border-rose-300 bg-rose-100 hover:bg-rose-100 dark:bg-rose-900/30 dark:border-rose-500 dark:hover:bg-rose-900/30",
-        disabled && "pointer-events-none hover:bg-white dark:hover:bg-slate-800",
+        disabled && "pointer-events-none hover:bg-background dark:hover:bg-background-800",
         type === "ASSIST" && "lg:p-3 w-full"
       )}
     >
@@ -73,7 +73,7 @@ export const Card = ({
         {type === "ASSIST" && <div />}
         <p
           className={cn(
-            "text-neutral-600 dark:text-slate-300 text-sm lg:text-base",
+            "text-neutral-600 dark:text-muted-foreground-300 text-sm lg:text-base",
             selected && "text-sky-500 dark:text-sky-400",
             selected && status === "correct" && "text-green-500 dark:text-green-400",
             selected && status === "wrong" && "text-rose-500 dark:text-rose-400"
@@ -83,7 +83,7 @@ export const Card = ({
         </p>
         <div
           className={cn(
-            "lg:w-[30px] lg:h-[30px] w-[20px] h-[20px] border-2 flex items-center justify-center rounded-lg text-neutral-400 dark:text-slate-500 dark:border-slate-600 lg:text-[15px] text-xs font-semibold",
+            "lg:w-[30px] lg:h-[30px] w-[20px] h-[20px] border-2 flex items-center justify-center rounded-lg text-neutral-400 dark:text-muted-foreground-500 dark:border-border-600 lg:text-[15px] text-xs font-semibold",
             selected && "border-sky-300 text-sky-500 dark:border-sky-500 dark:text-sky-400",
             selected && status === "correct" && "border-green-500 text-green-500 dark:border-green-500 dark:text-green-400",
             selected && status === "wrong" && "border-rose-500 text-rose-500 dark:border-rose-500 dark:text-rose-400"

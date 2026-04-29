@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 
 type Props = {
@@ -9,16 +8,15 @@ type Props = {
 
 export const Header = ({ title }: Props) => {
   return (
-    <div className="sticky top-0 bg-white dark:bg-slate-900 pb-3 lg:pt-[28px] lg:mt-[-28px] flex items-center justify-between border-b-2 dark:border-slate-700 mb-5 text-neutral-400 dark:text-slate-400 lg:z-50">
+    <div className="flex items-center gap-x-2">
       <Link href="/courses">
-        <Button variant="ghost" size="sm">
-          <ArrowLeft className="h-5 w-5 stroke-2 text-neutral-400 dark:text-slate-400" />
+        <Button variant="ghost" size="sm" className="hover:bg-card">
+          <ArrowLeft className="h-5 w-5 stroke-2 text-muted-foreground" />
         </Button>
       </Link>
-      <h1 className="font-bold text-lg dark:text-slate-100">
+      <h1 className="font-bold text-lg text-foreground">
         {title}
       </h1>
-      <div />
     </div>
   );
 };

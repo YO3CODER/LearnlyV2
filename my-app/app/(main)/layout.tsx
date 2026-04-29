@@ -26,9 +26,10 @@ const MainLayout = async ({ children }: Props) => {
         hearts={userProgress.hearts}
         points={userProgress.points}
         hasActiveSubscription={false}
+        streak={userProgress.streak ?? 0}
       />
       <Sidebar className="hidden lg:flex" />
-      <main className="lg:pl-[256px] h-full pt-[56px] pb-[60px] lg:pt-0 lg:pb-0">
+      <main className="lg:pl-[80px] h-full pt-[56px] pb-[60px] lg:pt-0 lg:pb-0">
         <div className="max-w-[1056px] mx-auto pt-6 h-full">
           {children}
         </div>

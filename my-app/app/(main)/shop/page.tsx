@@ -14,12 +14,9 @@ const ShopPage = async () => {
   const userProgressData = getUserProgress();
   const userSubscriptionData = getUserSubscription();
 
-  const [
-    userProgress,
-    userSubscription,
-  ] = await Promise.all([
+  const [userProgress, userSubscription] = await Promise.all([
     userProgressData,
-    userSubscriptionData
+    userSubscriptionData,
   ]);
 
   if (!userProgress || !userProgress.activeCourse) {
@@ -28,32 +25,46 @@ const ShopPage = async () => {
 
   const isPro = !!userSubscription?.isActive;
 
-  return ( 
+  return (
     <div className="flex flex-row-reverse gap-[48px] px-6">
+
+      {/* SIDEBAR */}
       <StickyWrapper>
         <UserProgress
           activeCourse={userProgress.activeCourse}
           hearts={userProgress.hearts}
           points={userProgress.points}
           hasActiveSubscription={isPro}
+          streak={userProgress.streak ?? 0}
         />
+
         {!isPro && <Promo />}
+
         <Quests points={userProgress.points} />
       </StickyWrapper>
+
+      {/* MAIN */}
       <FeedWrapper>
         <div className="w-full flex flex-col items-center">
+
           <Image
             src="/shop.ico"
             alt="Shop"
             height={90}
             width={90}
           />
-          <h1 className="text-center font-bold text-neutral-800 dark:text-slate-100 text-2xl my-6">
+
+          {/* TITLE */}
+          <h1 className="text-center font-bold text-foreground text-2xl my-6">
             Shop
           </h1>
-          <p className="text-muted-foreground dark:text-slate-500 text-center text-lg mb-6">
+
+          {/* DESCRIPTION */}
+          <p className="text-muted-foreground text-center text-lg mb-6">
             Spend your points on cool stuff.
           </p>
+
+          {/* ITEMS */}
           <Items
             hearts={userProgress.hearts}
             points={userProgress.points}
@@ -61,8 +72,9 @@ const ShopPage = async () => {
           />
         </div>
       </FeedWrapper>
+
     </div>
   );
 };
- 
+
 export default ShopPage;

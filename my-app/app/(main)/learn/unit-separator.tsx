@@ -33,22 +33,22 @@ export const UnitSeparator = ({ nextUnitTitle, unitIndex }: Props) => {
   return (
     <div ref={ref} className="flex items-center gap-x-4 my-10 px-2">
       {/* Trait gauche */}
-      <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
+      <div className="flex-1 h-px bg-border" />
 
       {/* Texte au centre */}
-      <span className="text-slate-400 dark:text-slate-500 font-bold text-sm tracking-wide whitespace-nowrap">
+      <span className="text-muted-foreground font-bold text-sm tracking-wide whitespace-nowrap">
         {nextUnitTitle}
       </span>
 
       {/* Trait droit */}
-      <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
+      <div className="flex-1 h-px bg-border" />
 
       {/* Bouton flèche */}
       <button
         onClick={scrollToUnit}
         className="flex items-center justify-center w-10 h-10 rounded-xl
-          border-2 border-b-4 border-slate-200 dark:border-slate-700
-          bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700
+          border-2 border-b-4 border-border
+          bg-card hover:bg-muted
           transition-all duration-200 active:border-b-2 active:translate-y-px
           shadow-sm"
       >

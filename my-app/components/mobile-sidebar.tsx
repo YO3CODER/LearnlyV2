@@ -3,23 +3,36 @@ import { Menu } from "lucide-react";
 import {
   Sheet,
   SheetContent,
-  SheetTrigger
+  SheetTrigger,
 } from "@/components/ui/sheet";
+
 import { Sidebar } from "@/components/sidebar";
 
 export const MobileSidebar = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <button className="flex items-center justify-center w-9 h-9 rounded-xl 
-          hover:bg-slate-100 dark:hover:bg-slate-800 
-          transition-colors duration-200">
-          <Menu className="text-slate-600 dark:text-slate-400 w-5 h-5" />
+        <button
+          className="
+            flex items-center justify-center
+            w-9 h-9 rounded-xl
+            bg-card
+            hover:bg-border
+            transition-colors duration-200
+          "
+        >
+          <Menu className="text-gray-300 w-5 h-5" />
         </button>
       </SheetTrigger>
+
       <SheetContent
-        className="p-0 z-[100] w-[256px] border-r-0 shadow-2xl dark:bg-slate-900"
         side="left"
+        className="
+          p-0 z-[100] w-[256px]
+          border-r-2 border-border
+          shadow-2xl
+          bg-background
+        "
       >
         <Sidebar />
       </SheetContent>

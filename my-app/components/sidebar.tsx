@@ -17,78 +17,56 @@ type Props = {
 
 export const Sidebar = ({ className }: Props) => {
   return (
-    <div className={cn(
-      "flex h-full lg:w-[256px] lg:fixed left-0 top-0 flex-col",
-      "bg-gradient-to-b from-white via-slate-50 to-blue-50/40",
-      "dark:from-slate-900 dark:via-slate-900 dark:to-slate-800",
-      "border-r border-slate-200/80 dark:border-slate-700/80 shadow-sm",
-      className,
-    )}>
-
-      {/* Logo */}
+    <div
+      className={cn(
+        "flex h-full w-[80px] fixed left-0 top-0 flex-col items-center",
+        "bg-background",
+        "border-r border-border",
+        "shadow-sm",
+        className
+      )}
+    >
+      {/* LOGO */}
       <Link href="/">
-        <div className="pt-8 px-6 pb-7 flex items-center gap-x-3 group">
-          <div className="relative">
-            <div className="absolute inset-0 bg-blue-300/30 rounded-full blur-md scale-110 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <Image src="/mascot.svg" height={52} width={52} alt="Mascot" className="relative drop-shadow-sm" />
-          </div>
-          <h1 className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-blue-500 to-blue-500 bg-clip-text text-transparent">
-            Learnly
-          </h1>
+        <div className="h-[72px] flex items-center justify-center group cursor-pointer">
+          <Image
+            src="/mascot.svg"
+            height={44}
+            width={44}
+            alt="Mascot"
+            className="relative"
+          />
         </div>
       </Link>
 
       {/* Divider */}
-      <div className="mx-4 h-px bg-gradient-to-r from-blue-100 via-blue-100 to-transparent dark:from-slate-700 dark:via-slate-700 mb-4" />
+      <div className="w-10 h-px bg-border mb-4" />
 
-      {/* Nav items */}
-      <div className="flex flex-col gap-y-1 flex-1 px-3">
-        <SidebarItem
-          label="Learn"
-          href="/learn"
-          iconSrc="/learn.svg"
-        />
-        <SidebarItem
-          label="Leaderboard"
-          href="/leaderboard"
-          iconSrc="/leaderboard.ico"
-        />
-        <SidebarItem
-          label="Quests"
-          href="/quests"
-          iconSrc="/question.svg"
-        />
-        <SidebarItem
-          label="Shop"
-          href="/shop"
-          iconSrc="/shop.ico"
-        />
+      {/* NAVIGATION */}
+      <div className="flex flex-col gap-y-1 flex-1 w-full px-2">
+        <SidebarItem href="/learn"       iconSrc="/learn.svg" />
+        <SidebarItem href="/leaderboard" iconSrc="/leaderboard.ico" />
+        <SidebarItem href="/quests"      iconSrc="/question.svg" />
+        <SidebarItem href="/shop"        iconSrc="/shop.ico" />
       </div>
 
-      {/* Theme Toggle */}
-      <div className="mx-3 mb-3 flex items-center justify-between px-2">
-        <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
-          Thème
-        </span>
+      {/* THEME */}
+      <div className="mb-3">
         <ThemeToggle />
       </div>
 
       {/* Divider */}
-      <div className="mx-4 h-px bg-gradient-to-r from-blue-100 via-blue-100 to-transparent dark:from-slate-700 dark:via-slate-700 mb-3" />
+      <div className="w-10 h-px bg-border mb-3" />
 
-      {/* User */}
-      <div className="mx-3 mb-4 p-3 rounded-2xl bg-white/70 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-700 shadow-sm flex items-center gap-x-3">
+      {/* USER */}
+      <div className="mb-4 p-2 rounded-2xl bg-card border border-border flex items-center justify-center">
         <ClerkLoading>
-          <Loader className="h-5 w-5 text-blue-300 animate-spin" />
+          <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
         </ClerkLoading>
         <ClerkLoaded>
           <UserButton />
-          <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
-            My Account
-          </span>
         </ClerkLoaded>
       </div>
-
     </div>
   );
 };

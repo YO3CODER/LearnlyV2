@@ -262,7 +262,7 @@ export const Quiz = ({
             <p className="text-xs font-semibold tracking-widest uppercase text-blue-400">
               Lesson Complete
             </p>
-            <h1 className="text-2xl lg:text-4xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight leading-tight">
+            <h1 className="text-2xl lg:text-4xl font-extrabold text-muted-foreground-800 dark:text-muted-foreground-100 tracking-tight leading-tight">
               Great job! 🎉
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-500">
@@ -353,7 +353,7 @@ export const Quiz = ({
                   </div>
                 )}
 
-                <h1 className="text-lg lg:text-3xl text-center lg:text-start font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">
+                <h1 className="text-lg lg:text-3xl text-center lg:text-start font-extrabold text-muted-foreground-800 dark:text-muted-foreground-100 tracking-tight">
                   {title}
                 </h1>
 

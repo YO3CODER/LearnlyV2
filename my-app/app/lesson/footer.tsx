@@ -31,43 +31,70 @@ export const Footer = ({
   };
 
   return (
-    <footer className={cn(
-      "lg:h-[140px] h-[100px] transition-colors duration-300",
-      status === "none" && "border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900",
-      status === "correct" && "bg-emerald-50 dark:bg-emerald-950/50 border-t-2 border-emerald-200 dark:border-emerald-800",
-      status === "wrong" && "bg-rose-50 dark:bg-rose-950/50 border-t-2 border-rose-200 dark:border-rose-800",
-      status === "completed" && "border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900",
-    )}>
-      <div className="max-w-[1140px] h-full mx-auto flex items-center justify-between px-6 lg:px-10">
+    <footer
+      className={cn(
+        "lg:h-[140px] h-[100px] transition-colors duration-300 border-t-2",
 
-        {/* Correct feedback */}
+        status === "none" &&
+          "bg-background border-border",
+
+        status === "correct" &&
+          "bg-[#1f2b1f] border-[#2e5a2e]",
+
+        status === "wrong" &&
+          "bg-[#2a1f1f] border-[#5a2e2e]",
+
+        status === "completed" &&
+          "bg-background border-border"
+      )}
+    >
+      <div className="max-w-[1140px] h-full mx-auto flex items-center justify-between px-6 lg:px-10">
+        {/* Correct */}
         {status === "correct" && (
           <div className="flex items-center gap-x-3">
-            <div className="w-10 h-10 lg:w-14 lg:h-14 rounded-2xl bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center shrink-0">
-              <CheckCircle className="h-5 w-5 lg:h-7 lg:w-7 text-emerald-500 stroke-[2.5]" />
+            <div
+              className="
+                w-10 h-10 lg:w-14 lg:h-14
+                rounded-2xl
+                bg-[#2e5a2e]
+                flex items-center justify-center shrink-0
+              "
+            >
+              <CheckCircle className="h-5 w-5 lg:h-7 lg:w-7 text-lime-400 stroke-[2.5]" />
             </div>
+
             <div>
-              <p className="text-emerald-600 dark:text-emerald-400 font-extrabold text-base lg:text-xl tracking-tight">
+              <p className="font-extrabold text-base lg:text-xl text-lime-400 tracking-tight">
                 Nicely done!
               </p>
-              <p className="text-emerald-400 dark:text-emerald-600 text-xs lg:text-sm font-medium">
+
+              <p className="text-xs lg:text-sm font-medium text-lime-300">
                 Keep it up 🔥
               </p>
             </div>
           </div>
         )}
 
-        {/* Wrong feedback */}
+        {/* Wrong */}
         {status === "wrong" && (
           <div className="flex items-center gap-x-3">
-            <div className="w-10 h-10 lg:w-14 lg:h-14 rounded-2xl bg-rose-100 dark:bg-rose-900/50 flex items-center justify-center shrink-0">
-              <XCircle className="h-5 w-5 lg:h-7 lg:w-7 text-rose-500 stroke-[2.5]" />
+            <div
+              className="
+                w-10 h-10 lg:w-14 lg:h-14
+                rounded-2xl
+                bg-[#5a2e2e]
+                flex items-center justify-center shrink-0
+              "
+            >
+              <XCircle className="h-5 w-5 lg:h-7 lg:w-7 text-red-400 stroke-[2.5]" />
             </div>
+
             <div>
-              <p className="text-rose-600 dark:text-rose-400 font-extrabold text-base lg:text-xl tracking-tight">
+              <p className="font-extrabold text-base lg:text-xl text-red-400 tracking-tight">
                 Try again.
               </p>
-              <p className="text-rose-400 dark:text-rose-600 text-xs lg:text-sm font-medium">
+
+              <p className="text-xs lg:text-sm font-medium text-red-300">
                 {label ?? "You can do it! 💪"}
               </p>
             </div>
@@ -79,30 +106,44 @@ export const Footer = ({
           <Button
             variant="default"
             size={isMobile ? "sm" : "lg"}
-            onClick={() => window.location.href = `/lesson/${lessonId}`}
-            className="rounded-xl font-bold"
+            onClick={() =>
+              (window.location.href = `/lesson/${lessonId}`)
+            }
+            className="
+              rounded-xl font-bold
+              bg-card
+              hover:bg-border
+              text-white
+            "
           >
             Practice again
           </Button>
         )}
 
-        {/* CTA button */}
+        {/* Main button */}
         <Button
           disabled={disabled}
-          className={cn(
-            "ml-auto rounded-xl font-bold tracking-wide transition-all duration-200",
-            status === "correct" && "bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-200 dark:shadow-emerald-900",
-            status === "wrong" && "bg-rose-500 hover:bg-rose-600 text-white shadow-md shadow-rose-200 dark:shadow-rose-900 opacity-60",
-            status === "none" && "shadow-md",
-            status === "completed" && "bg-gradient-to-r from-blue-500 to-blue-500 text-white shadow-md shadow-blue-200 dark:shadow-blue-900 hover:opacity-90",
-          )}
           onClick={onCheck}
           size={isMobile ? "sm" : "lg"}
-          variant={status === "wrong" ? "danger" : status === "completed" ? "default" : "secondary"}
+          variant="secondary"
+          className={cn(
+            "ml-auto rounded-xl font-bold tracking-wide transition-all duration-200",
+
+            status === "none" &&
+              "bg-card hover:bg-border text-white",
+
+            status === "correct" &&
+              "bg-lime-500 hover:bg-lime-600 text-black",
+
+            status === "wrong" &&
+              "bg-red-500 hover:bg-red-600 text-white opacity-70",
+
+            status === "completed" &&
+              "bg-background text-black hover:bg-gray-200"
+          )}
         >
           {buttonLabel()}
         </Button>
-
       </div>
     </footer>
   );
