@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "ra-data-simple-rest": "^5.14.6",
-    "react-admin": "^5.14.6",
-    "stripe": "^22.1.0"
-  }
-}
