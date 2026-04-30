@@ -21,6 +21,7 @@ type Props = {
   isLastLesson: boolean;
   unitId: number;
   title?: string;
+  lessonChallengeCount?: number; // 👈 nombre de challenges dans la leçon
 };
 
 const colorMap: Record<string, {
@@ -48,6 +49,8 @@ const colorMap: Record<string, {
   red: { bg: "!bg-red-500", hover: "hover:!bg-red-600", bgHex: "#ef4444", borderHex: "#b91c1c", shadow: "shadow-red-200 dark:shadow-red-900", glow: "bg-red-300/40", progress: ["#ef4444", "#dc2626"], popup: "bg-red-500", popupBorder: "border-red-600", popupArrow: "#ef4444", popupButtonBorder: "#b91c1c", popupButton: "bg-white", popupButtonText: "text-red-500" },
 };
 
+const XP_PER_CHALLENGE = 10;
+
 export const LessonButton = ({
   id,
   index,
@@ -58,10 +61,13 @@ export const LessonButton = ({
   unitColor,
   isLastLesson,
   title = "Leçon",
+  lessonChallengeCount = 5, // défaut raisonnable
 }: Props) => {
   const router = useRouter();
   const { open } = usePracticeModal();
   const [showPopup, setShowPopup] = useState(false);
+  const [popupVisible, setPopupVisible] = useState(false); // 👈 pour l'animation d'apparition
+  const [pressing, setPressing] = useState(false); // 👈 pour l'effet de descente
   const popupRef = useRef<HTMLDivElement>(null);
 
   const cycleLength = 8;
@@ -83,10 +89,13 @@ export const LessonButton = ({
   const Icon = isLastLesson ? Crown : isCompleted ? Check : Star;
   const colors = colorMap[unitColor] || colorMap.green;
 
+  // XP total calculé
+  const totalXP = lessonChallengeCount * XP_PER_CHALLENGE;
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
-        setShowPopup(false);
+        closePopup();
       }
     };
     if (showPopup) {
@@ -95,18 +104,42 @@ export const LessonButton = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showPopup]);
 
+  // Ouvre le popup avec animation d'entrée
+  const openPopup = () => {
+    setShowPopup(true);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setPopupVisible(true));
+    });
+  };
+
+  // Ferme le popup avec animation de sortie
+  const closePopup = () => {
+    setPopupVisible(false);
+    setTimeout(() => setShowPopup(false), 200);
+  };
+
   const handleClick = () => {
     if (locked) return;
-    setShowPopup((prev) => !prev);
+    if (showPopup) {
+      closePopup();
+    } else {
+      openPopup();
+    }
   };
 
   const handleStart = () => {
-    setShowPopup(false);
+    closePopup();
     if (isCompleted) {
       open(id);
       return;
     }
     router.push("/lesson");
+  };
+
+  // Effet de descente du bouton au clic
+  const handleButtonPress = () => {
+    setPressing(true);
+    setTimeout(() => setPressing(false), 150);
   };
 
   const DuoButton = ({
@@ -128,24 +161,31 @@ export const LessonButton = ({
         height: 70,
         borderRadius: "50%",
         backgroundColor: isGoldenBtn ? "#f59e0b" : isLocked ? "#d1d5db" : bgHex,
-        borderBottom: `6px solid ${isGoldenBtn ? "#b45309" : isLocked ? "#9ca3af" : borderHex}`,
+        // 👇 effet de descente : réduit borderBottom et translate quand pressing
+        borderBottom: pressing
+          ? `2px solid ${isGoldenBtn ? "#b45309" : isLocked ? "#9ca3af" : borderHex}`
+          : `6px solid ${isGoldenBtn ? "#b45309" : isLocked ? "#9ca3af" : borderHex}`,
         cursor: isLocked ? "default" : "pointer",
         position: "relative",
         overflow: "hidden",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        transition: "transform 0.2s, border-bottom 0.1s",
-        boxShadow: isLocked ? "none" : `0 4px 12px ${bgHex}55`,
+        transition: "transform 0.1s ease, border-bottom 0.1s ease",
+        transform: pressing ? "translateY(4px)" : "translateY(0px)",
+        boxShadow: isLocked
+          ? "none"
+          : pressing
+          ? "none"
+          : `0 4px 12px ${bgHex}55`,
       }}
       className={cn(
-        !isLocked && "hover:translate-y-[2px] hover:border-b-[3px] active:translate-y-[4px] active:border-b-[2px]",
+        !isLocked && !pressing && "hover:translate-y-[2px] hover:border-b-[3px]",
         isLocked && "opacity-60",
       )}
     >
       {!isLocked && (
         <>
-          {/* Reflet principal — demi-cercle en haut */}
           <div
             style={{
               position: "absolute",
@@ -158,8 +198,6 @@ export const LessonButton = ({
               borderRadius: "100% 100% 0% 0%",
             }}
           />
-
-          {/* Reflet secondaire — grande ellipse en bas */}
           <div
             style={{
               position: "absolute",
@@ -178,15 +216,10 @@ export const LessonButton = ({
     </div>
   );
 
-  // Animation CSS pour le bounce continu (infinite)
   const infiniteBounceAnimation = `
     @keyframes bounceInfinite {
-      0%, 100% { 
-        transform: translateY(0); 
-      }
-      50% { 
-        transform: translateY(-8px); 
-      }
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
     }
     .bounce-infinite {
       animation: bounceInfinite 1s ease-in-out infinite;
@@ -216,7 +249,7 @@ export const LessonButton = ({
           zIndex: showPopup ? 50 : "auto",
         }}
       >
-        {/* Popup */}
+        {/* Popup avec animation d'entrée */}
         {showPopup && !locked && (
           <div
             ref={popupRef}
@@ -225,9 +258,18 @@ export const LessonButton = ({
               colors.popup,
               colors.popupBorder,
               "top-[85px] left-1/2 -translate-x-1/2",
+              // 👇 animation d'apparition douce
+              "transition-all duration-200 ease-out",
             )}
-            style={{ zIndex: 999 }}
+            style={{
+              zIndex: 999,
+              opacity: popupVisible ? 1 : 0,
+              transform: popupVisible
+                ? "translateX(-50%) translateY(0) scale(1)"
+                : "translateX(-50%) translateY(-8px) scale(0.95)",
+            }}
           >
+            {/* Flèche */}
             <div
               className="absolute -top-[10px] left-1/2 -translate-x-1/2 w-0 h-0"
               style={{
@@ -236,34 +278,48 @@ export const LessonButton = ({
                 borderBottom: `10px solid ${colors.popupArrow}`,
               }}
             />
+
+            {/* Bouton fermer */}
             <button
-              onClick={(e) => { e.stopPropagation(); setShowPopup(false); }}
+              onClick={(e) => { e.stopPropagation(); closePopup(); }}
               className="absolute top-2 right-2 text-white/70 hover:text-white transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
+
+            {/* Titre et sous-titre */}
             <p className="text-white font-extrabold text-sm mb-1 pr-6">{title}</p>
             <p className="text-white/80 text-xs mb-4">
               Leçon {index + 1} sur {totalCount}
             </p>
+
+            {/* Bouton Commencer avec effet de descente */}
             <button
+              onMouseDown={handleButtonPress}
               onClick={handleStart}
               className={cn(
                 "w-full py-2.5 rounded-xl font-extrabold text-sm uppercase tracking-wide",
-                "border-b-4 active:border-b-0 transition-all",
+                "transition-all duration-100",
                 colors.popupButton,
                 colors.popupButtonText,
               )}
-              style={{ borderBottomColor: colors.popupButtonBorder }}
+              style={{
+                borderBottom: pressing
+                  ? `1px solid ${colors.popupButtonBorder}`
+                  : `4px solid ${colors.popupButtonBorder}`,
+                transform: pressing ? "translateY(3px)" : "translateY(0px)",
+              }}
             >
-              {isCompleted ? "Pratiquer" : "Commencer +10 XP"}
+              {isCompleted ? "Pratiquer" : `Commencer +${totalXP} XP`}
             </button>
           </div>
         )}
 
         {current ? (
-          <div className="h-[102px] w-[102px] relative" onClick={handleClick}>
-            {/* Badge Start avec triangle qui pointe vers le bas */}
+          <div
+            className="h-[102px] w-[102px] relative"
+            onClick={() => { handleClick(); handleButtonPress(); }}
+          >
             <div
               className={cn(
                 "absolute -top-10 left-1/2 -translate-x-1/2 z-10",
@@ -275,23 +331,19 @@ export const LessonButton = ({
               )}
             >
               Start
-              {/* Petit triangle qui pointe vers le bas */}
               <div
                 className="absolute -bottom-[10px] left-1/2 -translate-x-1/2"
                 style={{
-                  width: 0,
-                  height: 0,
+                  width: 0, height: 0,
                   borderLeft: "6px solid transparent",
                   borderRight: "6px solid transparent",
                   borderTop: `8px solid hsl(var(--border))`,
                 }}
               />
-              {/* Triangle intérieur (plus clair) */}
               <div
                 className="absolute -bottom-[7px] left-1/2 -translate-x-1/2"
                 style={{
-                  width: 0,
-                  height: 0,
+                  width: 0, height: 0,
                   borderLeft: "5px solid transparent",
                   borderRight: "5px solid transparent",
                   borderTop: `7px solid hsl(var(--background))`,
@@ -314,12 +366,7 @@ export const LessonButton = ({
                   </linearGradient>
                 </defs>
               </svg>
-
-              <DuoButton
-                bgHex={colors.bgHex}
-                borderHex={colors.borderHex}
-                isLocked={locked}
-              >
+              <DuoButton bgHex={colors.bgHex} borderHex={colors.borderHex} isLocked={locked}>
                 <Icon
                   className={cn(
                     "h-9 w-9 relative z-10",
@@ -334,7 +381,10 @@ export const LessonButton = ({
           </div>
 
         ) : (
-          <div className="relative" onClick={handleClick}>
+          <div
+            className="relative"
+            onClick={() => { handleClick(); handleButtonPress(); }}
+          >
             {!locked && (
               <div className={cn(
                 "absolute inset-0 rounded-full blur-md scale-125 opacity-0 hover:opacity-100 transition-all duration-500",
