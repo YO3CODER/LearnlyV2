@@ -8,22 +8,36 @@ import { getTopTenUsers, getUserProgress, getUserSubscription } from "@/db/queri
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Promo } from "@/components/promo";
 import { Quests } from "@/components/quests";
-import {
-  StarIcon,
-  ShieldCheckIcon,
-  BoltIcon,
-  FireIcon,
-  SparklesIcon,
-  TrophyIcon,
-  ArrowTrendingUpIcon,
-} from "@heroicons/react/24/solid";
 
 export const dynamic = "force-dynamic";
+
+// Images mapping pour les divisions (4 niveaux uniquement)
+const divisionImages = {
+  Legendary: "/legendary.svg",
+  Diamond: "/diamond.svg",
+  Platinum: "/platinum.svg",
+  Gold: "/gold.svg",
+};
+
+// Images pour les médailles (mêmes images que les divisions)
+const medalImages = [
+  "/first.svg",      // 1ère place = Gold
+  "/seconds.svg",  // 2ème place = Platinum
+  "/troisieme.svg",   // 3ème place = Diamond
+];
+
+// Images pour les divisions dans la légende
+const legendImages = {
+  Gold: "/gold.svg",
+  Platinum: "/platinum.svg",
+  Diamond: "/diamond.svg",
+  Legendary: "/legendary.svg",
+};
 
 const getDivision = (points: number) => {
   if (points >= 5000) return {
     name: "Légendaire",
-    Icon: SparklesIcon,
+    image: divisionImages.Legendary,
     color: "text-yellow-500",
     bg: "bg-yellow-50 dark:bg-yellow-950/30",
     border: "border-yellow-200 dark:border-yellow-800",
@@ -31,7 +45,7 @@ const getDivision = (points: number) => {
   };
   if (points >= 3000) return {
     name: "Diamant",
-    Icon: StarIcon,
+    image: divisionImages.Diamond,
     color: "text-cyan-500",
     bg: "bg-cyan-50 dark:bg-cyan-950/30",
     border: "border-cyan-200 dark:border-cyan-800",
@@ -39,43 +53,19 @@ const getDivision = (points: number) => {
   };
   if (points >= 2000) return {
     name: "Platine",
-    Icon: ShieldCheckIcon,
+    image: divisionImages.Platinum,
     color: "text-slate-500",
     bg: "bg-card",
     border: "border-border",
     barColor: "bg-gradient-to-r from-slate-400 to-slate-500",
   };
-  if (points >= 1000) return {
+  return {
     name: "Or",
-    Icon: TrophyIcon,
+    image: divisionImages.Gold,
     color: "text-yellow-500",
     bg: "bg-yellow-50 dark:bg-yellow-950/30",
     border: "border-yellow-200 dark:border-yellow-800",
     barColor: "bg-gradient-to-r from-yellow-300 to-yellow-500",
-  };
-  if (points >= 500) return {
-    name: "Argent",
-    Icon: ShieldCheckIcon,
-    color: "text-slate-400",
-    bg: "bg-card",
-    border: "border-border",
-    barColor: "bg-gradient-to-r from-slate-300 to-slate-400",
-  };
-  if (points >= 100) return {
-    name: "Bronze",
-    Icon: FireIcon,
-    color: "text-orange-500",
-    bg: "bg-orange-50 dark:bg-orange-950/30",
-    border: "border-orange-200 dark:border-orange-800",
-    barColor: "bg-gradient-to-r from-orange-300 to-orange-400",
-  };
-  return {
-    name: "Débutant",
-    Icon: ArrowTrendingUpIcon,
-    color: "text-green-500",
-    bg: "bg-green-50 dark:bg-green-950/30",
-    border: "border-green-200 dark:border-green-800",
-    barColor: "bg-gradient-to-r from-green-300 to-green-400",
   };
 };
 
@@ -83,24 +73,15 @@ const getNextThreshold = (points: number) => {
   if (points >= 5000) return null;
   if (points >= 3000) return { name: "Légendaire", required: 5000 };
   if (points >= 2000) return { name: "Diamant", required: 3000 };
-  if (points >= 1000) return { name: "Platine", required: 2000 };
-  if (points >= 500)  return { name: "Or", required: 1000 };
-  if (points >= 100)  return { name: "Argent", required: 500 };
-  return { name: "Bronze", required: 100 };
+  return { name: "Platine", required: 2000 };
 };
 
 const getPrevThreshold = (points: number) => {
   if (points >= 5000) return 3000;
   if (points >= 3000) return 2000;
   if (points >= 2000) return 1000;
-  if (points >= 1000) return 500;
-  if (points >= 500)  return 100;
   return 0;
 };
-
-const medalIcons = [TrophyIcon, StarIcon, BoltIcon];
-const medalColors = ["text-yellow-500", "text-slate-400", "text-orange-400"];
-const medalBg = ["bg-yellow-50 dark:bg-yellow-950/30", "bg-card", "bg-orange-50 dark:bg-orange-950/30"];
 
 const LeaderboardPage = async () => {
   const userProgressData = getUserProgress();
@@ -170,7 +151,13 @@ const LeaderboardPage = async () => {
           <div className={`w-full rounded-2xl border-2 border-b-4 ${division.border} ${division.bg} p-4 mb-6`}>
             <div className="flex items-center gap-3 mb-3">
               <div className={`p-2 rounded-xl bg-background shadow-sm border-2 border-b-4 ${division.border}`}>
-                <division.Icon className={`h-6 w-6 ${division.color}`} />
+                <Image
+                  src={division.image}
+                  alt={division.name}
+                  width={24}
+                  height={24}
+                  className="drop-shadow-sm"
+                />
               </div>
               <div>
                 <p className="text-xs text-muted-foreground font-medium">Votre division</p>
@@ -206,7 +193,12 @@ const LeaderboardPage = async () => {
 
             {!nextDiv && (
               <div className="flex items-center gap-2 mt-1">
-                <SparklesIcon className="h-4 w-4 text-yellow-500" />
+                <Image
+                  src="/legendary.svg"
+                  alt="Legendary"
+                  width={16}
+                  height={16}
+                />
                 <p className="text-xs font-bold text-yellow-600 dark:text-yellow-400">
                   Vous avez atteint la division maximale !
                 </p>
@@ -214,21 +206,18 @@ const LeaderboardPage = async () => {
             )}
           </div>
 
-          {/* Divisions Legend */}
+          {/* Divisions Legend (4 niveaux uniquement) */}
           <div className="w-full mb-6">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3">
-              Toutes les divisions
+              Divisions
             </p>
             <div className="grid grid-cols-4 gap-2">
               {[
-                { name: "Débutant", Icon: ArrowTrendingUpIcon, color: "text-green-500", req: "0 XP" },
-                { name: "Bronze", Icon: FireIcon, color: "text-orange-500", req: "100 XP" },
-                { name: "Argent", Icon: ShieldCheckIcon, color: "text-slate-400", req: "500 XP" },
-                { name: "Or", Icon: TrophyIcon, color: "text-yellow-500", req: "1000 XP" },
-                { name: "Platine", Icon: ShieldCheckIcon, color: "text-slate-500", req: "2000 XP" },
-                { name: "Diamant", Icon: StarIcon, color: "text-cyan-500", req: "3000 XP" },
-                { name: "Légendaire", Icon: SparklesIcon, color: "text-yellow-500", req: "5000 XP" },
-              ].map(({ name, Icon, color, req }) => {
+                { name: "Or", image: legendImages.Gold, req: "0 XP" },
+                { name: "Platine", image: legendImages.Platinum, req: "2000 XP" },
+                { name: "Diamant", image: legendImages.Diamond, req: "3000 XP" },
+                { name: "Légendaire", image: legendImages.Legendary, req: "5000 XP" },
+              ].map(({ name, image, req }) => {
                 const isCurrentDivision = division.name === name;
                 return (
                   <div
@@ -239,7 +228,13 @@ const LeaderboardPage = async () => {
                         : "border-border bg-card opacity-60"
                       }`}
                   >
-                    <Icon className={`h-5 w-5 ${color} mb-1`} />
+                    <Image
+                      src={image}
+                      alt={name}
+                      width={20}
+                      height={20}
+                      className="mb-1 drop-shadow-sm"
+                    />
                     <p className="text-[10px] font-bold text-foreground">{name}</p>
                     <p className="text-[9px] text-muted-foreground">{req}</p>
                   </div>
@@ -255,7 +250,6 @@ const LeaderboardPage = async () => {
             {leaderboard.map((entry, index) => {
               if (!entry.userId) return null;
               const isTop3 = index < 3;
-              const MedalIcon = isTop3 ? medalIcons[index] : null;
               const entryDivision = getDivision(entry.points);
 
               return (
@@ -267,12 +261,16 @@ const LeaderboardPage = async () => {
                       : "hover:bg-muted border-transparent"
                     }`}
                 >
-                  {/* Rank */}
+                  {/* Rank avec médailles (Gold, Platinum, Diamond) */}
                   <div className="w-8 flex items-center justify-center shrink-0">
-                    {isTop3 && MedalIcon ? (
-                      <div className={`p-1 rounded-lg ${medalBg[index]}`}>
-                        <MedalIcon className={`h-5 w-5 ${medalColors[index]}`} />
-                      </div>
+                    {isTop3 ? (
+                      <Image
+                        src={medalImages[index]}
+                        alt={`Médaille ${index + 1}`}
+                        width={24}
+                        height={24}
+                        className="drop-shadow-md"
+                      />
                     ) : (
                       <span className="font-extrabold text-sm text-muted-foreground">
                         {index + 1}
@@ -293,7 +291,13 @@ const LeaderboardPage = async () => {
                   <div className="flex-1">
                     <p className="font-bold text-foreground text-sm">{entry.userName}</p>
                     <div className="flex items-center gap-1 mt-0.5">
-                      <entryDivision.Icon className={`h-3 w-3 ${entryDivision.color}`} />
+                      <Image
+                        src={entryDivision.image}
+                        alt={entryDivision.name}
+                        width={12}
+                        height={12}
+                        className="drop-shadow-sm"
+                      />
                       <span className={`text-[10px] font-semibold ${entryDivision.color}`}>
                         {entryDivision.name}
                       </span>
@@ -307,7 +311,12 @@ const LeaderboardPage = async () => {
                       : "bg-muted text-muted-foreground"
                     }`}
                   >
-                    <BoltIcon className="h-3 w-3" />
+                    <Image
+                      src="/xp-bolt.svg"
+                      alt="XP"
+                      width={12}
+                      height={12}
+                    />
                     {entry.points} XP
                   </div>
                 </div>

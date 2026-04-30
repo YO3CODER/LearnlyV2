@@ -178,6 +178,21 @@ export const LessonButton = ({
     </div>
   );
 
+  // Animation CSS pour le bounce continu (infinite)
+  const infiniteBounceAnimation = `
+    @keyframes bounceInfinite {
+      0%, 100% { 
+        transform: translateY(0); 
+      }
+      50% { 
+        transform: translateY(-8px); 
+      }
+    }
+    .bounce-infinite {
+      animation: bounceInfinite 1s ease-in-out infinite;
+    }
+  `;
+
   return (
     <div
       style={{
@@ -190,6 +205,8 @@ export const LessonButton = ({
       }}
       className="animate-in fade-in slide-in-from-bottom-4"
     >
+      <style>{infiniteBounceAnimation}</style>
+
       <div
         className="relative"
         style={{
@@ -246,13 +263,40 @@ export const LessonButton = ({
 
         {current ? (
           <div className="h-[102px] w-[102px] relative" onClick={handleClick}>
-            <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-10
-              px-4 py-2 rounded-xl
-              bg-background border-2 border-b-4 border-border
-              text-foreground text-xs font-extrabold uppercase tracking-widest
-              shadow-lg whitespace-nowrap"
+            {/* Badge Start avec triangle qui pointe vers le bas */}
+            <div
+              className={cn(
+                "absolute -top-10 left-1/2 -translate-x-1/2 z-10",
+                "px-4 py-2 rounded-xl",
+                "bg-background border-2 border-b-4 border-border",
+                "text-foreground text-xs font-extrabold uppercase tracking-widest",
+                "shadow-lg whitespace-nowrap",
+                "bounce-infinite"
+              )}
             >
               Start
+              {/* Petit triangle qui pointe vers le bas */}
+              <div
+                className="absolute -bottom-[10px] left-1/2 -translate-x-1/2"
+                style={{
+                  width: 0,
+                  height: 0,
+                  borderLeft: "6px solid transparent",
+                  borderRight: "6px solid transparent",
+                  borderTop: `8px solid hsl(var(--border))`,
+                }}
+              />
+              {/* Triangle intérieur (plus clair) */}
+              <div
+                className="absolute -bottom-[7px] left-1/2 -translate-x-1/2"
+                style={{
+                  width: 0,
+                  height: 0,
+                  borderLeft: "5px solid transparent",
+                  borderRight: "5px solid transparent",
+                  borderTop: `7px solid hsl(var(--background))`,
+                }}
+              />
             </div>
 
             <CircularProgressbarWithChildren

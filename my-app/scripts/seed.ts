@@ -77,7 +77,6 @@ const main = async () => {
       { id: 200, lessonId: 1, type: "FILL_BLANK", order: 5, question: "Si 3x + 7 = 2x + 15, alors x = ___" },
       { id: 201, lessonId: 1, type: "FILL_BLANK", order: 6, question: "Si 5x - 3 = 2x + 9, alors x = ___" },
       { id: 202, lessonId: 1, type: "FILL_BLANK", order: 7, question: "Si 4(x + 2) = 24, alors x = ___" },
-      // 👇 TRANSLATE maths — leçon 1
       { id: 305, lessonId: 1, type: "TRANSLATE", order: 8, question: "Traduis : 'Trois fois un nombre moins cinq égale seize'" },
       { id: 306, lessonId: 1, type: "TRANSLATE", order: 9, question: "Traduis : 'Le double d'un nombre augmenté de sept égale vingt-trois'" },
 
@@ -133,7 +132,6 @@ const main = async () => {
       { id: 36, lessonId: 10, type: "SELECT", order: 3, question: "Quelle est la moyenne de : 12, 15, 18, 9, 6 ?" },
       { id: 213, lessonId: 10, type: "FILL_BLANK", order: 4, question: "La moyenne de 4, 8, 6, 10, 2 est ___" },
       { id: 214, lessonId: 10, type: "FILL_BLANK", order: 5, question: "La médiane de 3, 7, 1, 9, 5 est ___" },
-      // 👇 MATCH maths — leçon 10
       { id: 322, lessonId: 10, type: "MATCH", order: 6, question: "Relie chaque terme à sa définition" },
 
       { id: 37, lessonId: 11, type: "SELECT", order: 1, question: "On lance un dé. Quelle est la probabilité d'obtenir 6 ?" },
@@ -435,7 +433,6 @@ const main = async () => {
       { challengeId: 101, correct: false, text: "x=0, y=2" },
       { challengeId: 101, correct: false, text: "x=2, y=1" },
 
-      // FILL_BLANK options
       { challengeId: 200, correct: true, text: "8", blank: 0 },
       { challengeId: 200, correct: false, text: "6", blank: 0 },
       { challengeId: 200, correct: false, text: "10", blank: 0 },
@@ -506,11 +503,9 @@ const main = async () => {
       { challengeId: 218, correct: false, text: "cos²(x)", blank: 0 },
       { challengeId: 218, correct: false, text: "sin²(x)", blank: 0 },
 
-      // TRANSLATE maths options
       { challengeId: 305, correct: true, text: "3x - 5 = 16|3x-5=16" },
       { challengeId: 306, correct: true, text: "2x + 7 = 23|2x+7=23" },
 
-      // MATCH maths options (leçon 10)
       { challengeId: 322, correct: false, text: "Moyenne", order: 1 },
       { challengeId: 322, correct: true, text: "Somme divisée par le nombre de valeurs", order: 1 },
       { challengeId: 322, correct: false, text: "Médiane", order: 2 },
@@ -529,7 +524,6 @@ const main = async () => {
       { id: 5, courseId: 2, title: "Introducción", description: "Learn the basics of Spanish", order: 1 },
       { id: 6, courseId: 2, title: "Familia y Amigos", description: "Talk about family and friends", order: 2 },
       { id: 7, courseId: 2, title: "Comida y Bebida", description: "Food and drinks vocabulary", order: 3 },
-      // 👇 nouvelle unité pour TRANSLATE/LISTEN/MATCH
       { id: 22, courseId: 2, title: "Traducción & Escucha", description: "Traduis et écoute en espagnol", order: 4 },
     ]);
 
@@ -541,7 +535,6 @@ const main = async () => {
       { id: 16, unitId: 6, order: 2, title: "Adjectives" },
       { id: 17, unitId: 7, order: 1, title: "Food" },
       { id: 18, unitId: 7, order: 2, title: "Drinks" },
-      // 👇 nouvelles leçons
       { id: 50, unitId: 22, order: 1, title: "Traducción al Español" },
       { id: 51, unitId: 22, order: 2, title: "Escucha y Escribe" },
       { id: 52, unitId: 22, order: 3, title: "Une les Palabras" },
@@ -565,14 +558,11 @@ const main = async () => {
       { id: 114, lessonId: 16, type: "WORD_BANK", order: 2, question: 'Translate: "The big dog is fast"' },
       { id: 115, lessonId: 17, type: "WORD_BANK", order: 2, question: 'Translate: "I eat bread with cheese"' },
       { id: 116, lessonId: 18, type: "WORD_BANK", order: 2, question: 'Translate: "She drinks water every day"' },
-      // 👇 TRANSLATE espagnol
       { id: 300, lessonId: 50, type: "TRANSLATE", order: 1, question: "Traduis en espagnol : 'The cat drinks water'" },
       { id: 301, lessonId: 50, type: "TRANSLATE", order: 2, question: "Traduis en espagnol : 'She reads a book every day'" },
       { id: 302, lessonId: 50, type: "TRANSLATE", order: 3, question: "Traduis en espagnol : 'We are going to the market'" },
-      // 👇 LISTEN espagnol
       { id: 310, lessonId: 51, type: "LISTEN", order: 1, question: "Écoute et écris ce que tu entends" },
       { id: 311, lessonId: 51, type: "LISTEN", order: 2, question: "Écoute et écris ce que tu entends" },
-      // 👇 MATCH espagnol
       { id: 320, lessonId: 52, type: "MATCH", order: 1, question: "Relie chaque mot à sa traduction" },
     ]);
 
@@ -658,14 +648,11 @@ const main = async () => {
       { challengeId: 116, correct: false, text: "come", order: null },
       { challengeId: 116, correct: false, text: "vino", order: null },
       { challengeId: 116, correct: false, text: "nunca", order: null },
-      // TRANSLATE espagnol
       { challengeId: 300, correct: true, text: "El gato bebe agua" },
       { challengeId: 301, correct: true, text: "Ella lee un libro todos los días|Ella lee un libro cada día" },
       { challengeId: 302, correct: true, text: "Vamos al mercado|Nosotros vamos al mercado" },
-      // LISTEN espagnol
       { challengeId: 310, correct: true, text: "Hola, ¿cómo estás?|Hola cómo estás", audioSrc: "/audio/es_hola.mp3" },
       { challengeId: 311, correct: true, text: "Buenos días, señor|Buenos dias señor", audioSrc: "/audio/es_buenos_dias.mp3" },
-      // MATCH espagnol
       { challengeId: 320, correct: false, text: "perro", order: 1 },
       { challengeId: 320, correct: true, text: "chien", order: 1 },
       { challengeId: 320, correct: false, text: "gato", order: 2 },
@@ -729,7 +716,6 @@ const main = async () => {
     await db.insert(schema.units).values([
       { id: 9, courseId: 4, title: "Introduction", description: "Learn the basics of French", order: 1 },
       { id: 21, courseId: 4, title: "La Vie Quotidienne", description: "La vie de tous les jours", order: 2 },
-      // 👇 nouvelle unité
       { id: 23, courseId: 4, title: "Traduction & Écoute", description: "Traduis et écoute en français", order: 3 },
     ]);
 
@@ -739,7 +725,6 @@ const main = async () => {
       { id: 62, unitId: 21, order: 1, title: "Les Animaux" },
       { id: 63, unitId: 21, order: 2, title: "La Famille" },
       { id: 64, unitId: 21, order: 3, title: "Les Couleurs" },
-      // 👇 nouvelles leçons
       { id: 60, unitId: 23, order: 1, title: "Traduction en Français" },
       { id: 61, unitId: 23, order: 2, title: "Écoute et Écris" },
       { id: 65, unitId: 23, order: 3, title: "Relie les Mots" },
@@ -762,13 +747,10 @@ const main = async () => {
       { id: 143, lessonId: 64, type: "SELECT", order: 1, question: 'Which one means "red"?' },
       { id: 144, lessonId: 64, type: "WORD_BANK", order: 2, question: 'Translate: "The sky is blue and the grass is green"' },
       { id: 145, lessonId: 64, type: "WORD_BANK", order: 3, question: 'Translate: "I like the red car"' },
-      // 👇 TRANSLATE français
       { id: 303, lessonId: 60, type: "TRANSLATE", order: 1, question: "Traduis en français : 'The dog runs in the park'" },
       { id: 304, lessonId: 60, type: "TRANSLATE", order: 2, question: "Traduis en français : 'He eats an apple every morning'" },
-      // 👇 LISTEN français
       { id: 312, lessonId: 61, type: "LISTEN", order: 1, question: "Écoute et écris ce que tu entends" },
       { id: 313, lessonId: 61, type: "LISTEN", order: 2, question: "Écoute et écris ce que tu entends" },
-      // 👇 MATCH français
       { id: 321, lessonId: 65, type: "MATCH", order: 1, question: "Relie chaque mot à sa traduction" },
     ]);
 
@@ -871,13 +853,10 @@ const main = async () => {
       { challengeId: 145, correct: false, text: "bleue", order: null },
       { challengeId: 145, correct: false, text: "moto", order: null },
       { challengeId: 145, correct: false, text: "verte", order: null },
-      // TRANSLATE français
       { challengeId: 303, correct: true, text: "Le chien court dans le parc" },
       { challengeId: 304, correct: true, text: "Il mange une pomme chaque matin|Il mange une pomme tous les matins" },
-      // LISTEN français
       { challengeId: 312, correct: true, text: "Bonjour, comment vas-tu ?|Bonjour comment vas-tu", audioSrc: "/audio/fr_bonjour.mp3" },
       { challengeId: 313, correct: true, text: "Il fait beau aujourd'hui", audioSrc: "/audio/fr_beau.mp3" },
-      // MATCH français
       { challengeId: 321, correct: false, text: "pomme", order: 1 },
       { challengeId: 321, correct: true, text: "apple", order: 1 },
       { challengeId: 321, correct: false, text: "eau", order: 2 },
