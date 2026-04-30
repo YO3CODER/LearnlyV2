@@ -21,7 +21,7 @@ type Props = {
   isLastLesson: boolean;
   unitId: number;
   title?: string;
-  lessonChallengeCount?: number; // 👈 nombre de challenges dans la leçon
+  lessonChallengeCount?: number;
 };
 
 const colorMap: Record<string, {
@@ -61,14 +61,41 @@ export const LessonButton = ({
   unitColor,
   isLastLesson,
   title = "Leçon",
-  lessonChallengeCount = 5, // défaut raisonnable
+  lessonChallengeCount = 5,
 }: Props) => {
   const router = useRouter();
   const { open } = usePracticeModal();
   const [showPopup, setShowPopup] = useState(false);
-  const [popupVisible, setPopupVisible] = useState(false); // 👈 pour l'animation d'apparition
-  const [pressing, setPressing] = useState(false); // 👈 pour l'effet de descente
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [pressing, setPressing] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
+
+  // ─── Audio & Haptic refs ───────────────────────────────────────────────────
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const audio = new Audio("/boutonsong.mp3");
+    audio.preload = "auto";
+    audioRef.current = audio;
+  }, []);
+
+  // ─── Feedback : son + vibration style Duolingo ────────────────────────────
+  const playFeedback = () => {
+    // Son — repart depuis le début pour être réactif même si déjà en cours
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {
+        // Silencieux si l'autoplay est bloqué par le navigateur (politique mobile)
+      });
+    }
+
+    // Vibration haptique : double pulse court, net, satisfaisant
+    if ("vibrate" in navigator) {
+      navigator.vibrate([12, 30, 12]);
+    }
+  };
+
+  // ──────────────────────────────────────────────────────────────────────────
 
   const cycleLength = 8;
   const cycleIndex = index % cycleLength;
@@ -89,7 +116,6 @@ export const LessonButton = ({
   const Icon = isLastLesson ? Crown : isCompleted ? Check : Star;
   const colors = colorMap[unitColor] || colorMap.green;
 
-  // XP total calculé
   const totalXP = lessonChallengeCount * XP_PER_CHALLENGE;
 
   useEffect(() => {
@@ -104,7 +130,6 @@ export const LessonButton = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showPopup]);
 
-  // Ouvre le popup avec animation d'entrée
   const openPopup = () => {
     setShowPopup(true);
     requestAnimationFrame(() => {
@@ -112,7 +137,6 @@ export const LessonButton = ({
     });
   };
 
-  // Ferme le popup avec animation de sortie
   const closePopup = () => {
     setPopupVisible(false);
     setTimeout(() => setShowPopup(false), 200);
@@ -120,6 +144,7 @@ export const LessonButton = ({
 
   const handleClick = () => {
     if (locked) return;
+    playFeedback(); // 🔊📳
     if (showPopup) {
       closePopup();
     } else {
@@ -128,6 +153,7 @@ export const LessonButton = ({
   };
 
   const handleStart = () => {
+    playFeedback(); // 🔊📳
     closePopup();
     if (isCompleted) {
       open(id);
@@ -136,7 +162,6 @@ export const LessonButton = ({
     router.push("/lesson");
   };
 
-  // Effet de descente du bouton au clic
   const handleButtonPress = () => {
     setPressing(true);
     setTimeout(() => setPressing(false), 150);
@@ -161,7 +186,6 @@ export const LessonButton = ({
         height: 70,
         borderRadius: "50%",
         backgroundColor: isGoldenBtn ? "#f59e0b" : isLocked ? "#d1d5db" : bgHex,
-        // 👇 effet de descente : réduit borderBottom et translate quand pressing
         borderBottom: pressing
           ? `2px solid ${isGoldenBtn ? "#b45309" : isLocked ? "#9ca3af" : borderHex}`
           : `6px solid ${isGoldenBtn ? "#b45309" : isLocked ? "#9ca3af" : borderHex}`,
@@ -249,7 +273,7 @@ export const LessonButton = ({
           zIndex: showPopup ? 50 : "auto",
         }}
       >
-        {/* Popup avec animation d'entrée */}
+        {/* Popup */}
         {showPopup && !locked && (
           <div
             ref={popupRef}
@@ -258,7 +282,6 @@ export const LessonButton = ({
               colors.popup,
               colors.popupBorder,
               "top-[85px] left-1/2 -translate-x-1/2",
-              // 👇 animation d'apparition douce
               "transition-all duration-200 ease-out",
             )}
             style={{
@@ -293,7 +316,7 @@ export const LessonButton = ({
               Leçon {index + 1} sur {totalCount}
             </p>
 
-            {/* Bouton Commencer avec effet de descente */}
+            {/* Bouton Commencer */}
             <button
               onMouseDown={handleButtonPress}
               onClick={handleStart}
