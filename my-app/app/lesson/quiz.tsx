@@ -27,9 +27,9 @@ type Props = {
     completed: boolean;
     challengeOptions: typeof challengeOptions.$inferSelect[];
   })[];
-  userSubscription: typeof userSubscription.$inferSelect & {
-    isActive: boolean;
-  } | null;
+  userSubscription:
+  | (typeof userSubscription.$inferSelect & { isActive: boolean })
+  | null;
 };
 
 export const Quiz = ({
@@ -43,9 +43,7 @@ export const Quiz = ({
   const { open: openPracticeModal } = usePracticeModal();
 
   useMount(() => {
-    if (initialPercentage === 100) {
-      openPracticeModal(initialLessonId);
-    }
+    if (initialPercentage === 100) openPracticeModal(initialLessonId);
   });
 
   const { width, height } = useWindowSize();
@@ -58,9 +56,9 @@ export const Quiz = ({
 
   const [lessonId] = useState(initialLessonId);
   const [hearts, setHearts] = useState(initialHearts);
-  const [percentage, setPercentage] = useState(() => {
-    return initialPercentage === 100 ? 0 : initialPercentage;
-  });
+  const [percentage, setPercentage] = useState(() =>
+    initialPercentage === 100 ? 0 : initialPercentage,
+  );
 
   const totalChallenges = initialLessonChallenges.length;
 
@@ -69,13 +67,16 @@ export const Quiz = ({
   const [isRetryRound, setIsRetryRound] = useState(false);
 
   const [activeIndex, setActiveIndex] = useState(() => {
-    const uncompletedIndex = challenges.findIndex((challenge) => !challenge.completed);
-    return uncompletedIndex === -1 ? 0 : uncompletedIndex;
+    const i = challenges.findIndex((c) => !c.completed);
+    return i === -1 ? 0 : i;
   });
 
   const [selectedOption, setSelectedOption] = useState<number>();
   const [wordBankSelectedIds, setWordBankSelectedIds] = useState<number[]>([]);
   const [fillBlankSelectedBlanks, setFillBlankSelectedBlanks] = useState<(number | null)[]>([]);
+  const [translateValue, setTranslateValue] = useState("");
+  const [matchPairs, setMatchPairs] = useState<[number, number][]>([]);
+  const [listenValue, setListenValue] = useState("");
   const [status, setStatus] = useState<"correct" | "wrong" | "none">("none");
 
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -97,17 +98,18 @@ export const Quiz = ({
     if (isFinished) {
       finishControls.play();
       startTransition(() => {
-        completeLesson()
-          .catch(() => console.error("Failed to complete lesson"));
+        completeLesson().catch(() => console.error("Failed to complete lesson"));
       });
     }
   }, [isFinished]);
 
-  // 👇 Reset les états selon le type de question
   const resetAnswerState = () => {
     setSelectedOption(undefined);
     setWordBankSelectedIds([]);
     setFillBlankSelectedBlanks([]);
+    setTranslateValue("");
+    setMatchPairs([]);
+    setListenValue("");
   };
 
   const onNext = () => {
@@ -116,9 +118,7 @@ export const Quiz = ({
       setActiveIndex((current) => current + 1);
       resetAnswerState();
       setSlideState("enter");
-      slideTimeoutRef.current = setTimeout(() => {
-        setSlideState("idle");
-      }, 50);
+      slideTimeoutRef.current = setTimeout(() => setSlideState("idle"), 50);
     }, 250);
   };
 
@@ -154,16 +154,19 @@ export const Quiz = ({
     });
   };
 
+  const onMatch = (pairs: [number, number][]) => {
+    if (status !== "none") return;
+    setMatchPairs(pairs);
+  };
+
   const startWrongCountdown = () => setCountdown(3);
 
   useEffect(() => {
     if (countdown === null) return;
-
     if (countdown === 0) {
       setFailedChallenges((prev) => {
         const alreadyFailed = prev.some((c) => c.id === challenge.id);
-        if (alreadyFailed) return prev;
-        return [...prev, challenge];
+        return alreadyFailed ? prev : [...prev, challenge];
       });
       onNext();
       setStatus("none");
@@ -171,15 +174,13 @@ export const Quiz = ({
       setCountdown(null);
       return;
     }
-
     countdownRef.current = setTimeout(() => {
       setCountdown((prev) => (prev !== null ? prev - 1 : null));
     }, 1000);
-
     return () => {
       if (countdownRef.current) clearTimeout(countdownRef.current);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countdown]);
 
   const triggerStreakToast = () => {
@@ -192,10 +193,7 @@ export const Quiz = ({
     startTransition(() => {
       upsertChallengeProgress(challenge.id)
         .then((response) => {
-          if (response?.error === "hearts") {
-            openHeartsModal();
-            return;
-          }
+          if (response?.error === "hearts") { openHeartsModal(); return; }
           correctControls.play();
           setStatus("correct");
           setPercentage((prev) => Math.min(prev + 100 / totalChallenges, 100));
@@ -204,9 +202,7 @@ export const Quiz = ({
             if (next >= 3) triggerStreakToast();
             return next;
           });
-          if (initialPercentage === 100) {
-            setHearts((prev) => Math.min(prev + 1, 5));
-          }
+          if (initialPercentage === 100) setHearts((prev) => Math.min(prev + 1, 5));
         })
         .catch(() => toast.error("Something went wrong. Please try again."));
     });
@@ -216,51 +212,88 @@ export const Quiz = ({
     startTransition(() => {
       reduceHearts(challenge.id)
         .then((response) => {
-          if (response?.error === "hearts") {
-            openHeartsModal();
-            return;
-          }
+          if (response?.error === "hearts") { openHeartsModal(); return; }
           incorrectControls.play();
           setStatus("wrong");
           setStreak(0);
           setShowStreak(false);
-          if (!response?.error) {
-            setHearts((prev) => Math.max(prev - 1, 0));
-          }
+          if (!response?.error) setHearts((prev) => Math.max(prev - 1, 0));
           startWrongCountdown();
         })
         .catch(() => toast.error("Something went wrong. Please try again."));
     });
   };
 
-  // 👇 Vérifie WORD_BANK
+  // ── Vérifications par type ──
+
   const isWordBankCorrect = () => {
-    const correctOptions = [...options]
+    const correctIds = [...options]
       .filter((o) => o.correct)
-      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-    const correctIds = correctOptions.map((o) => o.id);
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      .map((o) => o.id);
     return (
       wordBankSelectedIds.length === correctIds.length &&
       wordBankSelectedIds.every((id, i) => id === correctIds[i])
     );
   };
 
-  // 👇 Vérifie FILL_BLANK
   const isFillBlankCorrect = () => {
     const blankCount = (challenge.question.match(/___/g) ?? []).length;
     if (fillBlankSelectedBlanks.length !== blankCount) return false;
     if (fillBlankSelectedBlanks.some((b) => b === null)) return false;
-
     return fillBlankSelectedBlanks.every((selectedId, blankIndex) => {
       const option = options.find((o) => o.id === selectedId);
       return option?.correct && option?.blank === blankIndex;
     });
   };
 
+  const normalize = (str: string) =>
+    str.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  const isTranslateCorrect = () => {
+    const correctOption = options.find((o) => o.correct);
+    if (!correctOption) return false;
+    // Accepte aussi les variantes séparées par "|"
+    const variants = correctOption.text.split("|").map(normalize);
+    return variants.includes(normalize(translateValue));
+  };
+
+  const isListenCorrect = () => {
+    const correctOption = options.find((o) => o.correct);
+    if (!correctOption) return false;
+    const variants = correctOption.text.split("|").map(normalize);
+    return variants.includes(normalize(listenValue));
+  };
+
+  const isMatchCorrect = () => {
+    const leftItems = options.filter((o) => !o.correct);
+    if (matchPairs.length !== leftItems.length) return false;
+    return matchPairs.every(([leftId, rightId]) => {
+      const left = options.find((o) => o.id === leftId);
+      const right = options.find((o) => o.id === rightId);
+      if (!left || !right) return false;
+      // La colonne droite porte le même `text` que la paire correcte
+      return left.audioSrc === right.audioSrc || left.text === right.audioSrc;
+    });
+  };
+
+  // ── Vérification MATCH via ordre déclaré ──
+  // On encode la paire correcte avec la colonne `order` :
+  // left.order === right.order → c'est une paire valide
+  const isMatchCorrectByOrder = () => {
+    const leftItems = options.filter((o) => !o.correct);
+    if (matchPairs.length !== leftItems.length) return false;
+    return matchPairs.every(([leftId, rightId]) => {
+      const left = options.find((o) => o.id === leftId);
+      const right = options.find((o) => o.id === rightId);
+      if (!left || !right) return false;
+      return left.order === right.order;
+    });
+  };
+
   const onContinue = () => {
     if (countdown !== null) return;
 
-    // ── WORD_BANK ──
     if (challenge.type === "WORD_BANK") {
       if (wordBankSelectedIds.length === 0) return;
       if (status === "correct") { onNext(); setStatus("none"); resetAnswerState(); return; }
@@ -268,7 +301,6 @@ export const Quiz = ({
       return;
     }
 
-    // ── FILL_BLANK ──
     if (challenge.type === "FILL_BLANK") {
       const blankCount = (challenge.question.match(/___/g) ?? []).length;
       const allFilled = fillBlankSelectedBlanks.filter((b) => b !== null).length === blankCount;
@@ -278,10 +310,32 @@ export const Quiz = ({
       return;
     }
 
-    // ── SELECT / ASSIST ──
+    if (challenge.type === "TRANSLATE") {
+      if (!translateValue.trim()) return;
+      if (status === "correct") { onNext(); setStatus("none"); resetAnswerState(); return; }
+      isTranslateCorrect() ? handleCorrect() : handleWrong();
+      return;
+    }
+
+    if (challenge.type === "LISTEN") {
+      if (!listenValue.trim()) return;
+      if (status === "correct") { onNext(); setStatus("none"); resetAnswerState(); return; }
+      isListenCorrect() ? handleCorrect() : handleWrong();
+      return;
+    }
+
+    if (challenge.type === "MATCH") {
+      const leftItems = options.filter((o) => !o.correct);
+      if (matchPairs.length !== leftItems.length) return;
+      if (status === "correct") { onNext(); setStatus("none"); resetAnswerState(); return; }
+      isMatchCorrectByOrder() ? handleCorrect() : handleWrong();
+      return;
+    }
+
+    // SELECT / ASSIST
     if (!selectedOption) return;
     if (status === "correct") { onNext(); setStatus("none"); setSelectedOption(undefined); return; }
-    const correctOption = options.find((option) => option.correct);
+    const correctOption = options.find((o) => o.correct);
     if (!correctOption) return;
     correctOption.id === selectedOption ? handleCorrect() : handleWrong();
   };
@@ -326,16 +380,28 @@ export const Quiz = ({
     );
   }
 
-  const title = challenge.type === "ASSIST"
-    ? "Select the correct meaning"
-    : challenge.type === "FILL_BLANK"
-    ? "Fill in the blanks"
-    : challenge.question;
+  const title =
+    challenge.type === "ASSIST"
+      ? "Select the correct meaning"
+      : challenge.type === "FILL_BLANK"
+        ? "Fill in the blanks"
+        : challenge.type === "TRANSLATE"
+          ? "Translate this sentence"
+          : challenge.type === "LISTEN"
+            ? "Write what you hear"
+            : challenge.type === "MATCH"
+              ? "Match the pairs"
+              : challenge.question;
 
-  // 👇 Footer désactivé selon le type
+  // ── Désactivation du footer ──
   const isFillBlankDone = () => {
     const blankCount = (challenge.question.match(/___/g) ?? []).length;
     return fillBlankSelectedBlanks.filter((b) => b !== null).length === blankCount;
+  };
+
+  const isMatchDone = () => {
+    const leftItems = options.filter((o) => !o.correct);
+    return matchPairs.length === leftItems.length;
   };
 
   const isFooterDisabled =
@@ -344,8 +410,17 @@ export const Quiz = ({
     (challenge.type === "WORD_BANK"
       ? wordBankSelectedIds.length === 0
       : challenge.type === "FILL_BLANK"
-      ? !isFillBlankDone()
-      : !selectedOption);
+        ? !isFillBlankDone()
+        : challenge.type === "TRANSLATE"
+          ? !translateValue.trim()
+          : challenge.type === "LISTEN"
+            ? !listenValue.trim()
+            : challenge.type === "MATCH"
+              ? !isMatchDone()
+              : !selectedOption);
+
+  // Audio pour LISTEN — première option qui a un audioSrc
+  const listenAudioSrc = options.find((o) => o.audioSrc)?.audioSrc ?? "";
 
   const footerLabel = countdown !== null ? `Next in ${countdown}s…` : undefined;
 
@@ -364,7 +439,9 @@ export const Quiz = ({
       <Header hearts={hearts} percentage={percentage} hasActiveSubscription={!!userSubscription?.isActive} />
 
       {/* Streak toast */}
-      <div className={["fixed top-6 left-1/2 -translate-x-1/2 z-50", "transition-all duration-500 ease-out",
+      <div className={[
+        "fixed top-6 left-1/2 -translate-x-1/2 z-50",
+        "transition-all duration-500 ease-out",
         showStreak ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-3 pointer-events-none",
       ].join(" ")}>
         <div className="flex items-center gap-x-3 bg-orange-500 text-white px-5 py-3 rounded-2xl shadow-lg shadow-orange-200 dark:shadow-orange-900">
@@ -399,9 +476,12 @@ export const Quiz = ({
                 </h1>
 
                 <div>
-                  {challenge.type === "ASSIST" && (
-                    <QuestionBubble question={challenge.question} />
-                  )}
+                 
+                  {(challenge.type === "ASSIST" ||
+                    challenge.type === "TRANSLATE" ||
+                    challenge.type === "LISTEN") && (
+                      <QuestionBubble question={challenge.question} />
+                    )}
                   <Challenge
                     options={options}
                     onSelect={onSelect}
@@ -410,6 +490,13 @@ export const Quiz = ({
                     wordBankSelectedIds={wordBankSelectedIds}
                     onFillBlankSelect={onFillBlankSelect}
                     fillBlankSelectedBlanks={fillBlankSelectedBlanks}
+                    translateValue={translateValue}
+                    onTranslateChange={setTranslateValue}
+                    onMatch={onMatch}
+                    matchPairs={matchPairs}
+                    listenValue={listenValue}
+                    onListenChange={setListenValue}
+                    listenAudioSrc={listenAudioSrc}
                     status={status}
                     selectedOption={selectedOption}
                     disabled={pending || countdown !== null}

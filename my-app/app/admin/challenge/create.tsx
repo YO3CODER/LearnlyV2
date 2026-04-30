@@ -11,7 +11,10 @@ export const ChallengeCreate = () => {
             { id: "SELECT", name: "SELECT" },
             { id: "ASSIST", name: "ASSIST" },
             { id: "WORD_BANK", name: "WORD_BANK" },
-            { id: "FILL_BLANK", name: "FILL_BLANK" }, // 👈 ajouté
+            { id: "FILL_BLANK", name: "FILL_BLANK" },
+            { id: "TRANSLATE", name: "TRANSLATE" },
+            { id: "MATCH", name: "MATCH" },
+            { id: "LISTEN", name: "LISTEN" },
           ]}
           validate={[required()]}
         />

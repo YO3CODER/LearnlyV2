@@ -1,7 +1,6 @@
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
-
 import * as schema from "../db/schema";
 
 const sql = neon(process.env.DATABASE_URL!);
@@ -10,7 +9,6 @@ const db = drizzle(sql, { schema });
 
 const main = async () => {
   try {
-    // Clean existing data
     await db.delete(schema.userProgress);
     await db.delete(schema.challengeProgress);
     await db.delete(schema.challengeOptions);
@@ -30,7 +28,7 @@ const main = async () => {
     ]);
 
     // ================================================
-    // 1. MATHÉMATIQUES (Course ID: 1)
+    // 1. MATHÉMATIQUES
     // ================================================
 
     await db.insert(schema.units).values([
@@ -76,17 +74,18 @@ const main = async () => {
       { id: 2, lessonId: 1, type: "ASSIST", order: 2, question: "Résous : 5(x - 2) = 3(x + 4)" },
       { id: 3, lessonId: 1, type: "ASSIST", order: 3, question: "Résous : 7x - 9 = 5x + 15" },
       { id: 4, lessonId: 1, type: "ASSIST", order: 4, question: "Résous : 4(2x - 1) = 6x + 10" },
-      // 👇 FILL_BLANK maths — leçon 1
       { id: 200, lessonId: 1, type: "FILL_BLANK", order: 5, question: "Si 3x + 7 = 2x + 15, alors x = ___" },
       { id: 201, lessonId: 1, type: "FILL_BLANK", order: 6, question: "Si 5x - 3 = 2x + 9, alors x = ___" },
       { id: 202, lessonId: 1, type: "FILL_BLANK", order: 7, question: "Si 4(x + 2) = 24, alors x = ___" },
+      // 👇 TRANSLATE maths — leçon 1
+      { id: 305, lessonId: 1, type: "TRANSLATE", order: 8, question: "Traduis : 'Trois fois un nombre moins cinq égale seize'" },
+      { id: 306, lessonId: 1, type: "TRANSLATE", order: 9, question: "Traduis : 'Le double d'un nombre augmenté de sept égale vingt-trois'" },
 
       { id: 5, lessonId: 2, type: "ASSIST", order: 1, question: "Résous : x² - 9 = 0" },
       { id: 6, lessonId: 2, type: "ASSIST", order: 2, question: "Résous : 2x² - 18 = 0" },
       { id: 7, lessonId: 2, type: "ASSIST", order: 3, question: "Résous : (x - 4)(2x + 6) = 0" },
       { id: 8, lessonId: 2, type: "ASSIST", order: 4, question: "Résous : (x + 2)² = 49" },
       { id: 9, lessonId: 2, type: "ASSIST", order: 5, question: "Résous : x² - 5x + 6 = 0" },
-      // 👇 FILL_BLANK maths — leçon 2
       { id: 203, lessonId: 2, type: "FILL_BLANK", order: 6, question: "Si x² = 25, alors x = ___ ou x = ___" },
       { id: 204, lessonId: 2, type: "FILL_BLANK", order: 7, question: "Si x² - 7x + 12 = 0, alors x = ___ ou x = ___" },
 
@@ -99,7 +98,6 @@ const main = async () => {
       { id: 15, lessonId: 4, type: "SELECT", order: 2, question: "Simplifie : 24/36" },
       { id: 16, lessonId: 4, type: "SELECT", order: 3, question: "Simplifie : 15/45" },
       { id: 17, lessonId: 4, type: "SELECT", order: 4, question: "Simplifie : 28/42" },
-      // 👇 FILL_BLANK maths — leçon 4
       { id: 205, lessonId: 4, type: "FILL_BLANK", order: 5, question: "12/18 simplifié donne ___" },
       { id: 206, lessonId: 4, type: "FILL_BLANK", order: 6, question: "15/45 simplifié donne ___ et 24/36 donne ___" },
 
@@ -107,7 +105,6 @@ const main = async () => {
       { id: 19, lessonId: 5, type: "SELECT", order: 2, question: "Calcule : 3/4 - 1/6" },
       { id: 20, lessonId: 5, type: "SELECT", order: 3, question: "Calcule : 2/3 × 3/4" },
       { id: 21, lessonId: 5, type: "SELECT", order: 4, question: "Calcule : 5/6 ÷ 5/3" },
-      // 👇 FILL_BLANK maths — leçon 5
       { id: 207, lessonId: 5, type: "FILL_BLANK", order: 5, question: "1/2 + 1/3 = ___" },
       { id: 208, lessonId: 5, type: "FILL_BLANK", order: 6, question: "2/3 × 3/4 = ___ et 5/6 ÷ 5/3 = ___" },
 
@@ -119,14 +116,12 @@ const main = async () => {
       { id: 26, lessonId: 7, type: "SELECT", order: 2, question: "Quel est le périmètre d'un carré de côté 5cm ?" },
       { id: 27, lessonId: 7, type: "SELECT", order: 3, question: "Quelle est l'aire d'un triangle de base 8cm et hauteur 5cm ?" },
       { id: 28, lessonId: 7, type: "SELECT", order: 4, question: "Quelle est l'aire d'un cercle de rayon 7cm ? (π ≈ 3.14)" },
-      // 👇 FILL_BLANK maths — leçon 7
       { id: 209, lessonId: 7, type: "FILL_BLANK", order: 5, question: "L'aire d'un rectangle de 6cm × 4cm est ___ cm²" },
       { id: 210, lessonId: 7, type: "FILL_BLANK", order: 6, question: "Le périmètre d'un carré de côté 5cm est ___ cm" },
 
       { id: 29, lessonId: 8, type: "SELECT", order: 1, question: "Triangle rectangle : a=3, b=4. Quelle est la valeur de c ?" },
       { id: 30, lessonId: 8, type: "SELECT", order: 2, question: "Triangle rectangle : a=5, b=12. Quelle est la valeur de c ?" },
       { id: 31, lessonId: 8, type: "SELECT", order: 3, question: "Triangle rectangle : c=10, a=6. Quelle est la valeur de b ?" },
-      // 👇 FILL_BLANK maths — leçon 8
       { id: 211, lessonId: 8, type: "FILL_BLANK", order: 4, question: "Si a = 3 et b = 4, alors c = ___" },
       { id: 212, lessonId: 8, type: "FILL_BLANK", order: 5, question: "Si a = 5 et b = 12, alors c = ___" },
 
@@ -136,9 +131,10 @@ const main = async () => {
       { id: 34, lessonId: 10, type: "SELECT", order: 1, question: "Quelle est la moyenne de : 4, 8, 6, 10, 2 ?" },
       { id: 35, lessonId: 10, type: "SELECT", order: 2, question: "Quelle est la médiane de : 3, 7, 1, 9, 5 ?" },
       { id: 36, lessonId: 10, type: "SELECT", order: 3, question: "Quelle est la moyenne de : 12, 15, 18, 9, 6 ?" },
-      // 👇 FILL_BLANK maths — leçon 10
       { id: 213, lessonId: 10, type: "FILL_BLANK", order: 4, question: "La moyenne de 4, 8, 6, 10, 2 est ___" },
       { id: 214, lessonId: 10, type: "FILL_BLANK", order: 5, question: "La médiane de 3, 7, 1, 9, 5 est ___" },
+      // 👇 MATCH maths — leçon 10
+      { id: 322, lessonId: 10, type: "MATCH", order: 6, question: "Relie chaque terme à sa définition" },
 
       { id: 37, lessonId: 11, type: "SELECT", order: 1, question: "On lance un dé. Quelle est la probabilité d'obtenir 6 ?" },
       { id: 38, lessonId: 11, type: "SELECT", order: 2, question: "On tire une carte dans un jeu de 52. Probabilité d'un as ?" },
@@ -148,7 +144,6 @@ const main = async () => {
       { id: 61, lessonId: 25, type: "SELECT", order: 2, question: "Quelle est la dérivée de f(x) = sin(x) + cos(x) ?" },
       { id: 62, lessonId: 25, type: "SELECT", order: 3, question: "Quelle est la dérivée de f(x) = eˣ · x² ?" },
       { id: 63, lessonId: 25, type: "SELECT", order: 4, question: "Quelle est la dérivée de f(x) = ln(x) / x ?" },
-      // 👇 FILL_BLANK maths — leçon 25
       { id: 215, lessonId: 25, type: "FILL_BLANK", order: 5, question: "La dérivée de x³ est ___ et la dérivée de x⁴ est ___" },
       { id: 216, lessonId: 25, type: "FILL_BLANK", order: 6, question: "La dérivée de sin(x) est ___ et la dérivée de cos(x) est ___" },
 
@@ -170,7 +165,6 @@ const main = async () => {
       { id: 76, lessonId: 29, type: "SELECT", order: 2, question: "Quelle est la valeur de cos(2x) en termes de sin(x) ?" },
       { id: 77, lessonId: 29, type: "SELECT", order: 3, question: "Simplifie : (1 - cos²(x)) / sin(x)" },
       { id: 78, lessonId: 29, type: "SELECT", order: 4, question: "Quelle est la valeur de tan²(x) + 1 ?" },
-      // 👇 FILL_BLANK maths — leçon 29
       { id: 217, lessonId: 29, type: "FILL_BLANK", order: 5, question: "sin²(x) + cos²(x) = ___" },
       { id: 218, lessonId: 29, type: "FILL_BLANK", order: 6, question: "tan²(x) + 1 = ___" },
 
@@ -441,104 +435,102 @@ const main = async () => {
       { challengeId: 101, correct: false, text: "x=0, y=2" },
       { challengeId: 101, correct: false, text: "x=2, y=1" },
 
-      // ── FILL_BLANK options ──
+      // FILL_BLANK options
       { challengeId: 200, correct: true, text: "8", blank: 0 },
       { challengeId: 200, correct: false, text: "6", blank: 0 },
       { challengeId: 200, correct: false, text: "10", blank: 0 },
-
       { challengeId: 201, correct: true, text: "4", blank: 0 },
       { challengeId: 201, correct: false, text: "3", blank: 0 },
       { challengeId: 201, correct: false, text: "6", blank: 0 },
-
       { challengeId: 202, correct: true, text: "4", blank: 0 },
       { challengeId: 202, correct: false, text: "6", blank: 0 },
       { challengeId: 202, correct: false, text: "2", blank: 0 },
-
       { challengeId: 203, correct: true, text: "5", blank: 0 },
       { challengeId: 203, correct: true, text: "-5", blank: 1 },
       { challengeId: 203, correct: false, text: "3", blank: 0 },
       { challengeId: 203, correct: false, text: "-3", blank: 1 },
       { challengeId: 203, correct: false, text: "25", blank: 0 },
-
       { challengeId: 204, correct: true, text: "3", blank: 0 },
       { challengeId: 204, correct: true, text: "4", blank: 1 },
       { challengeId: 204, correct: false, text: "2", blank: 0 },
       { challengeId: 204, correct: false, text: "6", blank: 1 },
       { challengeId: 204, correct: false, text: "1", blank: 0 },
-
       { challengeId: 205, correct: true, text: "2/3", blank: 0 },
       { challengeId: 205, correct: false, text: "1/2", blank: 0 },
       { challengeId: 205, correct: false, text: "3/4", blank: 0 },
-
       { challengeId: 206, correct: true, text: "1/3", blank: 0 },
       { challengeId: 206, correct: true, text: "2/3", blank: 1 },
       { challengeId: 206, correct: false, text: "1/4", blank: 0 },
       { challengeId: 206, correct: false, text: "3/5", blank: 1 },
       { challengeId: 206, correct: false, text: "2/5", blank: 0 },
-
       { challengeId: 207, correct: true, text: "5/6", blank: 0 },
       { challengeId: 207, correct: false, text: "2/5", blank: 0 },
       { challengeId: 207, correct: false, text: "1/6", blank: 0 },
-
       { challengeId: 208, correct: true, text: "1/2", blank: 0 },
       { challengeId: 208, correct: true, text: "1/2", blank: 1 },
       { challengeId: 208, correct: false, text: "2/3", blank: 0 },
       { challengeId: 208, correct: false, text: "1/3", blank: 1 },
       { challengeId: 208, correct: false, text: "3/4", blank: 0 },
-
       { challengeId: 209, correct: true, text: "24", blank: 0 },
       { challengeId: 209, correct: false, text: "20", blank: 0 },
       { challengeId: 209, correct: false, text: "28", blank: 0 },
-
       { challengeId: 210, correct: true, text: "20", blank: 0 },
       { challengeId: 210, correct: false, text: "15", blank: 0 },
       { challengeId: 210, correct: false, text: "25", blank: 0 },
-
       { challengeId: 211, correct: true, text: "5", blank: 0 },
       { challengeId: 211, correct: false, text: "6", blank: 0 },
       { challengeId: 211, correct: false, text: "7", blank: 0 },
-
       { challengeId: 212, correct: true, text: "13", blank: 0 },
       { challengeId: 212, correct: false, text: "11", blank: 0 },
       { challengeId: 212, correct: false, text: "15", blank: 0 },
-
       { challengeId: 213, correct: true, text: "6", blank: 0 },
       { challengeId: 213, correct: false, text: "5", blank: 0 },
       { challengeId: 213, correct: false, text: "7", blank: 0 },
-
       { challengeId: 214, correct: true, text: "5", blank: 0 },
       { challengeId: 214, correct: false, text: "3", blank: 0 },
       { challengeId: 214, correct: false, text: "7", blank: 0 },
-
       { challengeId: 215, correct: true, text: "3x²", blank: 0 },
       { challengeId: 215, correct: true, text: "4x³", blank: 1 },
       { challengeId: 215, correct: false, text: "2x", blank: 0 },
       { challengeId: 215, correct: false, text: "3x²", blank: 1 },
       { challengeId: 215, correct: false, text: "x²", blank: 0 },
-
       { challengeId: 216, correct: true, text: "cos(x)", blank: 0 },
       { challengeId: 216, correct: true, text: "-sin(x)", blank: 1 },
       { challengeId: 216, correct: false, text: "-cos(x)", blank: 0 },
       { challengeId: 216, correct: false, text: "sin(x)", blank: 1 },
       { challengeId: 216, correct: false, text: "tan(x)", blank: 0 },
-
       { challengeId: 217, correct: true, text: "1", blank: 0 },
       { challengeId: 217, correct: false, text: "0", blank: 0 },
       { challengeId: 217, correct: false, text: "2", blank: 0 },
-
       { challengeId: 218, correct: true, text: "1/cos²(x)", blank: 0 },
       { challengeId: 218, correct: false, text: "cos²(x)", blank: 0 },
       { challengeId: 218, correct: false, text: "sin²(x)", blank: 0 },
+
+      // TRANSLATE maths options
+      { challengeId: 305, correct: true, text: "3x - 5 = 16|3x-5=16" },
+      { challengeId: 306, correct: true, text: "2x + 7 = 23|2x+7=23" },
+
+      // MATCH maths options (leçon 10)
+      { challengeId: 322, correct: false, text: "Moyenne", order: 1 },
+      { challengeId: 322, correct: true, text: "Somme divisée par le nombre de valeurs", order: 1 },
+      { challengeId: 322, correct: false, text: "Médiane", order: 2 },
+      { challengeId: 322, correct: true, text: "Valeur centrale d'une série triée", order: 2 },
+      { challengeId: 322, correct: false, text: "Mode", order: 3 },
+      { challengeId: 322, correct: true, text: "Valeur la plus fréquente", order: 3 },
+      { challengeId: 322, correct: false, text: "Étendue", order: 4 },
+      { challengeId: 322, correct: true, text: "Max moins Min", order: 4 },
     ]);
 
     // ================================================
-    // 2. ESPAGNOL (Course ID: 2)
+    // 2. ESPAGNOL
     // ================================================
 
     await db.insert(schema.units).values([
       { id: 5, courseId: 2, title: "Introducción", description: "Learn the basics of Spanish", order: 1 },
       { id: 6, courseId: 2, title: "Familia y Amigos", description: "Talk about family and friends", order: 2 },
       { id: 7, courseId: 2, title: "Comida y Bebida", description: "Food and drinks vocabulary", order: 3 },
+      // 👇 nouvelle unité pour TRANSLATE/LISTEN/MATCH
+      { id: 22, courseId: 2, title: "Traducción & Escucha", description: "Traduis et écoute en espagnol", order: 4 },
     ]);
 
     await db.insert(schema.lessons).values([
@@ -549,6 +541,10 @@ const main = async () => {
       { id: 16, unitId: 6, order: 2, title: "Adjectives" },
       { id: 17, unitId: 7, order: 1, title: "Food" },
       { id: 18, unitId: 7, order: 2, title: "Drinks" },
+      // 👇 nouvelles leçons
+      { id: 50, unitId: 22, order: 1, title: "Traducción al Español" },
+      { id: 51, unitId: 22, order: 2, title: "Escucha y Escribe" },
+      { id: 52, unitId: 22, order: 3, title: "Une les Palabras" },
     ]);
 
     await db.insert(schema.challenges).values([
@@ -569,6 +565,15 @@ const main = async () => {
       { id: 114, lessonId: 16, type: "WORD_BANK", order: 2, question: 'Translate: "The big dog is fast"' },
       { id: 115, lessonId: 17, type: "WORD_BANK", order: 2, question: 'Translate: "I eat bread with cheese"' },
       { id: 116, lessonId: 18, type: "WORD_BANK", order: 2, question: 'Translate: "She drinks water every day"' },
+      // 👇 TRANSLATE espagnol
+      { id: 300, lessonId: 50, type: "TRANSLATE", order: 1, question: "Traduis en espagnol : 'The cat drinks water'" },
+      { id: 301, lessonId: 50, type: "TRANSLATE", order: 2, question: "Traduis en espagnol : 'She reads a book every day'" },
+      { id: 302, lessonId: 50, type: "TRANSLATE", order: 3, question: "Traduis en espagnol : 'We are going to the market'" },
+      // 👇 LISTEN espagnol
+      { id: 310, lessonId: 51, type: "LISTEN", order: 1, question: "Écoute et écris ce que tu entends" },
+      { id: 311, lessonId: 51, type: "LISTEN", order: 2, question: "Écoute et écris ce que tu entends" },
+      // 👇 MATCH espagnol
+      { id: 320, lessonId: 52, type: "MATCH", order: 1, question: "Relie chaque mot à sa traduction" },
     ]);
 
     await db.insert(schema.challengeOptions).values([
@@ -653,10 +658,26 @@ const main = async () => {
       { challengeId: 116, correct: false, text: "come", order: null },
       { challengeId: 116, correct: false, text: "vino", order: null },
       { challengeId: 116, correct: false, text: "nunca", order: null },
+      // TRANSLATE espagnol
+      { challengeId: 300, correct: true, text: "El gato bebe agua" },
+      { challengeId: 301, correct: true, text: "Ella lee un libro todos los días|Ella lee un libro cada día" },
+      { challengeId: 302, correct: true, text: "Vamos al mercado|Nosotros vamos al mercado" },
+      // LISTEN espagnol
+      { challengeId: 310, correct: true, text: "Hola, ¿cómo estás?|Hola cómo estás", audioSrc: "/audio/es_hola.mp3" },
+      { challengeId: 311, correct: true, text: "Buenos días, señor|Buenos dias señor", audioSrc: "/audio/es_buenos_dias.mp3" },
+      // MATCH espagnol
+      { challengeId: 320, correct: false, text: "perro", order: 1 },
+      { challengeId: 320, correct: true, text: "chien", order: 1 },
+      { challengeId: 320, correct: false, text: "gato", order: 2 },
+      { challengeId: 320, correct: true, text: "chat", order: 2 },
+      { challengeId: 320, correct: false, text: "casa", order: 3 },
+      { challengeId: 320, correct: true, text: "maison", order: 3 },
+      { challengeId: 320, correct: false, text: "libro", order: 4 },
+      { challengeId: 320, correct: true, text: "livre", order: 4 },
     ]);
 
     // ================================================
-    // 3. ITALIEN (Course ID: 3)
+    // 3. ITALIEN
     // ================================================
 
     await db.insert(schema.units).values([
@@ -702,12 +723,14 @@ const main = async () => {
     ]);
 
     // ================================================
-    // 4. FRANÇAIS (Course ID: 4)
+    // 4. FRANÇAIS
     // ================================================
 
     await db.insert(schema.units).values([
       { id: 9, courseId: 4, title: "Introduction", description: "Learn the basics of French", order: 1 },
       { id: 21, courseId: 4, title: "La Vie Quotidienne", description: "La vie de tous les jours", order: 2 },
+      // 👇 nouvelle unité
+      { id: 23, courseId: 4, title: "Traduction & Écoute", description: "Traduis et écoute en français", order: 3 },
     ]);
 
     await db.insert(schema.lessons).values([
@@ -716,6 +739,10 @@ const main = async () => {
       { id: 62, unitId: 21, order: 1, title: "Les Animaux" },
       { id: 63, unitId: 21, order: 2, title: "La Famille" },
       { id: 64, unitId: 21, order: 3, title: "Les Couleurs" },
+      // 👇 nouvelles leçons
+      { id: 60, unitId: 23, order: 1, title: "Traduction en Français" },
+      { id: 61, unitId: 23, order: 2, title: "Écoute et Écris" },
+      { id: 65, unitId: 23, order: 3, title: "Relie les Mots" },
     ]);
 
     await db.insert(schema.challenges).values([
@@ -735,6 +762,14 @@ const main = async () => {
       { id: 143, lessonId: 64, type: "SELECT", order: 1, question: 'Which one means "red"?' },
       { id: 144, lessonId: 64, type: "WORD_BANK", order: 2, question: 'Translate: "The sky is blue and the grass is green"' },
       { id: 145, lessonId: 64, type: "WORD_BANK", order: 3, question: 'Translate: "I like the red car"' },
+      // 👇 TRANSLATE français
+      { id: 303, lessonId: 60, type: "TRANSLATE", order: 1, question: "Traduis en français : 'The dog runs in the park'" },
+      { id: 304, lessonId: 60, type: "TRANSLATE", order: 2, question: "Traduis en français : 'He eats an apple every morning'" },
+      // 👇 LISTEN français
+      { id: 312, lessonId: 61, type: "LISTEN", order: 1, question: "Écoute et écris ce que tu entends" },
+      { id: 313, lessonId: 61, type: "LISTEN", order: 2, question: "Écoute et écris ce que tu entends" },
+      // 👇 MATCH français
+      { id: 321, lessonId: 65, type: "MATCH", order: 1, question: "Relie chaque mot à sa traduction" },
     ]);
 
     await db.insert(schema.challengeOptions).values([
@@ -836,10 +871,25 @@ const main = async () => {
       { challengeId: 145, correct: false, text: "bleue", order: null },
       { challengeId: 145, correct: false, text: "moto", order: null },
       { challengeId: 145, correct: false, text: "verte", order: null },
+      // TRANSLATE français
+      { challengeId: 303, correct: true, text: "Le chien court dans le parc" },
+      { challengeId: 304, correct: true, text: "Il mange une pomme chaque matin|Il mange une pomme tous les matins" },
+      // LISTEN français
+      { challengeId: 312, correct: true, text: "Bonjour, comment vas-tu ?|Bonjour comment vas-tu", audioSrc: "/audio/fr_bonjour.mp3" },
+      { challengeId: 313, correct: true, text: "Il fait beau aujourd'hui", audioSrc: "/audio/fr_beau.mp3" },
+      // MATCH français
+      { challengeId: 321, correct: false, text: "pomme", order: 1 },
+      { challengeId: 321, correct: true, text: "apple", order: 1 },
+      { challengeId: 321, correct: false, text: "eau", order: 2 },
+      { challengeId: 321, correct: true, text: "water", order: 2 },
+      { challengeId: 321, correct: false, text: "soleil", order: 3 },
+      { challengeId: 321, correct: true, text: "sun", order: 3 },
+      { challengeId: 321, correct: false, text: "nuit", order: 4 },
+      { challengeId: 321, correct: true, text: "night", order: 4 },
     ]);
 
     // ================================================
-    // 5. CROATE (Course ID: 5)
+    // 5. CROATE
     // ================================================
 
     await db.insert(schema.units).values([
@@ -881,7 +931,7 @@ const main = async () => {
     ]);
 
     // ================================================
-    // 6. CULTURE GÉNÉRALE (Course ID: 6)
+    // 6. CULTURE GÉNÉRALE
     // ================================================
 
     await db.insert(schema.units).values([
@@ -916,8 +966,8 @@ const main = async () => {
       { id: 57, unitId: 19, order: 4, title: "Grands Discours" },
       { id: 58, unitId: 20, order: 1, title: "Mythologie Grecque" },
       { id: 59, unitId: 20, order: 2, title: "Mythologie Nordique" },
-      { id: 60, unitId: 20, order: 3, title: "Légendes Médiévales" },
-      { id: 61, unitId: 20, order: 4, title: "Folklore et Traditions" },
+      { id: 66, unitId: 20, order: 3, title: "Légendes Médiévales" },
+      { id: 67, unitId: 20, order: 4, title: "Folklore et Traditions" },
     ]);
 
     await db.insert(schema.challenges).values([
