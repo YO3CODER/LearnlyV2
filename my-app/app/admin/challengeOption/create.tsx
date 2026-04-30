@@ -16,7 +16,6 @@ const ImageUploader = () => {
     if (!file) return;
     const formData = new FormData();
     formData.append("file", file);
-
     try {
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       if (!res.ok) throw new Error();
@@ -39,9 +38,7 @@ const ImageUploader = () => {
       >
         <ImageField source="src" title="title" />
       </ImageInput>
-      {preview && (
-        <img src={preview} alt="Preview" style={{ width: 200, marginTop: 8, borderRadius: 8 }} />
-      )}
+      {preview && <img src={preview} alt="Preview" style={{ width: 200, marginTop: 8, borderRadius: 8 }} />}
     </>
   );
 };
@@ -56,10 +53,8 @@ const AudioUploader = () => {
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     const formData = new FormData();
     formData.append("file", file);
-
     try {
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       if (!res.ok) throw new Error();
@@ -74,25 +69,10 @@ const AudioUploader = () => {
 
   return (
     <div style={{ marginBottom: 16 }}>
-      <p style={{ fontWeight: 600, marginBottom: 8, color: "#374151" }}>
-        Audio (optionnel)
-      </p>
-      <input
-        type="file"
-        accept="audio/*"
-        onChange={handleChange}
-        style={{
-          padding: "8px",
-          border: "1px solid #D1D5DB",
-          borderRadius: "8px",
-          width: "100%",
-        }}
-      />
-      {audioUrl && (
-        <audio controls style={{ marginTop: 8, width: "100%" }}>
-          <source src={audioUrl} />
-        </audio>
-      )}
+      <p style={{ fontWeight: 600, marginBottom: 8, color: "#374151" }}>Audio (optionnel)</p>
+      <input type="file" accept="audio/*" onChange={handleChange}
+        style={{ padding: "8px", border: "1px solid #D1D5DB", borderRadius: "8px", width: "100%" }} />
+      {audioUrl && <audio controls style={{ marginTop: 8, width: "100%" }}><source src={audioUrl} /></audio>}
     </div>
   );
 };
@@ -112,7 +92,12 @@ export const ChallengeOptionCreate = () => {
         <NumberInput
           source="order"
           label="Order (WORD_BANK uniquement)"
-          helperText="Position du mot dans la phrase correcte. Laisser vide pour SELECT/ASSIST."
+          helperText="Position du mot dans la phrase correcte."
+        />
+        <NumberInput
+          source="blank"
+          label="Blank index (FILL_BLANK uniquement)"
+          helperText="Index du blanc que cette option remplit (0, 1, 2...)"
         />
         <ImageUploader />
         <TextInput source="imageSrc" label="URL Image (auto)" disabled />

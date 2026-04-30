@@ -20,9 +20,6 @@ const main = async () => {
     await db.delete(schema.courses);
     await db.delete(schema.userSubscription);
 
-    // ────────────────────────────────────────────────
-    // COURS
-    // ────────────────────────────────────────────────
     await db.insert(schema.courses).values([
       { id: 1, title: "Mathematics", imageSrc: "/math.svg" },
       { id: 2, title: "Spanish", imageSrc: "/es.svg" },
@@ -79,81 +76,132 @@ const main = async () => {
       { id: 2, lessonId: 1, type: "ASSIST", order: 2, question: "Résous : 5(x - 2) = 3(x + 4)" },
       { id: 3, lessonId: 1, type: "ASSIST", order: 3, question: "Résous : 7x - 9 = 5x + 15" },
       { id: 4, lessonId: 1, type: "ASSIST", order: 4, question: "Résous : 4(2x - 1) = 6x + 10" },
+      // 👇 FILL_BLANK maths — leçon 1
+      { id: 200, lessonId: 1, type: "FILL_BLANK", order: 5, question: "Si 3x + 7 = 2x + 15, alors x = ___" },
+      { id: 201, lessonId: 1, type: "FILL_BLANK", order: 6, question: "Si 5x - 3 = 2x + 9, alors x = ___" },
+      { id: 202, lessonId: 1, type: "FILL_BLANK", order: 7, question: "Si 4(x + 2) = 24, alors x = ___" },
+
       { id: 5, lessonId: 2, type: "ASSIST", order: 1, question: "Résous : x² - 9 = 0" },
       { id: 6, lessonId: 2, type: "ASSIST", order: 2, question: "Résous : 2x² - 18 = 0" },
       { id: 7, lessonId: 2, type: "ASSIST", order: 3, question: "Résous : (x - 4)(2x + 6) = 0" },
       { id: 8, lessonId: 2, type: "ASSIST", order: 4, question: "Résous : (x + 2)² = 49" },
       { id: 9, lessonId: 2, type: "ASSIST", order: 5, question: "Résous : x² - 5x + 6 = 0" },
+      // 👇 FILL_BLANK maths — leçon 2
+      { id: 203, lessonId: 2, type: "FILL_BLANK", order: 6, question: "Si x² = 25, alors x = ___ ou x = ___" },
+      { id: 204, lessonId: 2, type: "FILL_BLANK", order: 7, question: "Si x² - 7x + 12 = 0, alors x = ___ ou x = ___" },
+
       { id: 10, lessonId: 3, type: "ASSIST", order: 1, question: "Résous : x + y = 10 et x - y = 4" },
       { id: 11, lessonId: 3, type: "ASSIST", order: 2, question: "Résous : 2x + y = 7 et x - y = 2" },
       { id: 12, lessonId: 3, type: "ASSIST", order: 3, question: "Résous : 3x + 2y = 12 et x + y = 5" },
       { id: 13, lessonId: 3, type: "ASSIST", order: 4, question: "Résous : x + 2y = 8 et 2x - y = 1" },
+
       { id: 14, lessonId: 4, type: "SELECT", order: 1, question: "Simplifie : 12/18" },
       { id: 15, lessonId: 4, type: "SELECT", order: 2, question: "Simplifie : 24/36" },
       { id: 16, lessonId: 4, type: "SELECT", order: 3, question: "Simplifie : 15/45" },
       { id: 17, lessonId: 4, type: "SELECT", order: 4, question: "Simplifie : 28/42" },
+      // 👇 FILL_BLANK maths — leçon 4
+      { id: 205, lessonId: 4, type: "FILL_BLANK", order: 5, question: "12/18 simplifié donne ___" },
+      { id: 206, lessonId: 4, type: "FILL_BLANK", order: 6, question: "15/45 simplifié donne ___ et 24/36 donne ___" },
+
       { id: 18, lessonId: 5, type: "SELECT", order: 1, question: "Calcule : 1/2 + 1/3" },
       { id: 19, lessonId: 5, type: "SELECT", order: 2, question: "Calcule : 3/4 - 1/6" },
       { id: 20, lessonId: 5, type: "SELECT", order: 3, question: "Calcule : 2/3 × 3/4" },
       { id: 21, lessonId: 5, type: "SELECT", order: 4, question: "Calcule : 5/6 ÷ 5/3" },
+      // 👇 FILL_BLANK maths — leçon 5
+      { id: 207, lessonId: 5, type: "FILL_BLANK", order: 5, question: "1/2 + 1/3 = ___" },
+      { id: 208, lessonId: 5, type: "FILL_BLANK", order: 6, question: "2/3 × 3/4 = ___ et 5/6 ÷ 5/3 = ___" },
+
       { id: 22, lessonId: 6, type: "SELECT", order: 1, question: "Si 3 stylos coûtent 6€, combien coûtent 7 stylos ?" },
       { id: 23, lessonId: 6, type: "SELECT", order: 2, question: "Une voiture roule 150 km en 2h. Quelle distance en 5h ?" },
       { id: 24, lessonId: 6, type: "SELECT", order: 3, question: "4 ouvriers font un travail en 6 jours. Combien faut-il d'ouvriers pour 3 jours ?" },
+
       { id: 25, lessonId: 7, type: "SELECT", order: 1, question: "Quelle est l'aire d'un rectangle de 6cm × 4cm ?" },
       { id: 26, lessonId: 7, type: "SELECT", order: 2, question: "Quel est le périmètre d'un carré de côté 5cm ?" },
       { id: 27, lessonId: 7, type: "SELECT", order: 3, question: "Quelle est l'aire d'un triangle de base 8cm et hauteur 5cm ?" },
       { id: 28, lessonId: 7, type: "SELECT", order: 4, question: "Quelle est l'aire d'un cercle de rayon 7cm ? (π ≈ 3.14)" },
+      // 👇 FILL_BLANK maths — leçon 7
+      { id: 209, lessonId: 7, type: "FILL_BLANK", order: 5, question: "L'aire d'un rectangle de 6cm × 4cm est ___ cm²" },
+      { id: 210, lessonId: 7, type: "FILL_BLANK", order: 6, question: "Le périmètre d'un carré de côté 5cm est ___ cm" },
+
       { id: 29, lessonId: 8, type: "SELECT", order: 1, question: "Triangle rectangle : a=3, b=4. Quelle est la valeur de c ?" },
       { id: 30, lessonId: 8, type: "SELECT", order: 2, question: "Triangle rectangle : a=5, b=12. Quelle est la valeur de c ?" },
       { id: 31, lessonId: 8, type: "SELECT", order: 3, question: "Triangle rectangle : c=10, a=6. Quelle est la valeur de b ?" },
+      // 👇 FILL_BLANK maths — leçon 8
+      { id: 211, lessonId: 8, type: "FILL_BLANK", order: 4, question: "Si a = 3 et b = 4, alors c = ___" },
+      { id: 212, lessonId: 8, type: "FILL_BLANK", order: 5, question: "Si a = 5 et b = 12, alors c = ___" },
+
       { id: 32, lessonId: 9, type: "SELECT", order: 1, question: "Si AB=6, AC=9 et AD=4, quelle est la longueur AE ?" },
       { id: 33, lessonId: 9, type: "SELECT", order: 2, question: "Si AB=8, DE=4 et AD=3, quelle est la longueur BC ?" },
+
       { id: 34, lessonId: 10, type: "SELECT", order: 1, question: "Quelle est la moyenne de : 4, 8, 6, 10, 2 ?" },
       { id: 35, lessonId: 10, type: "SELECT", order: 2, question: "Quelle est la médiane de : 3, 7, 1, 9, 5 ?" },
       { id: 36, lessonId: 10, type: "SELECT", order: 3, question: "Quelle est la moyenne de : 12, 15, 18, 9, 6 ?" },
+      // 👇 FILL_BLANK maths — leçon 10
+      { id: 213, lessonId: 10, type: "FILL_BLANK", order: 4, question: "La moyenne de 4, 8, 6, 10, 2 est ___" },
+      { id: 214, lessonId: 10, type: "FILL_BLANK", order: 5, question: "La médiane de 3, 7, 1, 9, 5 est ___" },
+
       { id: 37, lessonId: 11, type: "SELECT", order: 1, question: "On lance un dé. Quelle est la probabilité d'obtenir 6 ?" },
       { id: 38, lessonId: 11, type: "SELECT", order: 2, question: "On tire une carte dans un jeu de 52. Probabilité d'un as ?" },
       { id: 39, lessonId: 11, type: "SELECT", order: 3, question: "On lance une pièce 2 fois. Probabilité d'obtenir 2 faces ?" },
+
       { id: 60, lessonId: 25, type: "SELECT", order: 1, question: "Quelle est la dérivée de f(x) = x³ + 2x² - 5x + 3 ?" },
       { id: 61, lessonId: 25, type: "SELECT", order: 2, question: "Quelle est la dérivée de f(x) = sin(x) + cos(x) ?" },
       { id: 62, lessonId: 25, type: "SELECT", order: 3, question: "Quelle est la dérivée de f(x) = eˣ · x² ?" },
       { id: 63, lessonId: 25, type: "SELECT", order: 4, question: "Quelle est la dérivée de f(x) = ln(x) / x ?" },
+      // 👇 FILL_BLANK maths — leçon 25
+      { id: 215, lessonId: 25, type: "FILL_BLANK", order: 5, question: "La dérivée de x³ est ___ et la dérivée de x⁴ est ___" },
+      { id: 216, lessonId: 25, type: "FILL_BLANK", order: 6, question: "La dérivée de sin(x) est ___ et la dérivée de cos(x) est ___" },
+
       { id: 64, lessonId: 26, type: "SELECT", order: 1, question: "Dérive f(x) = (3x² + 1)⁴" },
       { id: 65, lessonId: 26, type: "SELECT", order: 2, question: "Dérive f(x) = sin(2x + 1)" },
       { id: 66, lessonId: 26, type: "SELECT", order: 3, question: "Dérive f(x) = e^(x² - 1)" },
       { id: 67, lessonId: 26, type: "SELECT", order: 4, question: "Dérive f(x) = ln(cos(x))" },
+
       { id: 68, lessonId: 27, type: "SELECT", order: 1, question: "Calcule ∫₀² x² dx" },
       { id: 69, lessonId: 27, type: "SELECT", order: 2, question: "Calcule ∫₁³ (2x + 1) dx" },
       { id: 70, lessonId: 27, type: "SELECT", order: 3, question: "Calcule ∫₀^π sin(x) dx" },
       { id: 71, lessonId: 27, type: "SELECT", order: 4, question: "Calcule ∫₁^e (1/x) dx" },
+
       { id: 72, lessonId: 28, type: "SELECT", order: 1, question: "Quelle est une primitive de f(x) = 3x² + 2x ?" },
       { id: 73, lessonId: 28, type: "SELECT", order: 2, question: "Quelle est une primitive de f(x) = cos(x) ?" },
       { id: 74, lessonId: 28, type: "SELECT", order: 3, question: "Quelle est une primitive de f(x) = 1/(x+1) ?" },
+
       { id: 75, lessonId: 29, type: "SELECT", order: 1, question: "Simplifie : sin²(x) + cos²(x)" },
       { id: 76, lessonId: 29, type: "SELECT", order: 2, question: "Quelle est la valeur de cos(2x) en termes de sin(x) ?" },
       { id: 77, lessonId: 29, type: "SELECT", order: 3, question: "Simplifie : (1 - cos²(x)) / sin(x)" },
       { id: 78, lessonId: 29, type: "SELECT", order: 4, question: "Quelle est la valeur de tan²(x) + 1 ?" },
+      // 👇 FILL_BLANK maths — leçon 29
+      { id: 217, lessonId: 29, type: "FILL_BLANK", order: 5, question: "sin²(x) + cos²(x) = ___" },
+      { id: 218, lessonId: 29, type: "FILL_BLANK", order: 6, question: "tan²(x) + 1 = ___" },
+
       { id: 79, lessonId: 30, type: "SELECT", order: 1, question: "Résous : sin(x) = 1/2 sur [0, 2π]" },
       { id: 80, lessonId: 30, type: "SELECT", order: 2, question: "Résous : cos(x) = -1 sur [0, 2π]" },
       { id: 81, lessonId: 30, type: "SELECT", order: 3, question: "Résous : tan(x) = 1 sur [0, π]" },
+
       { id: 82, lessonId: 31, type: "SELECT", order: 1, question: "Développe : sin(a + b)" },
       { id: 83, lessonId: 31, type: "SELECT", order: 2, question: "Développe : cos(a - b)" },
       { id: 84, lessonId: 31, type: "SELECT", order: 3, question: "Calcule sin(75°) en utilisant sin(45° + 30°)" },
+
       { id: 85, lessonId: 32, type: "SELECT", order: 1, question: "Calcule (2 + 3i) + (1 - 5i)" },
       { id: 86, lessonId: 32, type: "SELECT", order: 2, question: "Calcule (1 + 2i)(3 - i)" },
       { id: 87, lessonId: 32, type: "SELECT", order: 3, question: "Calcule (2 + i) / (1 - i)" },
       { id: 88, lessonId: 32, type: "SELECT", order: 4, question: "Quel est le conjugué de z = 4 - 7i ?" },
+
       { id: 89, lessonId: 33, type: "SELECT", order: 1, question: "Quel est le module de z = 3 + 4i ?" },
       { id: 90, lessonId: 33, type: "SELECT", order: 2, question: "Quel est le module de z = -5 + 12i ?" },
       { id: 91, lessonId: 33, type: "SELECT", order: 3, question: "Quel est l'argument de z = 1 + i ?" },
+
       { id: 92, lessonId: 34, type: "SELECT", order: 1, question: "Écris z = 1 + i sous forme trigonométrique" },
       { id: 93, lessonId: 34, type: "SELECT", order: 2, question: "Calcule z³ pour z = √2 · e^(iπ/4)" },
+
       { id: 94, lessonId: 35, type: "SELECT", order: 1, question: "A = [[1,2],[3,4]], B = [[5,6],[7,8]]. Calcule A + B." },
       { id: 95, lessonId: 35, type: "SELECT", order: 2, question: "A = [[1,2],[3,4]], B = [[2,0],[1,3]]. Calcule A × B." },
       { id: 96, lessonId: 35, type: "SELECT", order: 3, question: "Calcule 2 × [[1,3],[2,5]]" },
+
       { id: 97, lessonId: 36, type: "SELECT", order: 1, question: "Calcule det([[2,3],[1,4]])" },
       { id: 98, lessonId: 36, type: "SELECT", order: 2, question: "Calcule det([[1,2],[3,4]])" },
       { id: 99, lessonId: 36, type: "SELECT", order: 3, question: "Quelle est l'inverse de A = [[4,7],[2,6]] ?" },
+
       { id: 100, lessonId: 37, type: "SELECT", order: 1, question: "Résous par Gauss : x + y + z = 6, 2x - y + z = 3, x + 2y - z = 2" },
       { id: 101, lessonId: 37, type: "SELECT", order: 2, question: "Résous par Gauss : x + 2y = 5, 3x - y = 1" },
     ]);
@@ -392,6 +440,95 @@ const main = async () => {
       { challengeId: 101, correct: true, text: "x=1, y=2" },
       { challengeId: 101, correct: false, text: "x=0, y=2" },
       { challengeId: 101, correct: false, text: "x=2, y=1" },
+
+      // ── FILL_BLANK options ──
+      { challengeId: 200, correct: true, text: "8", blank: 0 },
+      { challengeId: 200, correct: false, text: "6", blank: 0 },
+      { challengeId: 200, correct: false, text: "10", blank: 0 },
+
+      { challengeId: 201, correct: true, text: "4", blank: 0 },
+      { challengeId: 201, correct: false, text: "3", blank: 0 },
+      { challengeId: 201, correct: false, text: "6", blank: 0 },
+
+      { challengeId: 202, correct: true, text: "4", blank: 0 },
+      { challengeId: 202, correct: false, text: "6", blank: 0 },
+      { challengeId: 202, correct: false, text: "2", blank: 0 },
+
+      { challengeId: 203, correct: true, text: "5", blank: 0 },
+      { challengeId: 203, correct: true, text: "-5", blank: 1 },
+      { challengeId: 203, correct: false, text: "3", blank: 0 },
+      { challengeId: 203, correct: false, text: "-3", blank: 1 },
+      { challengeId: 203, correct: false, text: "25", blank: 0 },
+
+      { challengeId: 204, correct: true, text: "3", blank: 0 },
+      { challengeId: 204, correct: true, text: "4", blank: 1 },
+      { challengeId: 204, correct: false, text: "2", blank: 0 },
+      { challengeId: 204, correct: false, text: "6", blank: 1 },
+      { challengeId: 204, correct: false, text: "1", blank: 0 },
+
+      { challengeId: 205, correct: true, text: "2/3", blank: 0 },
+      { challengeId: 205, correct: false, text: "1/2", blank: 0 },
+      { challengeId: 205, correct: false, text: "3/4", blank: 0 },
+
+      { challengeId: 206, correct: true, text: "1/3", blank: 0 },
+      { challengeId: 206, correct: true, text: "2/3", blank: 1 },
+      { challengeId: 206, correct: false, text: "1/4", blank: 0 },
+      { challengeId: 206, correct: false, text: "3/5", blank: 1 },
+      { challengeId: 206, correct: false, text: "2/5", blank: 0 },
+
+      { challengeId: 207, correct: true, text: "5/6", blank: 0 },
+      { challengeId: 207, correct: false, text: "2/5", blank: 0 },
+      { challengeId: 207, correct: false, text: "1/6", blank: 0 },
+
+      { challengeId: 208, correct: true, text: "1/2", blank: 0 },
+      { challengeId: 208, correct: true, text: "1/2", blank: 1 },
+      { challengeId: 208, correct: false, text: "2/3", blank: 0 },
+      { challengeId: 208, correct: false, text: "1/3", blank: 1 },
+      { challengeId: 208, correct: false, text: "3/4", blank: 0 },
+
+      { challengeId: 209, correct: true, text: "24", blank: 0 },
+      { challengeId: 209, correct: false, text: "20", blank: 0 },
+      { challengeId: 209, correct: false, text: "28", blank: 0 },
+
+      { challengeId: 210, correct: true, text: "20", blank: 0 },
+      { challengeId: 210, correct: false, text: "15", blank: 0 },
+      { challengeId: 210, correct: false, text: "25", blank: 0 },
+
+      { challengeId: 211, correct: true, text: "5", blank: 0 },
+      { challengeId: 211, correct: false, text: "6", blank: 0 },
+      { challengeId: 211, correct: false, text: "7", blank: 0 },
+
+      { challengeId: 212, correct: true, text: "13", blank: 0 },
+      { challengeId: 212, correct: false, text: "11", blank: 0 },
+      { challengeId: 212, correct: false, text: "15", blank: 0 },
+
+      { challengeId: 213, correct: true, text: "6", blank: 0 },
+      { challengeId: 213, correct: false, text: "5", blank: 0 },
+      { challengeId: 213, correct: false, text: "7", blank: 0 },
+
+      { challengeId: 214, correct: true, text: "5", blank: 0 },
+      { challengeId: 214, correct: false, text: "3", blank: 0 },
+      { challengeId: 214, correct: false, text: "7", blank: 0 },
+
+      { challengeId: 215, correct: true, text: "3x²", blank: 0 },
+      { challengeId: 215, correct: true, text: "4x³", blank: 1 },
+      { challengeId: 215, correct: false, text: "2x", blank: 0 },
+      { challengeId: 215, correct: false, text: "3x²", blank: 1 },
+      { challengeId: 215, correct: false, text: "x²", blank: 0 },
+
+      { challengeId: 216, correct: true, text: "cos(x)", blank: 0 },
+      { challengeId: 216, correct: true, text: "-sin(x)", blank: 1 },
+      { challengeId: 216, correct: false, text: "-cos(x)", blank: 0 },
+      { challengeId: 216, correct: false, text: "sin(x)", blank: 1 },
+      { challengeId: 216, correct: false, text: "tan(x)", blank: 0 },
+
+      { challengeId: 217, correct: true, text: "1", blank: 0 },
+      { challengeId: 217, correct: false, text: "0", blank: 0 },
+      { challengeId: 217, correct: false, text: "2", blank: 0 },
+
+      { challengeId: 218, correct: true, text: "1/cos²(x)", blank: 0 },
+      { challengeId: 218, correct: false, text: "cos²(x)", blank: 0 },
+      { challengeId: 218, correct: false, text: "sin²(x)", blank: 0 },
     ]);
 
     // ================================================
@@ -415,7 +552,6 @@ const main = async () => {
     ]);
 
     await db.insert(schema.challenges).values([
-      // SELECT / ASSIST existants
       { id: 40, lessonId: 12, type: "SELECT", order: 1, question: 'Which one is "the man"?' },
       { id: 41, lessonId: 12, type: "ASSIST", order: 2, question: '"the man"' },
       { id: 42, lessonId: 12, type: "SELECT", order: 3, question: 'Which one is "the woman"?' },
@@ -426,8 +562,6 @@ const main = async () => {
       { id: 47, lessonId: 16, type: "SELECT", order: 1, question: 'Which one means "big"?' },
       { id: 48, lessonId: 17, type: "SELECT", order: 1, question: 'Which one is "bread"?' },
       { id: 49, lessonId: 18, type: "SELECT", order: 1, question: 'Which one is "water"?' },
-
-      // 🆕 WORD_BANK — Espagnol
       { id: 110, lessonId: 12, type: "WORD_BANK", order: 4, question: 'Translate: "The man eats bread"' },
       { id: 111, lessonId: 13, type: "WORD_BANK", order: 3, question: 'Translate: "I want to speak Spanish"' },
       { id: 112, lessonId: 14, type: "WORD_BANK", order: 2, question: 'Translate: "Good morning, how are you?"' },
@@ -438,7 +572,6 @@ const main = async () => {
     ]);
 
     await db.insert(schema.challengeOptions).values([
-      // Options existantes espagnol
       { challengeId: 40, correct: true, text: "el hombre", imageSrc: "/man.svg", audioSrc: "/es_man.mp3" },
       { challengeId: 40, correct: false, text: "la mujer", imageSrc: "/woman.svg", audioSrc: "/es_woman.mp3" },
       { challengeId: 40, correct: false, text: "el niño", imageSrc: "/boy.svg", audioSrc: "/es_boy.mp3" },
@@ -469,8 +602,6 @@ const main = async () => {
       { challengeId: 49, correct: true, text: "el agua", imageSrc: "/water.svg" },
       { challengeId: 49, correct: false, text: "el vino", imageSrc: "/wine.svg" },
       { challengeId: 49, correct: false, text: "la cerveza", imageSrc: "/beer.svg" },
-
-      // 🆕 WORD_BANK options — "The man eats bread"
       { challengeId: 110, correct: true, text: "El", order: 1 },
       { challengeId: 110, correct: true, text: "hombre", order: 2 },
       { challengeId: 110, correct: true, text: "come", order: 3 },
@@ -478,24 +609,18 @@ const main = async () => {
       { challengeId: 110, correct: false, text: "bebe", order: null },
       { challengeId: 110, correct: false, text: "mujer", order: null },
       { challengeId: 110, correct: false, text: "agua", order: null },
-
-      // 🆕 "I want to speak Spanish"
       { challengeId: 111, correct: true, text: "Quiero", order: 1 },
       { challengeId: 111, correct: true, text: "hablar", order: 2 },
       { challengeId: 111, correct: true, text: "español", order: 3 },
       { challengeId: 111, correct: false, text: "comer", order: null },
       { challengeId: 111, correct: false, text: "francés", order: null },
       { challengeId: 111, correct: false, text: "beber", order: null },
-
-      // 🆕 "Good morning, how are you?"
       { challengeId: 112, correct: true, text: "Buenos", order: 1 },
       { challengeId: 112, correct: true, text: "días,", order: 2 },
       { challengeId: 112, correct: true, text: "¿cómo", order: 3 },
       { challengeId: 112, correct: true, text: "estás?", order: 4 },
       { challengeId: 112, correct: false, text: "noches,", order: null },
       { challengeId: 112, correct: false, text: "tardes,", order: null },
-
-      // 🆕 "My mother is very kind"
       { challengeId: 113, correct: true, text: "Mi", order: 1 },
       { challengeId: 113, correct: true, text: "madre", order: 2 },
       { challengeId: 113, correct: true, text: "es", order: 3 },
@@ -504,8 +629,6 @@ const main = async () => {
       { challengeId: 113, correct: false, text: "padre", order: null },
       { challengeId: 113, correct: false, text: "poco", order: null },
       { challengeId: 113, correct: false, text: "rápida", order: null },
-
-      // 🆕 "The big dog is fast"
       { challengeId: 114, correct: true, text: "El", order: 1 },
       { challengeId: 114, correct: true, text: "perro", order: 2 },
       { challengeId: 114, correct: true, text: "grande", order: 3 },
@@ -514,8 +637,6 @@ const main = async () => {
       { challengeId: 114, correct: false, text: "gato", order: null },
       { challengeId: 114, correct: false, text: "pequeño", order: null },
       { challengeId: 114, correct: false, text: "lento", order: null },
-
-      // 🆕 "I eat bread with cheese"
       { challengeId: 115, correct: true, text: "Como", order: 1 },
       { challengeId: 115, correct: true, text: "pan", order: 2 },
       { challengeId: 115, correct: true, text: "con", order: 3 },
@@ -523,8 +644,6 @@ const main = async () => {
       { challengeId: 115, correct: false, text: "bebo", order: null },
       { challengeId: 115, correct: false, text: "agua", order: null },
       { challengeId: 115, correct: false, text: "carne", order: null },
-
-      // 🆕 "She drinks water every day"
       { challengeId: 116, correct: true, text: "Ella", order: 1 },
       { challengeId: 116, correct: true, text: "bebe", order: 2 },
       { challengeId: 116, correct: true, text: "agua", order: 3 },
@@ -564,7 +683,6 @@ const main = async () => {
       { challengeId: 121, correct: true, text: "il cane", imageSrc: "/dog.svg" },
       { challengeId: 121, correct: false, text: "il gatto", imageSrc: "/cat.svg" },
       { challengeId: 121, correct: false, text: "l'uccello", imageSrc: "/bird.svg" },
-      // 🆕 "The cat drinks milk"
       { challengeId: 122, correct: true, text: "Il", order: 1 },
       { challengeId: 122, correct: true, text: "gatto", order: 2 },
       { challengeId: 122, correct: true, text: "beve", order: 3 },
@@ -575,7 +693,6 @@ const main = async () => {
       { challengeId: 123, correct: true, text: "Buongiorno" },
       { challengeId: 123, correct: false, text: "Buonasera" },
       { challengeId: 123, correct: false, text: "Buonanotte" },
-      // 🆕 "Hello, my name is Marco"
       { challengeId: 124, correct: true, text: "Ciao,", order: 1 },
       { challengeId: 124, correct: true, text: "mi", order: 2 },
       { challengeId: 124, correct: true, text: "chiamo", order: 3 },
@@ -608,16 +725,13 @@ const main = async () => {
       { id: 133, lessonId: 22, type: "SELECT", order: 1, question: 'How do you say "Good evening"?' },
       { id: 134, lessonId: 22, type: "WORD_BANK", order: 2, question: 'Translate: "Hello, how are you today?"' },
       { id: 135, lessonId: 22, type: "WORD_BANK", order: 3, question: 'Translate: "My name is Paul, I am French"' },
-      // Les Animaux
       { id: 136, lessonId: 62, type: "SELECT", order: 1, question: 'Which one is "the cat"?' },
       { id: 137, lessonId: 62, type: "SELECT", order: 2, question: 'Which one is "the dog"?' },
       { id: 138, lessonId: 62, type: "WORD_BANK", order: 3, question: 'Translate: "The dog runs in the garden"' },
       { id: 139, lessonId: 62, type: "WORD_BANK", order: 4, question: 'Translate: "My cat is black and white"' },
-      // La Famille
       { id: 140, lessonId: 63, type: "SELECT", order: 1, question: 'Which one is "the father"?' },
       { id: 141, lessonId: 63, type: "WORD_BANK", order: 2, question: 'Translate: "My brother is tall and kind"' },
       { id: 142, lessonId: 63, type: "WORD_BANK", order: 3, question: 'Translate: "She has two sisters and one brother"' },
-      // Les Couleurs
       { id: 143, lessonId: 64, type: "SELECT", order: 1, question: 'Which one means "red"?' },
       { id: 144, lessonId: 64, type: "WORD_BANK", order: 2, question: 'Translate: "The sky is blue and the grass is green"' },
       { id: 145, lessonId: 64, type: "WORD_BANK", order: 3, question: 'Translate: "I like the red car"' },
@@ -630,7 +744,6 @@ const main = async () => {
       { challengeId: 131, correct: true, text: "la table", imageSrc: "/table.svg" },
       { challengeId: 131, correct: false, text: "le livre", imageSrc: "/book.svg" },
       { challengeId: 131, correct: false, text: "la chaise", imageSrc: "/chair.svg" },
-      // 🆕 "The book is on the table"
       { challengeId: 132, correct: true, text: "Le", order: 1 },
       { challengeId: 132, correct: true, text: "livre", order: 2 },
       { challengeId: 132, correct: true, text: "est", order: 3 },
@@ -642,7 +755,6 @@ const main = async () => {
       { challengeId: 133, correct: true, text: "Bonsoir" },
       { challengeId: 133, correct: false, text: "Bonjour" },
       { challengeId: 133, correct: false, text: "Bonne nuit" },
-      // 🆕 "Hello, how are you today?"
       { challengeId: 134, correct: true, text: "Bonjour,", order: 1 },
       { challengeId: 134, correct: true, text: "comment", order: 2 },
       { challengeId: 134, correct: true, text: "allez-vous", order: 3 },
@@ -650,7 +762,6 @@ const main = async () => {
       { challengeId: 134, correct: false, text: "Bonsoir,", order: null },
       { challengeId: 134, correct: false, text: "demain", order: null },
       { challengeId: 134, correct: false, text: "hier", order: null },
-      // 🆕 "My name is Paul, I am French"
       { challengeId: 135, correct: true, text: "Je", order: 1 },
       { challengeId: 135, correct: true, text: "m'appelle", order: 2 },
       { challengeId: 135, correct: true, text: "Paul,", order: 3 },
@@ -659,14 +770,12 @@ const main = async () => {
       { challengeId: 135, correct: true, text: "français", order: 6 },
       { challengeId: 135, correct: false, text: "Marie,", order: null },
       { challengeId: 135, correct: false, text: "anglais", order: null },
-      // SELECT animaux
       { challengeId: 136, correct: true, text: "le chat", imageSrc: "/cat.svg" },
       { challengeId: 136, correct: false, text: "le chien", imageSrc: "/dog.svg" },
       { challengeId: 136, correct: false, text: "le lapin", imageSrc: "/rabbit.svg" },
       { challengeId: 137, correct: true, text: "le chien", imageSrc: "/dog.svg" },
       { challengeId: 137, correct: false, text: "le chat", imageSrc: "/cat.svg" },
       { challengeId: 137, correct: false, text: "l'oiseau", imageSrc: "/bird.svg" },
-      // 🆕 "The dog runs in the garden"
       { challengeId: 138, correct: true, text: "Le", order: 1 },
       { challengeId: 138, correct: true, text: "chien", order: 2 },
       { challengeId: 138, correct: true, text: "court", order: 3 },
@@ -676,7 +785,6 @@ const main = async () => {
       { challengeId: 138, correct: false, text: "chat", order: null },
       { challengeId: 138, correct: false, text: "marche", order: null },
       { challengeId: 138, correct: false, text: "maison", order: null },
-      // 🆕 "My cat is black and white"
       { challengeId: 139, correct: true, text: "Mon", order: 1 },
       { challengeId: 139, correct: true, text: "chat", order: 2 },
       { challengeId: 139, correct: true, text: "est", order: 3 },
@@ -685,11 +793,9 @@ const main = async () => {
       { challengeId: 139, correct: true, text: "blanc", order: 6 },
       { challengeId: 139, correct: false, text: "chien", order: null },
       { challengeId: 139, correct: false, text: "rouge", order: null },
-      // SELECT famille
       { challengeId: 140, correct: true, text: "le père", imageSrc: "/father.svg" },
       { challengeId: 140, correct: false, text: "la mère", imageSrc: "/mother.svg" },
       { challengeId: 140, correct: false, text: "le frère", imageSrc: "/brother.svg" },
-      // 🆕 "My brother is tall and kind"
       { challengeId: 141, correct: true, text: "Mon", order: 1 },
       { challengeId: 141, correct: true, text: "frère", order: 2 },
       { challengeId: 141, correct: true, text: "est", order: 3 },
@@ -699,7 +805,6 @@ const main = async () => {
       { challengeId: 141, correct: false, text: "sœur", order: null },
       { challengeId: 141, correct: false, text: "petit", order: null },
       { challengeId: 141, correct: false, text: "méchant", order: null },
-      // 🆕 "She has two sisters and one brother"
       { challengeId: 142, correct: true, text: "Elle", order: 1 },
       { challengeId: 142, correct: true, text: "a", order: 2 },
       { challengeId: 142, correct: true, text: "deux", order: 3 },
@@ -710,11 +815,9 @@ const main = async () => {
       { challengeId: 142, correct: false, text: "Il", order: null },
       { challengeId: 142, correct: false, text: "trois", order: null },
       { challengeId: 142, correct: false, text: "cousins", order: null },
-      // SELECT couleurs
       { challengeId: 143, correct: true, text: "rouge" },
       { challengeId: 143, correct: false, text: "bleu" },
       { challengeId: 143, correct: false, text: "vert" },
-      // 🆕 "The sky is blue and the grass is green"
       { challengeId: 144, correct: true, text: "Le", order: 1 },
       { challengeId: 144, correct: true, text: "ciel", order: 2 },
       { challengeId: 144, correct: true, text: "est", order: 3 },
@@ -726,7 +829,6 @@ const main = async () => {
       { challengeId: 144, correct: false, text: "rouge", order: null },
       { challengeId: 144, correct: false, text: "nuage", order: null },
       { challengeId: 144, correct: false, text: "jaune", order: null },
-      // 🆕 "I like the red car"
       { challengeId: 145, correct: true, text: "J'aime", order: 1 },
       { challengeId: 145, correct: true, text: "la", order: 2 },
       { challengeId: 145, correct: true, text: "voiture", order: 3 },
@@ -760,7 +862,6 @@ const main = async () => {
       { challengeId: 150, correct: true, text: "kuća", imageSrc: "/house.svg" },
       { challengeId: 150, correct: false, text: "auto", imageSrc: "/car.svg" },
       { challengeId: 150, correct: false, text: "pas", imageSrc: "/dog.svg" },
-      // 🆕 "The house is big and beautiful"
       { challengeId: 151, correct: true, text: "Kuća", order: 1 },
       { challengeId: 151, correct: true, text: "je", order: 2 },
       { challengeId: 151, correct: true, text: "velika", order: 3 },
@@ -771,7 +872,6 @@ const main = async () => {
       { challengeId: 152, correct: true, text: "Hvala" },
       { challengeId: 152, correct: false, text: "Molim" },
       { challengeId: 152, correct: false, text: "Dobar dan" },
-      // 🆕 "Good morning, how are you?"
       { challengeId: 153, correct: true, text: "Dobro", order: 1 },
       { challengeId: 153, correct: true, text: "jutro,", order: 2 },
       { challengeId: 153, correct: true, text: "kako", order: 3 },

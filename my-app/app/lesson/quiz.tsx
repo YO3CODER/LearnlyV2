@@ -74,8 +74,8 @@ export const Quiz = ({
   });
 
   const [selectedOption, setSelectedOption] = useState<number>();
-  // 👇 État pour WORD_BANK — liste des ids sélectionnés dans l'ordre
   const [wordBankSelectedIds, setWordBankSelectedIds] = useState<number[]>([]);
+  const [fillBlankSelectedBlanks, setFillBlankSelectedBlanks] = useState<(number | null)[]>([]);
   const [status, setStatus] = useState<"correct" | "wrong" | "none">("none");
 
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -103,11 +103,18 @@ export const Quiz = ({
     }
   }, [isFinished]);
 
+  // 👇 Reset les états selon le type de question
+  const resetAnswerState = () => {
+    setSelectedOption(undefined);
+    setWordBankSelectedIds([]);
+    setFillBlankSelectedBlanks([]);
+  };
+
   const onNext = () => {
     setSlideState("exit");
     slideTimeoutRef.current = setTimeout(() => {
       setActiveIndex((current) => current + 1);
-      setWordBankSelectedIds([]); // 👈 reset WORD_BANK à chaque nouvelle question
+      resetAnswerState();
       setSlideState("enter");
       slideTimeoutRef.current = setTimeout(() => {
         setSlideState("idle");
@@ -128,7 +135,6 @@ export const Quiz = ({
     setSelectedOption(id);
   };
 
-  // 👇 Handlers WORD_BANK
   const onWordBankSelect = (id: number) => {
     if (status !== "none") return;
     setWordBankSelectedIds((prev) => [...prev, id]);
@@ -137,6 +143,15 @@ export const Quiz = ({
   const onWordBankRemove = (id: number) => {
     if (status !== "none") return;
     setWordBankSelectedIds((prev) => prev.filter((i) => i !== id));
+  };
+
+  const onFillBlankSelect = (blankIndex: number, optionId: number | null) => {
+    if (status !== "none") return;
+    setFillBlankSelectedBlanks((prev) => {
+      const next = [...prev];
+      next[blankIndex] = optionId;
+      return next;
+    });
   };
 
   const startWrongCountdown = () => setCountdown(3);
@@ -152,8 +167,7 @@ export const Quiz = ({
       });
       onNext();
       setStatus("none");
-      setSelectedOption(undefined);
-      setWordBankSelectedIds([]);
+      resetAnswerState();
       setCountdown(null);
       return;
     }
@@ -174,7 +188,52 @@ export const Quiz = ({
     streakTimeoutRef.current = setTimeout(() => setShowStreak(false), 2500);
   };
 
-  // 👇 Vérifie si la réponse WORD_BANK est correcte
+  const handleCorrect = () => {
+    startTransition(() => {
+      upsertChallengeProgress(challenge.id)
+        .then((response) => {
+          if (response?.error === "hearts") {
+            openHeartsModal();
+            return;
+          }
+          correctControls.play();
+          setStatus("correct");
+          setPercentage((prev) => Math.min(prev + 100 / totalChallenges, 100));
+          setStreak((prev) => {
+            const next = prev + 1;
+            if (next >= 3) triggerStreakToast();
+            return next;
+          });
+          if (initialPercentage === 100) {
+            setHearts((prev) => Math.min(prev + 1, 5));
+          }
+        })
+        .catch(() => toast.error("Something went wrong. Please try again."));
+    });
+  };
+
+  const handleWrong = () => {
+    startTransition(() => {
+      reduceHearts(challenge.id)
+        .then((response) => {
+          if (response?.error === "hearts") {
+            openHeartsModal();
+            return;
+          }
+          incorrectControls.play();
+          setStatus("wrong");
+          setStreak(0);
+          setShowStreak(false);
+          if (!response?.error) {
+            setHearts((prev) => Math.max(prev - 1, 0));
+          }
+          startWrongCountdown();
+        })
+        .catch(() => toast.error("Something went wrong. Please try again."));
+    });
+  };
+
+  // 👇 Vérifie WORD_BANK
   const isWordBankCorrect = () => {
     const correctOptions = [...options]
       .filter((o) => o.correct)
@@ -186,120 +245,45 @@ export const Quiz = ({
     );
   };
 
+  // 👇 Vérifie FILL_BLANK
+  const isFillBlankCorrect = () => {
+    const blankCount = (challenge.question.match(/___/g) ?? []).length;
+    if (fillBlankSelectedBlanks.length !== blankCount) return false;
+    if (fillBlankSelectedBlanks.some((b) => b === null)) return false;
+
+    return fillBlankSelectedBlanks.every((selectedId, blankIndex) => {
+      const option = options.find((o) => o.id === selectedId);
+      return option?.correct && option?.blank === blankIndex;
+    });
+  };
+
   const onContinue = () => {
     if (countdown !== null) return;
 
-    // Cas WORD_BANK
+    // ── WORD_BANK ──
     if (challenge.type === "WORD_BANK") {
       if (wordBankSelectedIds.length === 0) return;
-
-      if (status === "correct") {
-        onNext();
-        setStatus("none");
-        setWordBankSelectedIds([]);
-        return;
-      }
-
-      if (isWordBankCorrect()) {
-        startTransition(() => {
-          upsertChallengeProgress(challenge.id)
-            .then((response) => {
-              if (response?.error === "hearts") {
-                openHeartsModal();
-                return;
-              }
-              correctControls.play();
-              setStatus("correct");
-              setPercentage((prev) => Math.min(prev + 100 / totalChallenges, 100));
-              setStreak((prev) => {
-                const next = prev + 1;
-                if (next >= 3) triggerStreakToast();
-                return next;
-              });
-              if (initialPercentage === 100) {
-                setHearts((prev) => Math.min(prev + 1, 5));
-              }
-            })
-            .catch(() => toast.error("Something went wrong. Please try again."));
-        });
-      } else {
-        startTransition(() => {
-          reduceHearts(challenge.id)
-            .then((response) => {
-              if (response?.error === "hearts") {
-                openHeartsModal();
-                return;
-              }
-              incorrectControls.play();
-              setStatus("wrong");
-              setStreak(0);
-              setShowStreak(false);
-              if (!response?.error) {
-                setHearts((prev) => Math.max(prev - 1, 0));
-              }
-              startWrongCountdown();
-            })
-            .catch(() => toast.error("Something went wrong. Please try again."));
-        });
-      }
+      if (status === "correct") { onNext(); setStatus("none"); resetAnswerState(); return; }
+      isWordBankCorrect() ? handleCorrect() : handleWrong();
       return;
     }
 
-    // Cas SELECT / ASSIST
+    // ── FILL_BLANK ──
+    if (challenge.type === "FILL_BLANK") {
+      const blankCount = (challenge.question.match(/___/g) ?? []).length;
+      const allFilled = fillBlankSelectedBlanks.filter((b) => b !== null).length === blankCount;
+      if (!allFilled) return;
+      if (status === "correct") { onNext(); setStatus("none"); resetAnswerState(); return; }
+      isFillBlankCorrect() ? handleCorrect() : handleWrong();
+      return;
+    }
+
+    // ── SELECT / ASSIST ──
     if (!selectedOption) return;
-
-    if (status === "correct") {
-      onNext();
-      setStatus("none");
-      setSelectedOption(undefined);
-      return;
-    }
-
+    if (status === "correct") { onNext(); setStatus("none"); setSelectedOption(undefined); return; }
     const correctOption = options.find((option) => option.correct);
     if (!correctOption) return;
-
-    if (correctOption.id === selectedOption) {
-      startTransition(() => {
-        upsertChallengeProgress(challenge.id)
-          .then((response) => {
-            if (response?.error === "hearts") {
-              openHeartsModal();
-              return;
-            }
-            correctControls.play();
-            setStatus("correct");
-            setPercentage((prev) => Math.min(prev + 100 / totalChallenges, 100));
-            setStreak((prev) => {
-              const next = prev + 1;
-              if (next >= 3) triggerStreakToast();
-              return next;
-            });
-            if (initialPercentage === 100) {
-              setHearts((prev) => Math.min(prev + 1, 5));
-            }
-          })
-          .catch(() => toast.error("Something went wrong. Please try again."));
-      });
-    } else {
-      startTransition(() => {
-        reduceHearts(challenge.id)
-          .then((response) => {
-            if (response?.error === "hearts") {
-              openHeartsModal();
-              return;
-            }
-            incorrectControls.play();
-            setStatus("wrong");
-            setStreak(0);
-            setShowStreak(false);
-            if (!response?.error) {
-              setHearts((prev) => Math.max(prev - 1, 0));
-            }
-            startWrongCountdown();
-          })
-          .catch(() => toast.error("Something went wrong. Please try again."));
-      });
-    }
+    correctOption.id === selectedOption ? handleCorrect() : handleWrong();
   };
 
   if (!challenge && failedChallenges.length > 0) {
@@ -316,38 +300,17 @@ export const Quiz = ({
         {finishAudio}
         {correctAudio}
         {incorrectAudio}
-        <Confetti
-          width={width}
-          height={height}
-          recycle={false}
-          numberOfPieces={500}
-          tweenDuration={10000}
-        />
+        <Confetti width={width} height={height} recycle={false} numberOfPieces={500} tweenDuration={10000} />
         <div className="flex flex-col gap-y-6 lg:gap-y-10 max-w-lg mx-auto text-center items-center justify-center h-full px-6">
           <div className="relative">
             <div className="absolute inset-0 bg-blue-200/40 dark:bg-blue-800/20 rounded-full blur-2xl scale-150" />
-            <Image
-              src="/finish.svg"
-              alt="Finish"
-              className="hidden lg:block relative drop-shadow-lg"
-              height={110}
-              width={110}
-            />
-            <Image
-              src="/finish.svg"
-              alt="Finish"
-              className="block lg:hidden relative drop-shadow-lg"
-              height={60}
-              width={60}
-            />
+            <Image src="/finish.svg" alt="Finish" className="hidden lg:block relative drop-shadow-lg" height={110} width={110} />
+            <Image src="/finish.svg" alt="Finish" className="block lg:hidden relative drop-shadow-lg" height={60} width={60} />
           </div>
           <div className="space-y-2">
-            <p className="text-xs font-semibold tracking-widest uppercase text-blue-400">
-              Lesson Complete
-            </p>
-            <h1 className="text-2xl lg:text-4xl font-extrabold text-muted-foreground-800 dark:text-muted-foreground-100 tracking-tight leading-tight">
-              Great job! 🎉
-              <br />
+            <p className="text-xs font-semibold tracking-widest uppercase text-blue-400">Lesson Complete</p>
+            <h1 className="text-2xl lg:text-4xl font-extrabold tracking-tight leading-tight">
+              Great job! 🎉<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-500">
                 You&apos;ve completed the lesson.
               </span>
@@ -358,24 +321,31 @@ export const Quiz = ({
             <ResultCard variant="hearts" value={hearts} />
           </div>
         </div>
-        <Footer
-          lessonId={lessonId}
-          status="completed"
-          onCheck={() => router.push("/learn")}
-        />
+        <Footer lessonId={lessonId} status="completed" onCheck={() => router.push("/learn")} />
       </>
     );
   }
 
   const title = challenge.type === "ASSIST"
     ? "Select the correct meaning"
+    : challenge.type === "FILL_BLANK"
+    ? "Fill in the blanks"
     : challenge.question;
 
   // 👇 Footer désactivé selon le type
+  const isFillBlankDone = () => {
+    const blankCount = (challenge.question.match(/___/g) ?? []).length;
+    return fillBlankSelectedBlanks.filter((b) => b !== null).length === blankCount;
+  };
+
   const isFooterDisabled =
     pending ||
     countdown !== null ||
-    (challenge.type === "WORD_BANK" ? wordBankSelectedIds.length === 0 : !selectedOption);
+    (challenge.type === "WORD_BANK"
+      ? wordBankSelectedIds.length === 0
+      : challenge.type === "FILL_BLANK"
+      ? !isFillBlankDone()
+      : !selectedOption);
 
   const footerLabel = countdown !== null ? `Next in ${countdown}s…` : undefined;
 
@@ -391,31 +361,17 @@ export const Quiz = ({
       {incorrectAudio}
       {correctAudio}
       {finishAudio}
-      <Header
-        hearts={hearts}
-        percentage={percentage}
-        hasActiveSubscription={!!userSubscription?.isActive}
-      />
+      <Header hearts={hearts} percentage={percentage} hasActiveSubscription={!!userSubscription?.isActive} />
 
       {/* Streak toast */}
-      <div
-        className={[
-          "fixed top-6 left-1/2 -translate-x-1/2 z-50",
-          "transition-all duration-500 ease-out",
-          showStreak
-            ? "opacity-100 translate-y-0 pointer-events-auto"
-            : "opacity-0 -translate-y-3 pointer-events-none",
-        ].join(" ")}
-      >
+      <div className={["fixed top-6 left-1/2 -translate-x-1/2 z-50", "transition-all duration-500 ease-out",
+        showStreak ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-3 pointer-events-none",
+      ].join(" ")}>
         <div className="flex items-center gap-x-3 bg-orange-500 text-white px-5 py-3 rounded-2xl shadow-lg shadow-orange-200 dark:shadow-orange-900">
           <span className="text-xl leading-none">🔥</span>
           <div className="flex flex-col leading-tight">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-orange-100">
-              {streak} in a row
-            </span>
-            <span className="text-base font-extrabold tracking-tight">
-              On a roll!
-            </span>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-orange-100">{streak} in a row</span>
+            <span className="text-base font-extrabold tracking-tight">On a roll!</span>
           </div>
         </div>
       </div>
@@ -430,9 +386,7 @@ export const Quiz = ({
                   <div className="relative overflow-hidden rounded-2xl border border-amber-200 dark:border-amber-800 bg-gradient-to-r from-amber-50 dark:from-amber-950/30 via-orange-50 dark:via-orange-950/20 to-amber-50 dark:to-amber-950/30 px-5 py-3.5">
                     <div className="absolute left-0 top-0 h-full w-1 rounded-l-2xl bg-gradient-to-b from-amber-400 to-orange-400" />
                     <div className="flex flex-col gap-y-0.5 pl-2">
-                      <p className="text-[11px] font-bold uppercase tracking-widest text-amber-400">
-                        Review Round
-                      </p>
+                      <p className="text-[11px] font-bold uppercase tracking-widest text-amber-400">Review Round</p>
                       <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
                         Questions you missed — let&apos;s nail them this time.
                       </p>
@@ -440,7 +394,7 @@ export const Quiz = ({
                   </div>
                 )}
 
-                <h1 className="text-lg lg:text-3xl text-center lg:text-start font-extrabold text-muted-foreground-800 dark:text-muted-foreground-100 tracking-tight">
+                <h1 className="text-lg lg:text-3xl text-center lg:text-start font-extrabold tracking-tight">
                   {title}
                 </h1>
 
@@ -454,10 +408,13 @@ export const Quiz = ({
                     onWordBankSelect={onWordBankSelect}
                     onWordBankRemove={onWordBankRemove}
                     wordBankSelectedIds={wordBankSelectedIds}
+                    onFillBlankSelect={onFillBlankSelect}
+                    fillBlankSelectedBlanks={fillBlankSelectedBlanks}
                     status={status}
                     selectedOption={selectedOption}
                     disabled={pending || countdown !== null}
                     type={challenge.type}
+                    question={challenge.question}
                   />
                 </div>
 
@@ -467,12 +424,7 @@ export const Quiz = ({
         </div>
       </div>
 
-      <Footer
-        disabled={isFooterDisabled}
-        status={status}
-        onCheck={onContinue}
-        label={footerLabel}
-      />
+      <Footer disabled={isFooterDisabled} status={status} onCheck={onContinue} label={footerLabel} />
     </>
   );
 };
