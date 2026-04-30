@@ -11,6 +11,7 @@ type Props = {
   isLast?: boolean;
   lessons: (typeof lessons.$inferSelect & {
     completed: boolean;
+    challengeCount?: number; // 👈
   })[];
   activeLesson: typeof lessons.$inferSelect & {
     unit: typeof units.$inferSelect;
@@ -84,6 +85,7 @@ export const Unit = ({
               isLastLesson={isLastLesson}
               unitId={id}
               title={lesson.title}
+              lessonChallengeCount={lesson.challengeCount ?? 5} // 👈
             />
           );
         })}

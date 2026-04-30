@@ -14,7 +14,7 @@ import {
 } from "@/db/schema";
 
 export const getUserProgress = async () => {
-  noStore(); // 👈 Plus de cache() ici
+  noStore();
 
   const { userId } = await auth();
 
@@ -57,10 +57,11 @@ export const getUnits = cache(async () => {
     },
   });
 
+  // 👇 À L'INTÉRIEUR de getUnits
   const normalizedData = data.map((unit) => {
     const lessonsWithCompletedStatus = unit.lessons.map((lesson) => {
       if (lesson.challenges.length === 0) {
-        return { ...lesson, completed: false };
+        return { ...lesson, completed: false, challengeCount: 0 };
       }
 
       const allCompletedChallenges = lesson.challenges.every((challenge) => {
@@ -69,7 +70,11 @@ export const getUnits = cache(async () => {
           && challenge.challengeProgress.every((progress) => progress.completed);
       });
 
-      return { ...lesson, completed: allCompletedChallenges };
+      return {
+        ...lesson,
+        completed: allCompletedChallenges,
+        challengeCount: lesson.challenges.length, // 👈 vrai nombre de challenges
+      };
     });
 
     return { ...unit, lessons: lessonsWithCompletedStatus };
@@ -203,7 +208,7 @@ export const getLessonPercentage = cache(async () => {
 
 const DAY_IN_MS = 86_400_000;
 export const getUserSubscription = async () => {
-  noStore(); // 👈 Plus de cache() ici non plus
+  noStore();
 
   const { userId } = await auth();
 
