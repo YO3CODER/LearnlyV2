@@ -1,6 +1,6 @@
-import { 
-  SimpleForm, Create, TextInput, ReferenceInput, 
-  required, BooleanInput, ImageInput, ImageField, useNotify 
+import {
+  SimpleForm, Create, TextInput, ReferenceInput,
+  required, BooleanInput, ImageInput, ImageField, useNotify, NumberInput
 } from "react-admin";
 import { useFormContext } from "react-hook-form";
 import { useState } from "react";
@@ -109,6 +109,11 @@ export const ChallengeOptionCreate = () => {
         <TextInput source="text" validate={[required()]} label="Text" />
         <BooleanInput source="correct" label="Correct option" />
         <ReferenceInput source="challengeId" reference="challenges" />
+        <NumberInput
+          source="order"
+          label="Order (WORD_BANK uniquement)"
+          helperText="Position du mot dans la phrase correcte. Laisser vide pour SELECT/ASSIST."
+        />
         <ImageUploader />
         <TextInput source="imageSrc" label="URL Image (auto)" disabled />
         <AudioUploader />

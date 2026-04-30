@@ -74,6 +74,8 @@ export const Quiz = ({
   });
 
   const [selectedOption, setSelectedOption] = useState<number>();
+  // 👇 État pour WORD_BANK — liste des ids sélectionnés dans l'ordre
+  const [wordBankSelectedIds, setWordBankSelectedIds] = useState<number[]>([]);
   const [status, setStatus] = useState<"correct" | "wrong" | "none">("none");
 
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -105,6 +107,7 @@ export const Quiz = ({
     setSlideState("exit");
     slideTimeoutRef.current = setTimeout(() => {
       setActiveIndex((current) => current + 1);
+      setWordBankSelectedIds([]); // 👈 reset WORD_BANK à chaque nouvelle question
       setSlideState("enter");
       slideTimeoutRef.current = setTimeout(() => {
         setSlideState("idle");
@@ -125,6 +128,17 @@ export const Quiz = ({
     setSelectedOption(id);
   };
 
+  // 👇 Handlers WORD_BANK
+  const onWordBankSelect = (id: number) => {
+    if (status !== "none") return;
+    setWordBankSelectedIds((prev) => [...prev, id]);
+  };
+
+  const onWordBankRemove = (id: number) => {
+    if (status !== "none") return;
+    setWordBankSelectedIds((prev) => prev.filter((i) => i !== id));
+  };
+
   const startWrongCountdown = () => setCountdown(3);
 
   useEffect(() => {
@@ -139,6 +153,7 @@ export const Quiz = ({
       onNext();
       setStatus("none");
       setSelectedOption(undefined);
+      setWordBankSelectedIds([]);
       setCountdown(null);
       return;
     }
@@ -159,9 +174,79 @@ export const Quiz = ({
     streakTimeoutRef.current = setTimeout(() => setShowStreak(false), 2500);
   };
 
+  // 👇 Vérifie si la réponse WORD_BANK est correcte
+  const isWordBankCorrect = () => {
+    const correctOptions = [...options]
+      .filter((o) => o.correct)
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    const correctIds = correctOptions.map((o) => o.id);
+    return (
+      wordBankSelectedIds.length === correctIds.length &&
+      wordBankSelectedIds.every((id, i) => id === correctIds[i])
+    );
+  };
+
   const onContinue = () => {
-    if (!selectedOption) return;
     if (countdown !== null) return;
+
+    // Cas WORD_BANK
+    if (challenge.type === "WORD_BANK") {
+      if (wordBankSelectedIds.length === 0) return;
+
+      if (status === "correct") {
+        onNext();
+        setStatus("none");
+        setWordBankSelectedIds([]);
+        return;
+      }
+
+      if (isWordBankCorrect()) {
+        startTransition(() => {
+          upsertChallengeProgress(challenge.id)
+            .then((response) => {
+              if (response?.error === "hearts") {
+                openHeartsModal();
+                return;
+              }
+              correctControls.play();
+              setStatus("correct");
+              setPercentage((prev) => Math.min(prev + 100 / totalChallenges, 100));
+              setStreak((prev) => {
+                const next = prev + 1;
+                if (next >= 3) triggerStreakToast();
+                return next;
+              });
+              if (initialPercentage === 100) {
+                setHearts((prev) => Math.min(prev + 1, 5));
+              }
+            })
+            .catch(() => toast.error("Something went wrong. Please try again."));
+        });
+      } else {
+        startTransition(() => {
+          reduceHearts(challenge.id)
+            .then((response) => {
+              if (response?.error === "hearts") {
+                openHeartsModal();
+                return;
+              }
+              incorrectControls.play();
+              setStatus("wrong");
+              setStreak(0);
+              setShowStreak(false);
+              if (!response?.error) {
+                setHearts((prev) => Math.max(prev - 1, 0));
+              }
+              startWrongCountdown();
+            })
+            .catch(() => toast.error("Something went wrong. Please try again."));
+        });
+      }
+      return;
+    }
+
+    // Cas SELECT / ASSIST
+    if (!selectedOption) return;
 
     if (status === "correct") {
       onNext();
@@ -184,13 +269,11 @@ export const Quiz = ({
             correctControls.play();
             setStatus("correct");
             setPercentage((prev) => Math.min(prev + 100 / totalChallenges, 100));
-
             setStreak((prev) => {
               const next = prev + 1;
               if (next >= 3) triggerStreakToast();
               return next;
             });
-
             if (initialPercentage === 100) {
               setHearts((prev) => Math.min(prev + 1, 5));
             }
@@ -288,7 +371,12 @@ export const Quiz = ({
     ? "Select the correct meaning"
     : challenge.question;
 
-  const isFooterDisabled = pending || !selectedOption || countdown !== null;
+  // 👇 Footer désactivé selon le type
+  const isFooterDisabled =
+    pending ||
+    countdown !== null ||
+    (challenge.type === "WORD_BANK" ? wordBankSelectedIds.length === 0 : !selectedOption);
+
   const footerLabel = countdown !== null ? `Next in ${countdown}s…` : undefined;
 
   const slideClasses = [
@@ -338,7 +426,6 @@ export const Quiz = ({
             <div className={slideClasses}>
               <div className="flex flex-col gap-y-8">
 
-                {/* Retry round banner */}
                 {isRetryRound && (
                   <div className="relative overflow-hidden rounded-2xl border border-amber-200 dark:border-amber-800 bg-gradient-to-r from-amber-50 dark:from-amber-950/30 via-orange-50 dark:via-orange-950/20 to-amber-50 dark:to-amber-950/30 px-5 py-3.5">
                     <div className="absolute left-0 top-0 h-full w-1 rounded-l-2xl bg-gradient-to-b from-amber-400 to-orange-400" />
@@ -364,6 +451,9 @@ export const Quiz = ({
                   <Challenge
                     options={options}
                     onSelect={onSelect}
+                    onWordBankSelect={onWordBankSelect}
+                    onWordBankRemove={onWordBankRemove}
+                    wordBankSelectedIds={wordBankSelectedIds}
                     status={status}
                     selectedOption={selectedOption}
                     disabled={pending || countdown !== null}
