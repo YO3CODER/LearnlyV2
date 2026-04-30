@@ -66,10 +66,6 @@ export const UnitBanner = ({
       shadow-lg ${getShadowColor()}
       relative overflow-hidden`}
     >
-      {/* Decorative circles */}
-      <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-background/10 blur-sm" />
-      <div className="absolute -bottom-8 right-24 w-24 h-24 rounded-full bg-background/10 blur-sm" />
-
       {/* Text */}
       <div className="relative z-10 space-y-0.5">
         <h3 className="text-xl font-extrabold text-white tracking-tight drop-shadow-sm">
@@ -81,7 +77,10 @@ export const UnitBanner = ({
       </div>
 
       {/* Séparateur vertical */}
-      <div className="w-px h-8 bg-background/30 mx-4 relative z-10 shrink-0" />
+      <div className="relative z-10 shrink-0 mx-4 flex flex-col">
+        <div className="w-[2px] h-10 bg-white/60 rounded-full" />
+        <div className="w-[2px] h-[4px] bg-black/20 rounded-full" />
+      </div>
 
       {/* CTA */}
       <Link href="/lesson" className="relative z-10">
