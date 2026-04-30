@@ -106,10 +106,10 @@ const QuestsPage = async () => {
 
           {/* Stats avec images */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full mb-6">
-            <div className="flex flex-col items-center p-3 rounded-2xl bg-green-50 dark:bg-green-950/30 border-2 border-b-4 border-green-200 dark:border-green-800">
+            <div className="flex flex-col items-center p-3 rounded-2xl bg-yellow-50 dark:bg-yellow-950/30 border-2 border-b-4 border-yellow-200 dark:border-yellow-800">
               <Image src="/xp-bolt.svg" alt="XP" width={20} height={20} className="mb-1" />
-              <p className="font-extrabold text-green-700 dark:text-green-400 text-lg">{userProgress.points}</p>
-              <p className="text-xs text-green-600 dark:text-green-500">XP Total</p>
+              <p className="font-extrabold text-yellow-300 dark:text-yellow-300 text-lg">{userProgress.points}</p>
+              <p className="text-xs text-yellow-200 dark:text-yellow-300">XP Total</p>
             </div>
             <div className="flex flex-col items-center p-3 rounded-2xl bg-red-50 dark:bg-red-950/30 border-2 border-b-4 border-red-200 dark:border-red-800">
               <Image src="/streak.svg" alt="Streak" width={20} height={20} className="mb-1" />
@@ -170,11 +170,11 @@ const QuestsPage = async () => {
                         key={quest.title}
                         className={`flex items-center w-full p-4 gap-x-4 rounded-2xl border-2 border-b-4 transition-all duration-200
                           ${completed
-                            ? "bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800"
+                            ? "bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200 dark:border-yellow-800"
                             : "bg-background border-border hover:border-border hover:shadow-sm"
                           }`}
                       >
-                        <div className={`p-2 rounded-xl border-2 border-b-4 shrink-0 ${completed ? "bg-green-100 dark:bg-green-900/40 border-green-200 dark:border-green-800" : `${questStyle.bg} ${questStyle.border}`}`}>
+                        <div className={`p-2 rounded-xl border-2 border-b-4 shrink-0 ${completed ? "bg-yellow-100 dark:bg-yellow-900/40 border-yellow-200 dark:border-yellow-800" : `${questStyle.bg} ${questStyle.border}`}`}>
                           {completed ? (
                             <Image src="/check.svg" alt="Complété" width={24} height={24} />
                           ) : (
@@ -184,13 +184,13 @@ const QuestsPage = async () => {
                         <div className="flex flex-col gap-y-2 w-full">
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className={`text-sm font-bold ${completed ? "text-green-700 dark:text-green-400" : "text-foreground"}`}>
+                              <p className={`text-sm font-bold ${completed ? "text-yellow-700 dark:text-yellow-400" : "text-foreground"}`}>
                                 {quest.title}
                               </p>
                               <p className="text-xs text-muted-foreground">{quest.description}</p>
                             </div>
                             {completed ? (
-                              <span className="text-xs font-bold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/40 px-2 py-0.5 rounded-full shrink-0">
+                              <span className="text-xs font-bold text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/40 px-2 py-0.5 rounded-full shrink-0">
                                 Complétée !
                               </span>
                             ) : (

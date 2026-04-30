@@ -45,9 +45,11 @@ export const Unit = ({
   return (
     <div id={`unit-${index}`} style={{ position: "relative", overflow: "visible" }}>
 
-      {/* GIF mascotte */}
+      {/* GIF mascotte — alterne droite/gauche selon l'index de l'unité */}
       <div
-        className="absolute right-0 top-20 z-10 animate-[mascot-float_3s_ease-in-out_infinite]"
+        className={`absolute top-20 z-10 animate-[mascot-float_3s_ease-in-out_infinite] ${
+          index % 2 === 0 ? "right-0" : "left-0"
+        }`}
         style={{ animationDelay: `${index * 300}ms` }}
       >
         <Image

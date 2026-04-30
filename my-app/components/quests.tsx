@@ -76,7 +76,7 @@ export const Quests = ({ points }: Props) => {
                 `}
               >
                 <Image
-                  src="/points.svg"
+                  src="/xp-bolt.svg"
                   alt="Points"
                   width={24}
                   height={24}

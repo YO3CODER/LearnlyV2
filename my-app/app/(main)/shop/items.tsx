@@ -79,7 +79,7 @@ export const Items = ({
       {/* UNLIMITED HEARTS */}
       <li className="flex items-center w-full p-4 pt-8 gap-x-4 border-t-2 border-border">
 
-        <Image src="/unlimited.svg" alt="Unlimited" height={60} width={60} />
+        <Image src="/heartInfin.svg" alt="Unlimited" height={60} width={60} />
 
         <div className="flex-1">
           <p className="text-slate-700 dark:text-foreground text-base lg:text-xl font-bold">

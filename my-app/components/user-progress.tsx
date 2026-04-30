@@ -68,8 +68,8 @@ export const UserProgress = ({
       {/* Points */}
       <Link href="/shop">
         <Button variant="ghost" className="px-2 gap-x-1">
-          <Image src="/points.svg" height={22} width={22} alt="Points" />
-          <span className="font-extrabold text-sm text-blue-500">{points}</span>
+          <Image src="/xp-bolt.svg" height={22} width={22} alt="Points" />
+          <span className="font-extrabold text-sm text-yellow-300">{points}</span>
         </Button>
       </Link>
 
