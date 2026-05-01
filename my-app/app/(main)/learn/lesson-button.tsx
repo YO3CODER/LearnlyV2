@@ -57,43 +57,40 @@ const colorMap: Record<string, {
 // ─── Données de transition ────────────────────────────────────────────────────
 
 const GIFS = ["/1.gif", "/2.gif", "/3.gif"];
-
-// Durée aléatoire : 2, 3 ou 5 secondes
 const DURATIONS = [2000, 3000, 5000];
-
 const TRANSITION_LABELS = [
   { headline: "Prepare-toi", sub: "La lecon commence dans un instant" },
   { headline: "Concentre-toi", sub: "Quelques secondes et c'est parti" },
   { headline: "Allez, on y va", sub: "La lecon se charge pour toi" },
 ];
 
-// ─── Composant TransitionScreen ───────────────────────────────────────────────
-// Monte via createPortal sur document.body pour couvrir toute la page
-// S'adapte automatiquement au mode sombre/clair via prefers-color-scheme
-// et les classes Tailwind dark: si elles sont presentes sur le html
+// ─── TransitionScreen ─────────────────────────────────────────────────────────
+// Monte via createPortal sur document.body.
+// Fond plein opaque (couleur unie de l'unite) — aucun element derriere n'est visible.
+// Navigation declenchee automatiquement apres la durée, SANS revenir a la page precedente.
 
 type TransitionScreenProps = {
-  color: string;       // bgHex de l'unite
-  onDone: () => void;  // appelee a la fin du compte a rebours
+  color: string;      // bgHex de l'unite
+  destination: string; // route cible (ex: "/lesson")
+  onNavigate: () => void;
 };
 
-const TransitionScreen = ({ color, onDone }: TransitionScreenProps) => {
-  const [gifSrc]    = useState(() => GIFS[Math.floor(Math.random() * GIFS.length)]);
-  const [label]     = useState(() => TRANSITION_LABELS[Math.floor(Math.random() * TRANSITION_LABELS.length)]);
-  const [duration]  = useState(() => DURATIONS[Math.floor(Math.random() * DURATIONS.length)]);
-  const [mounted,  setMounted]  = useState(false); // pour l'animation d'entree
-  const [progress, setProgress] = useState(0);     // 0 → 100
+const TransitionScreen = ({ color, onNavigate }: TransitionScreenProps) => {
+  const [gifSrc]   = useState(() => GIFS[Math.floor(Math.random() * GIFS.length)]);
+  const [label]    = useState(() => TRANSITION_LABELS[Math.floor(Math.random() * TRANSITION_LABELS.length)]);
+  const [duration] = useState(() => DURATIONS[Math.floor(Math.random() * DURATIONS.length)]);
+  const [mounted,  setMounted]  = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [isDark,   setIsDark]   = useState(false);
+  const navigatedRef = useRef(false);
 
-  // Detecte le mode sombre via la classe "dark" sur <html>
-  const [isDark, setIsDark] = useState(false);
-
+  // Detection dark mode via classe "dark" sur <html>
   useEffect(() => {
-    const check = () =>
-      setIsDark(document.documentElement.classList.contains("dark"));
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
     check();
-    const observer = new MutationObserver(check);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-    return () => observer.disconnect();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
   }, []);
 
   // Apparition douce
@@ -102,32 +99,37 @@ const TransitionScreen = ({ color, onDone }: TransitionScreenProps) => {
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  // Progression fluide + redirection a la fin
+  // Progression RAF + navigation à 100%
   useEffect(() => {
     const start = performance.now();
     let rafId: number;
 
     const tick = (now: number) => {
-      const elapsed = now - start;
-      const pct = Math.min((elapsed / duration) * 100, 100);
+      const pct = Math.min(((now - start) / duration) * 100, 100);
       setProgress(pct);
+
       if (pct < 100) {
         rafId = requestAnimationFrame(tick);
       } else {
-        // Legere pause visuelle avant de naviguer
-        setTimeout(onDone, 120);
+        // Garde contre le double appel
+        if (!navigatedRef.current) {
+          navigatedRef.current = true;
+          // Petit délai visuel pour que la barre atteigne 100% à l'écran
+          setTimeout(onNavigate, 80);
+        }
       }
     };
 
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, [duration, onDone]);
+  }, [duration, onNavigate]);
 
-  // Couleurs adaptees au theme
-  const bg        = isDark ? "#18181b" : "#ffffff";
-  const textPri   = isDark ? "#f4f4f5" : "#18181b";
-  const textSec   = isDark ? "#a1a1aa" : "#71717a";
-  const trackBg   = isDark ? "#3f3f46" : "#e4e4e7";
+  // Couleur de fond : couleur unie de l'unite (pas de carte, pas de fond different)
+  // Textes blancs sur fond couleur — lisibles en toutes circonstances
+  const textPri   = "#ffffff";
+  const textSec   = "rgba(255,255,255,0.75)";
+  const trackBg   = "rgba(255,255,255,0.25)";
+  const trackFill = "#ffffff";
 
   const content = (
     <div
@@ -138,14 +140,10 @@ const TransitionScreen = ({ color, onDone }: TransitionScreenProps) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        // Fond full-page opaque — masque completement tout ce qui est dessous
-        backgroundColor: isDark ? "rgba(9,9,11,0.97)" : "rgba(250,250,250,0.97)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        // Transition d'entree
+        // Fond plein couleur unie — masque tout ce qui est dessous
+        backgroundColor: color,
         opacity: mounted ? 1 : 0,
-        transition: "opacity 0.3s ease",
-        // Empeche toute interaction avec ce qui est dessous
+        transition: "opacity 0.28s ease",
         pointerEvents: "all",
       }}
     >
@@ -154,107 +152,71 @@ const TransitionScreen = ({ color, onDone }: TransitionScreenProps) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 28,
+          gap: 32,
           width: "100%",
-          maxWidth: 320,
+          maxWidth: 300,
           padding: "0 24px",
-          // Montee douce
-          transform: mounted ? "translateY(0)" : "translateY(16px)",
+          transform: mounted ? "translateY(0)" : "translateY(20px)",
           transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
         }}
       >
-        {/* GIF */}
-        <div
+        {/* GIF — fond transparent, pas de conteneur separe */}
+        <img
+          src={gifSrc}
+          alt=""
+          draggable={false}
           style={{
             width: 160,
             height: 160,
-            borderRadius: 24,
-            overflow: "hidden",
-            backgroundColor: trackBg,
-            flexShrink: 0,
+            objectFit: "contain",
+            display: "block",
+            // Pas de borderRadius, pas de backgroundColor — couleur unie derriere
           }}
-        >
-          <img
-            src={gifSrc}
-            alt=""
-            draggable={false}
-            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-          />
-        </div>
+        />
 
         {/* Textes */}
         <div style={{ textAlign: "center" }}>
-          <p
-            style={{
-              fontSize: 22,
-              fontWeight: 800,
-              color: textPri,
-              margin: 0,
-              letterSpacing: "-0.4px",
-              lineHeight: 1.2,
-            }}
-          >
+          <p style={{
+            fontSize: 22,
+            fontWeight: 800,
+            color: textPri,
+            margin: 0,
+            letterSpacing: "-0.3px",
+            lineHeight: 1.2,
+          }}>
             {label.headline}
           </p>
-          <p
-            style={{
-              fontSize: 14,
-              color: textSec,
-              margin: "8px 0 0",
-              fontWeight: 500,
-              lineHeight: 1.5,
-            }}
-          >
+          <p style={{
+            fontSize: 14,
+            color: textSec,
+            margin: "8px 0 0",
+            fontWeight: 500,
+            lineHeight: 1.5,
+          }}>
             {label.sub}
           </p>
         </div>
 
-        {/* Barre de progression */}
-        <div
-          style={{
-            width: "100%",
-            height: 6,
-            backgroundColor: trackBg,
+        {/* Barre de progression blanche sur fond couleur */}
+        <div style={{
+          width: "100%",
+          height: 6,
+          backgroundColor: trackBg,
+          borderRadius: 99,
+          overflow: "hidden",
+        }}>
+          <div style={{
+            height: "100%",
+            width: `${progress}%`,
+            backgroundColor: trackFill,
             borderRadius: 99,
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              height: "100%",
-              width: `${progress}%`,
-              backgroundColor: color,
-              borderRadius: 99,
-              // Pas de transition CSS — la RAF gere la fluidite
-              willChange: "width",
-            }}
-          />
+            willChange: "width",
+          }} />
         </div>
-
-        {/* Carte de fond subtile (optionnel, effet depth) */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            zIndex: -1,
-            borderRadius: 32,
-            backgroundColor: bg,
-            boxShadow: isDark
-              ? `0 0 80px ${color}22`
-              : `0 0 60px ${color}18`,
-            width: "calc(100% + 48px)",
-            maxWidth: 368,
-            margin: "0 auto",
-            left: "50%",
-            transform: "translateX(-50%)",
-            height: "calc(100% + 48px)",
-          }}
-        />
       </div>
     </div>
   );
 
-  // Monte directement sur document.body — invisible depuis l'arbre React
   return createPortal(content, document.body);
 };
 
@@ -262,7 +224,7 @@ const TransitionScreen = ({ color, onDone }: TransitionScreenProps) => {
 
 const XP_PER_CHALLENGE = 10;
 
-// ─── Composant principal ──────────────────────────────────────────────────────
+// ─── LessonButton ─────────────────────────────────────────────────────────────
 
 export const LessonButton = ({
   id,
@@ -283,14 +245,14 @@ export const LessonButton = ({
   const [popupVisible,   setPopupVisible]   = useState(false);
   const [pressing,       setPressing]       = useState(false);
   const [showTransition, setShowTransition] = useState(false);
+  // Route cible mémorisée pour que le portal la connaisse
+  const destinationRef = useRef<string>("/lesson");
 
   const popupRef = useRef<HTMLDivElement>(null);
 
-  // ─── Sons separes ────────────────────────────────────────────────────────
-  // boutonsong1.mp3  → clic sur le bouton rond (ouverture popup)
-  // boutonsong.mp3   → clic sur "Commencer" dans le popup
-  const audioBoutonRef    = useRef<HTMLAudioElement | null>(null); // boutonsong1
-  const audioCommencerRef = useRef<HTMLAudioElement | null>(null); // boutonsong
+  // ─── Sons ───────────────────────────────────────────────────────────────
+  const audioBoutonRef    = useRef<HTMLAudioElement | null>(null); // boutonsong1 → clic rond
+  const audioCommencerRef = useRef<HTMLAudioElement | null>(null); // boutonsong  → Commencer
 
   useEffect(() => {
     const a1 = new Audio("/boutonsong1.mp3");
@@ -317,13 +279,11 @@ export const LessonButton = ({
   // ─── Layout sinusoidal ───────────────────────────────────────────────────
   const cycleLength = 8;
   const cycleIndex  = index % cycleLength;
-
   let indentationLevel: number;
   if      (cycleIndex <= 2) indentationLevel = cycleIndex;
   else if (cycleIndex <= 4) indentationLevel = 4 - cycleIndex;
   else if (cycleIndex <= 6) indentationLevel = 4 - cycleIndex;
   else                      indentationLevel = cycleIndex - 8;
-
   const rightPosition = indentationLevel * 40;
 
   const isFirst     = index === 0;
@@ -344,7 +304,6 @@ export const LessonButton = ({
     return () => document.removeEventListener("mousedown", handler);
   }, [showPopup]);
 
-  // ─── Popup helpers ───────────────────────────────────────────────────────
   const openPopup = () => {
     setShowPopup(true);
     requestAnimationFrame(() => requestAnimationFrame(() => setPopupVisible(true)));
@@ -355,9 +314,7 @@ export const LessonButton = ({
     setTimeout(() => setShowPopup(false), 200);
   };
 
-  // ─── Handlers ────────────────────────────────────────────────────────────
-
-  // Clic sur le bouton rond → boutonsong1.mp3
+  // ─── Clic sur le bouton rond — boutonsong1 ───────────────────────────────
   const handleClick = () => {
     if (locked) return;
     playBouton();
@@ -365,24 +322,37 @@ export const LessonButton = ({
     else           openPopup();
   };
 
-  // Clic sur "Commencer" → boutonsong.mp3, puis ecran de transition
+  // ─── Clic "Commencer" — boutonsong + transition pour TOUS les boutons débloqués
   const handleStart = () => {
     playCommencer();
     closePopup();
 
+    // Lecon completee → meme logique : transition puis modal pratique
+    // On passe par la transition dans TOUS les cas (sauf locked)
     if (isCompleted) {
-      open(id);
-      return;
+      // Destination fictive vide — apres la transition on ouvre le modal
+      destinationRef.current = "practice";
+    } else {
+      destinationRef.current = "/lesson";
     }
 
     setShowTransition(true);
   };
 
-  // Fin du compte a rebours → navigation effective
+  /**
+   * Appelee a la FIN du compte a rebours par TransitionScreen.
+   * On utilise router.replace pour NE PAS empiler l'historique :
+   * apres le cours, le bouton "retour" va directement a la bonne page.
+   */
   const handleTransitionDone = useCallback(() => {
     setShowTransition(false);
-    router.push("/lesson");
-  }, [router]);
+    if (destinationRef.current === "practice") {
+      open(id);
+    } else {
+      // replace() au lieu de push() : evite le retour intermediaire
+      router.replace(destinationRef.current);
+    }
+  }, [router, open, id]);
 
   const handleButtonPress = () => {
     setPressing(true);
@@ -448,9 +418,12 @@ export const LessonButton = ({
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <>
-      {/* Ecran de transition — monte sur document.body via portal */}
       {showTransition && (
-        <TransitionScreen color={colors.bgHex} onDone={handleTransitionDone} />
+        <TransitionScreen
+          color={colors.bgHex}
+          destination={destinationRef.current}
+          onNavigate={handleTransitionDone}
+        />
       )}
 
       <div
@@ -475,7 +448,7 @@ export const LessonButton = ({
             zIndex: showPopup ? 50 : "auto",
           }}
         >
-          {/* ── Popup ────────────────────────────────────────────────────── */}
+          {/* ── Popup ── */}
           {showPopup && !locked && (
             <div
               ref={popupRef}
@@ -512,13 +485,12 @@ export const LessonButton = ({
                 <X className="h-4 w-4" />
               </button>
 
-              {/* Titre */}
               <p className="text-white font-extrabold text-sm mb-1 pr-6">{title}</p>
               <p className="text-white/80 text-xs mb-4">
                 Lecon {index + 1} sur {totalCount}
               </p>
 
-              {/* Bouton Commencer — boutonsong.mp3 */}
+              {/* Bouton Commencer — boutonsong.mp3 + transition */}
               <button
                 onMouseDown={handleButtonPress}
                 onClick={handleStart}
@@ -540,7 +512,7 @@ export const LessonButton = ({
             </div>
           )}
 
-          {/* ── Bouton lecon courante (avec progressbar circulaire) ───────── */}
+          {/* ── Bouton lecon courante ── */}
           {current ? (
             <div
               className="h-[102px] w-[102px] relative"
@@ -583,7 +555,7 @@ export const LessonButton = ({
             </div>
 
           ) : (
-            /* ── Bouton lecon normale ────────────────────────────────────── */
+            /* ── Boutons lecons normales (completees, verrouillees, golden) ── */
             <div
               className="relative"
               onClick={() => { handleClick(); handleButtonPress(); }}
