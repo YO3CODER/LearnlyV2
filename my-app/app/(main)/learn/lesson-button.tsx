@@ -3,7 +3,8 @@
 import { Check, Crown, Star, X } from "lucide-react";
 import { CircularProgressbarWithChildren } from "react-circular-progressbar";
 import { useRouter } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 
 import { cn } from "@/lib/utils";
 import { usePracticeModal } from "@/store/use-practice-modal";
@@ -43,144 +44,218 @@ const colorMap: Record<string, {
   popupButton: string;
   popupButtonText: string;
 }> = {
-  blue:   { bg: "!bg-blue-500",   hover: "hover:!bg-blue-600",   bgHex: "#3b82f6", borderHex: "#1d4ed8", shadow: "shadow-blue-200 dark:shadow-blue-900",     glow: "bg-blue-300/40",   progress: ["#3b82f6", "#6366f1"], popup: "bg-blue-500",   popupBorder: "border-blue-600",   popupArrow: "#3b82f6", popupButtonBorder: "#1d4ed8", popupButton: "bg-white", popupButtonText: "text-blue-500" },
+  blue:   { bg: "!bg-blue-500",   hover: "hover:!bg-blue-600",   bgHex: "#3b82f6", borderHex: "#1d4ed8", shadow: "shadow-blue-200 dark:shadow-blue-900",     glow: "bg-blue-300/40",   progress: ["#3b82f6", "#6366f1"], popup: "bg-blue-500",   popupBorder: "border-blue-600",   popupArrow: "#3b82f6", popupButtonBorder: "#1d4ed8", popupButton: "bg-white", popupButtonText: "text-blue-500"   },
   purple: { bg: "!bg-purple-500", hover: "hover:!bg-purple-600", bgHex: "#a855f7", borderHex: "#7e22ce", shadow: "shadow-purple-200 dark:shadow-purple-900", glow: "bg-purple-300/40", progress: ["#a855f7", "#8b5cf6"], popup: "bg-purple-500", popupBorder: "border-purple-600", popupArrow: "#a855f7", popupButtonBorder: "#7e22ce", popupButton: "bg-white", popupButtonText: "text-purple-500" },
-  green:  { bg: "!bg-green-500",  hover: "hover:!bg-green-600",  bgHex: "#22c55e", borderHex: "#15803d", shadow: "shadow-green-200 dark:shadow-green-900",   glow: "bg-green-300/40",  progress: ["#22c55e", "#16a34a"], popup: "bg-green-500",  popupBorder: "border-green-600",  popupArrow: "#22c55e", popupButtonBorder: "#15803d", popupButton: "bg-white", popupButtonText: "text-green-600" },
+  green:  { bg: "!bg-green-500",  hover: "hover:!bg-green-600",  bgHex: "#22c55e", borderHex: "#15803d", shadow: "shadow-green-200 dark:shadow-green-900",   glow: "bg-green-300/40",  progress: ["#22c55e", "#16a34a"], popup: "bg-green-500",  popupBorder: "border-green-600",  popupArrow: "#22c55e", popupButtonBorder: "#15803d", popupButton: "bg-white", popupButtonText: "text-green-600"  },
   orange: { bg: "!bg-orange-500", hover: "hover:!bg-orange-600", bgHex: "#f97316", borderHex: "#c2410c", shadow: "shadow-orange-200 dark:shadow-orange-900", glow: "bg-orange-300/40", progress: ["#f97316", "#ea580c"], popup: "bg-orange-500", popupBorder: "border-orange-600", popupArrow: "#f97316", popupButtonBorder: "#c2410c", popupButton: "bg-white", popupButtonText: "text-orange-500" },
-  pink:   { bg: "!bg-pink-500",   hover: "hover:!bg-pink-600",   bgHex: "#ec4899", borderHex: "#be185d", shadow: "shadow-pink-200 dark:shadow-pink-900",     glow: "bg-pink-300/40",   progress: ["#ec4899", "#db2777"], popup: "bg-pink-500",   popupBorder: "border-pink-600",   popupArrow: "#ec4899", popupButtonBorder: "#be185d", popupButton: "bg-white", popupButtonText: "text-pink-500" },
+  pink:   { bg: "!bg-pink-500",   hover: "hover:!bg-pink-600",   bgHex: "#ec4899", borderHex: "#be185d", shadow: "shadow-pink-200 dark:shadow-pink-900",     glow: "bg-pink-300/40",   progress: ["#ec4899", "#db2777"], popup: "bg-pink-500",   popupBorder: "border-pink-600",   popupArrow: "#ec4899", popupButtonBorder: "#be185d", popupButton: "bg-white", popupButtonText: "text-pink-500"   },
   indigo: { bg: "!bg-indigo-500", hover: "hover:!bg-indigo-600", bgHex: "#6366f1", borderHex: "#4338ca", shadow: "shadow-indigo-200 dark:shadow-indigo-900", glow: "bg-indigo-300/40", progress: ["#6366f1", "#4f46e5"], popup: "bg-indigo-500", popupBorder: "border-indigo-600", popupArrow: "#6366f1", popupButtonBorder: "#4338ca", popupButton: "bg-white", popupButtonText: "text-indigo-500" },
-  teal:   { bg: "!bg-teal-500",   hover: "hover:!bg-teal-600",   bgHex: "#14b8a6", borderHex: "#0f766e", shadow: "shadow-teal-200 dark:shadow-teal-900",     glow: "bg-teal-300/40",   progress: ["#14b8a6", "#0d9488"], popup: "bg-teal-500",   popupBorder: "border-teal-600",   popupArrow: "#14b8a6", popupButtonBorder: "#0f766e", popupButton: "bg-white", popupButtonText: "text-teal-500" },
-  red:    { bg: "!bg-red-500",    hover: "hover:!bg-red-600",    bgHex: "#ef4444", borderHex: "#b91c1c", shadow: "shadow-red-200 dark:shadow-red-900",       glow: "bg-red-300/40",    progress: ["#ef4444", "#dc2626"], popup: "bg-red-500",    popupBorder: "border-red-600",    popupArrow: "#ef4444", popupButtonBorder: "#b91c1c", popupButton: "bg-white", popupButtonText: "text-red-500" },
+  teal:   { bg: "!bg-teal-500",   hover: "hover:!bg-teal-600",   bgHex: "#14b8a6", borderHex: "#0f766e", shadow: "shadow-teal-200 dark:shadow-teal-900",     glow: "bg-teal-300/40",   progress: ["#14b8a6", "#0d9488"], popup: "bg-teal-500",   popupBorder: "border-teal-600",   popupArrow: "#14b8a6", popupButtonBorder: "#0f766e", popupButton: "bg-white", popupButtonText: "text-teal-500"   },
+  red:    { bg: "!bg-red-500",    hover: "hover:!bg-red-600",    bgHex: "#ef4444", borderHex: "#b91c1c", shadow: "shadow-red-200 dark:shadow-red-900",       glow: "bg-red-300/40",    progress: ["#ef4444", "#dc2626"], popup: "bg-red-500",    popupBorder: "border-red-600",    popupArrow: "#ef4444", popupButtonBorder: "#b91c1c", popupButton: "bg-white", popupButtonText: "text-red-500"    },
 };
 
-// ─── Écran de transition avant la leçon (style Duolingo) ─────────────────────
+// ─── Données de transition ────────────────────────────────────────────────────
 
 const GIFS = ["/1.gif", "/2.gif", "/3.gif"];
 
-const TRANSITION_TEXTS = [
-  { headline: "C'est parti ! 🚀", sub: "Concentre-toi, tu vas cartonner !" },
-  { headline: "En forme ? 💪",    sub: "Chaque leçon te rapproche du sommet." },
-  { headline: "Go go go ! ⚡",    sub: "Quelques minutes suffisent. Allez !" },
+// Durée aléatoire : 2, 3 ou 5 secondes
+const DURATIONS = [2000, 3000, 5000];
+
+const TRANSITION_LABELS = [
+  { headline: "Prepare-toi", sub: "La lecon commence dans un instant" },
+  { headline: "Concentre-toi", sub: "Quelques secondes et c'est parti" },
+  { headline: "Allez, on y va", sub: "La lecon se charge pour toi" },
 ];
 
+// ─── Composant TransitionScreen ───────────────────────────────────────────────
+// Monte via createPortal sur document.body pour couvrir toute la page
+// S'adapte automatiquement au mode sombre/clair via prefers-color-scheme
+// et les classes Tailwind dark: si elles sont presentes sur le html
+
 type TransitionScreenProps = {
-  onReady: () => void;
-  color: string;
+  color: string;       // bgHex de l'unite
+  onDone: () => void;  // appelee a la fin du compte a rebours
 };
 
-const TransitionScreen = ({ onReady, color }: TransitionScreenProps) => {
-  const [gifSrc] = useState(() => GIFS[Math.floor(Math.random() * GIFS.length)]);
-  const [texts]  = useState(() => TRANSITION_TEXTS[Math.floor(Math.random() * TRANSITION_TEXTS.length)]);
-  const [visible, setVisible] = useState(false);
-  const [leaving, setLeaving] = useState(false);
+const TransitionScreen = ({ color, onDone }: TransitionScreenProps) => {
+  const [gifSrc]    = useState(() => GIFS[Math.floor(Math.random() * GIFS.length)]);
+  const [label]     = useState(() => TRANSITION_LABELS[Math.floor(Math.random() * TRANSITION_LABELS.length)]);
+  const [duration]  = useState(() => DURATIONS[Math.floor(Math.random() * DURATIONS.length)]);
+  const [mounted,  setMounted]  = useState(false); // pour l'animation d'entree
+  const [progress, setProgress] = useState(0);     // 0 → 100
+
+  // Detecte le mode sombre via la classe "dark" sur <html>
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
+    const check = () =>
+      setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const observer = new MutationObserver(check);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
   }, []);
 
-  const handleGo = () => {
-    setLeaving(true);
-    setTimeout(onReady, 380);
-  };
+  // Apparition douce
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => requestAnimationFrame(() => setMounted(true)));
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
-  return (
+  // Progression fluide + redirection a la fin
+  useEffect(() => {
+    const start = performance.now();
+    let rafId: number;
+
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const pct = Math.min((elapsed / duration) * 100, 100);
+      setProgress(pct);
+      if (pct < 100) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        // Legere pause visuelle avant de naviguer
+        setTimeout(onDone, 120);
+      }
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [duration, onDone]);
+
+  // Couleurs adaptees au theme
+  const bg        = isDark ? "#18181b" : "#ffffff";
+  const textPri   = isDark ? "#f4f4f5" : "#18181b";
+  const textSec   = isDark ? "#a1a1aa" : "#71717a";
+  const trackBg   = isDark ? "#3f3f46" : "#e4e4e7";
+
+  const content = (
     <div
       style={{
         position: "fixed",
         inset: 0,
-        zIndex: 9999,
+        zIndex: 99999,
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        background: "rgba(0,0,0,0.55)",
-        backdropFilter: "blur(6px)",
-        WebkitBackdropFilter: "blur(6px)",
-        transition: "opacity 0.35s ease, transform 0.35s ease",
-        opacity: visible && !leaving ? 1 : 0,
-        transform: leaving ? "scale(1.04)" : visible ? "scale(1)" : "scale(0.96)",
-        pointerEvents: leaving ? "none" : "auto",
+        // Fond full-page opaque — masque completement tout ce qui est dessous
+        backgroundColor: isDark ? "rgba(9,9,11,0.97)" : "rgba(250,250,250,0.97)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        // Transition d'entree
+        opacity: mounted ? 1 : 0,
+        transition: "opacity 0.3s ease",
+        // Empeche toute interaction avec ce qui est dessous
+        pointerEvents: "all",
       }}
     >
       <div
         style={{
-          background: "#fff",
-          borderRadius: 28,
-          padding: "36px 32px 28px",
-          maxWidth: 340,
-          width: "90vw",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 16,
-          boxShadow: `0 20px 60px ${color}44, 0 4px 20px rgba(0,0,0,0.18)`,
-          border: `3px solid ${color}33`,
-          transition: "transform 0.35s cubic-bezier(.34,1.56,.64,1)",
-          transform: visible && !leaving ? "translateY(0)" : "translateY(24px)",
+          gap: 28,
+          width: "100%",
+          maxWidth: 320,
+          padding: "0 24px",
+          // Montee douce
+          transform: mounted ? "translateY(0)" : "translateY(16px)",
+          transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
         }}
       >
-        {/* GIF animé */}
-        <img
-          src={gifSrc}
-          alt="transition"
-          style={{ width: 140, height: 140, objectFit: "contain", borderRadius: 16 }}
-        />
-
-        {/* Texte */}
-        <div style={{ textAlign: "center" }}>
-          <p style={{ fontSize: 22, fontWeight: 900, color: "#1e1e2e", margin: 0, letterSpacing: "-0.3px", lineHeight: 1.2 }}>
-            {texts.headline}
-          </p>
-          <p style={{ fontSize: 14, color: "#6b7280", margin: "6px 0 0", fontWeight: 500 }}>
-            {texts.sub}
-          </p>
-        </div>
-
-        {/* Barre de progression simulée */}
-        <div style={{ width: "100%", height: 8, background: "#f0f0f5", borderRadius: 99, overflow: "hidden" }}>
-          <div style={{
-            height: "100%",
-            width: visible ? "100%" : "0%",
-            background: `linear-gradient(90deg, ${color}, ${color}cc)`,
-            borderRadius: 99,
-            transition: "width 2.8s cubic-bezier(0.4,0,0.2,1)",
-          }} />
-        </div>
-
-        {/* Bouton GO */}
-        <button
-          onClick={handleGo}
+        {/* GIF */}
+        <div
           style={{
-            marginTop: 4,
-            width: "100%",
-            padding: "14px 0",
-            borderRadius: 16,
-            background: color,
-            color: "#fff",
-            fontWeight: 900,
-            fontSize: 15,
-            letterSpacing: "0.8px",
-            textTransform: "uppercase",
-            border: "none",
-            borderBottom: `4px solid ${color}bb`,
-            cursor: "pointer",
-            boxShadow: `0 4px 16px ${color}55`,
-            transition: "transform 0.1s, box-shadow 0.1s",
-          }}
-          onMouseDown={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.transform = "translateY(3px)";
-            (e.currentTarget as HTMLButtonElement).style.borderBottom = `1px solid ${color}bb`;
-          }}
-          onMouseUp={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
-            (e.currentTarget as HTMLButtonElement).style.borderBottom = `4px solid ${color}bb`;
+            width: 160,
+            height: 160,
+            borderRadius: 24,
+            overflow: "hidden",
+            backgroundColor: trackBg,
+            flexShrink: 0,
           }}
         >
-          C'est parti !
-        </button>
+          <img
+            src={gifSrc}
+            alt=""
+            draggable={false}
+            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+          />
+        </div>
+
+        {/* Textes */}
+        <div style={{ textAlign: "center" }}>
+          <p
+            style={{
+              fontSize: 22,
+              fontWeight: 800,
+              color: textPri,
+              margin: 0,
+              letterSpacing: "-0.4px",
+              lineHeight: 1.2,
+            }}
+          >
+            {label.headline}
+          </p>
+          <p
+            style={{
+              fontSize: 14,
+              color: textSec,
+              margin: "8px 0 0",
+              fontWeight: 500,
+              lineHeight: 1.5,
+            }}
+          >
+            {label.sub}
+          </p>
+        </div>
+
+        {/* Barre de progression */}
+        <div
+          style={{
+            width: "100%",
+            height: 6,
+            backgroundColor: trackBg,
+            borderRadius: 99,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              height: "100%",
+              width: `${progress}%`,
+              backgroundColor: color,
+              borderRadius: 99,
+              // Pas de transition CSS — la RAF gere la fluidite
+              willChange: "width",
+            }}
+          />
+        </div>
+
+        {/* Carte de fond subtile (optionnel, effet depth) */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: -1,
+            borderRadius: 32,
+            backgroundColor: bg,
+            boxShadow: isDark
+              ? `0 0 80px ${color}22`
+              : `0 0 60px ${color}18`,
+            width: "calc(100% + 48px)",
+            maxWidth: 368,
+            margin: "0 auto",
+            left: "50%",
+            transform: "translateX(-50%)",
+            height: "calc(100% + 48px)",
+          }}
+        />
       </div>
     </div>
   );
+
+  // Monte directement sur document.body — invisible depuis l'arbre React
+  return createPortal(content, document.body);
 };
 
 // ─── Constante XP ─────────────────────────────────────────────────────────────
@@ -198,7 +273,7 @@ export const LessonButton = ({
   percentage,
   unitColor,
   isLastLesson,
-  title = "Leçon",
+  title = "Lecon",
   lessonChallengeCount = 5,
 }: Props) => {
   const router = useRouter();
@@ -211,30 +286,39 @@ export const LessonButton = ({
 
   const popupRef = useRef<HTMLDivElement>(null);
 
-  // ─── Audio & Haptic ──────────────────────────────────────────────────────
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  // ─── Sons separes ────────────────────────────────────────────────────────
+  // boutonsong1.mp3  → clic sur le bouton rond (ouverture popup)
+  // boutonsong.mp3   → clic sur "Commencer" dans le popup
+  const audioBoutonRef    = useRef<HTMLAudioElement | null>(null); // boutonsong1
+  const audioCommencerRef = useRef<HTMLAudioElement | null>(null); // boutonsong
 
   useEffect(() => {
-    const audio = new Audio("/boutonsong.mp3");
-    audio.preload = "auto";
-    audioRef.current = audio;
+    const a1 = new Audio("/boutonsong1.mp3");
+    a1.preload = "auto";
+    audioBoutonRef.current = a1;
+
+    const a2 = new Audio("/boutonsong.mp3");
+    a2.preload = "auto";
+    audioCommencerRef.current = a2;
   }, []);
 
-  const playFeedback = () => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(() => {});
-    }
-    if ("vibrate" in navigator) {
-      navigator.vibrate([12, 30, 12]);
-    }
+  const playBouton = () => {
+    const a = audioBoutonRef.current;
+    if (a) { a.currentTime = 0; a.play().catch(() => {}); }
+    if ("vibrate" in navigator) navigator.vibrate([12, 30, 12]);
   };
 
-  // ─── Layout ──────────────────────────────────────────────────────────────
+  const playCommencer = () => {
+    const a = audioCommencerRef.current;
+    if (a) { a.currentTime = 0; a.play().catch(() => {}); }
+    if ("vibrate" in navigator) navigator.vibrate([10, 20, 10]);
+  };
+
+  // ─── Layout sinusoidal ───────────────────────────────────────────────────
   const cycleLength = 8;
   const cycleIndex  = index % cycleLength;
 
-  let indentationLevel;
+  let indentationLevel: number;
   if      (cycleIndex <= 2) indentationLevel = cycleIndex;
   else if (cycleIndex <= 4) indentationLevel = 4 - cycleIndex;
   else if (cycleIndex <= 6) indentationLevel = 4 - cycleIndex;
@@ -251,15 +335,13 @@ export const LessonButton = ({
   const colors  = colorMap[unitColor] || colorMap.green;
   const totalXP = lessonChallengeCount * XP_PER_CHALLENGE;
 
-  // ─── Click outside ───────────────────────────────────────────────────────
+  // ─── Click outside popup ─────────────────────────────────────────────────
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
-        closePopup();
-      }
+    const handler = (e: MouseEvent) => {
+      if (popupRef.current && !popupRef.current.contains(e.target as Node)) closePopup();
     };
-    if (showPopup) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    if (showPopup) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, [showPopup]);
 
   // ─── Popup helpers ───────────────────────────────────────────────────────
@@ -274,32 +356,33 @@ export const LessonButton = ({
   };
 
   // ─── Handlers ────────────────────────────────────────────────────────────
+
+  // Clic sur le bouton rond → boutonsong1.mp3
   const handleClick = () => {
     if (locked) return;
-    playFeedback();
+    playBouton();
     if (showPopup) closePopup();
     else           openPopup();
   };
 
+  // Clic sur "Commencer" → boutonsong.mp3, puis ecran de transition
   const handleStart = () => {
-    playFeedback();
+    playCommencer();
     closePopup();
 
-    // Leçon déjà complétée → modal de pratique, pas d'écran interstitiel
     if (isCompleted) {
       open(id);
       return;
     }
 
-    // Affiche l'écran de transition style Duolingo avant la leçon
     setShowTransition(true);
   };
 
-  // Appelée quand l'utilisateur clique "C'est parti !" dans l'écran interstitiel
-  const handleTransitionReady = () => {
+  // Fin du compte a rebours → navigation effective
+  const handleTransitionDone = useCallback(() => {
     setShowTransition(false);
     router.push("/lesson");
-  };
+  }, [router]);
 
   const handleButtonPress = () => {
     setPressing(true);
@@ -365,12 +448,9 @@ export const LessonButton = ({
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <>
-      {/* Écran interstitiel plein écran style Duolingo */}
+      {/* Ecran de transition — monte sur document.body via portal */}
       {showTransition && (
-        <TransitionScreen
-          onReady={handleTransitionReady}
-          color={colors.bgHex}
-        />
+        <TransitionScreen color={colors.bgHex} onDone={handleTransitionDone} />
       )}
 
       <div
@@ -395,7 +475,7 @@ export const LessonButton = ({
             zIndex: showPopup ? 50 : "auto",
           }}
         >
-          {/* ── Popup ── */}
+          {/* ── Popup ────────────────────────────────────────────────────── */}
           {showPopup && !locked && (
             <div
               ref={popupRef}
@@ -414,7 +494,7 @@ export const LessonButton = ({
                   : "translateX(-50%) translateY(-8px) scale(0.95)",
               }}
             >
-              {/* Flèche */}
+              {/* Fleche */}
               <div
                 className="absolute -top-[10px] left-1/2 -translate-x-1/2 w-0 h-0"
                 style={{
@@ -435,10 +515,10 @@ export const LessonButton = ({
               {/* Titre */}
               <p className="text-white font-extrabold text-sm mb-1 pr-6">{title}</p>
               <p className="text-white/80 text-xs mb-4">
-                Leçon {index + 1} sur {totalCount}
+                Lecon {index + 1} sur {totalCount}
               </p>
 
-              {/* Bouton Commencer */}
+              {/* Bouton Commencer — boutonsong.mp3 */}
               <button
                 onMouseDown={handleButtonPress}
                 onClick={handleStart}
@@ -460,7 +540,7 @@ export const LessonButton = ({
             </div>
           )}
 
-          {/* ── Bouton leçon courante ── */}
+          {/* ── Bouton lecon courante (avec progressbar circulaire) ───────── */}
           {current ? (
             <div
               className="h-[102px] w-[102px] relative"
@@ -477,8 +557,8 @@ export const LessonButton = ({
                 )}
               >
                 Start
-                <div className="absolute -bottom-[10px] left-1/2 -translate-x-1/2" style={{ width: 0, height: 0, borderLeft: "6px solid transparent", borderRight: "6px solid transparent", borderTop: `8px solid hsl(var(--border))` }} />
-                <div className="absolute -bottom-[7px]  left-1/2 -translate-x-1/2" style={{ width: 0, height: 0, borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: `7px solid hsl(var(--background))` }} />
+                <div className="absolute -bottom-[10px] left-1/2 -translate-x-1/2" style={{ width: 0, height: 0, borderLeft: "6px solid transparent", borderRight: "6px solid transparent", borderTop: "8px solid hsl(var(--border))" }} />
+                <div className="absolute -bottom-[7px]  left-1/2 -translate-x-1/2" style={{ width: 0, height: 0, borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: "7px solid hsl(var(--background))" }} />
               </div>
 
               <CircularProgressbarWithChildren
@@ -503,7 +583,7 @@ export const LessonButton = ({
             </div>
 
           ) : (
-            /* ── Bouton leçon normale ── */
+            /* ── Bouton lecon normale ────────────────────────────────────── */
             <div
               className="relative"
               onClick={() => { handleClick(); handleButtonPress(); }}
@@ -517,7 +597,7 @@ export const LessonButton = ({
 
               {isPerfect && !isGolden && (
                 <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10 px-2 py-0.5 rounded-full bg-gradient-to-r from-yellow-400 to-amber-400 text-white text-[9px] font-extrabold uppercase tracking-wider shadow-sm whitespace-nowrap">
-                  ★ Perfect
+                  Perfect
                 </div>
               )}
 
