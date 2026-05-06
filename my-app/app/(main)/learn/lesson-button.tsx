@@ -7,9 +7,9 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 
 import { cn } from "@/lib/utils";
-import { usePracticeModal } from "@/store/use-practice-modal";
 
 import "react-circular-progressbar/dist/styles.css";
+import { Button } from "@/components/ui/button";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -65,42 +65,31 @@ const TRANSITION_LABELS = [
 ];
 
 // ─── TransitionScreen ─────────────────────────────────────────────────────────
-// Monte via createPortal sur document.body.
-// Fond plein opaque (couleur unie de l'unite) — aucun element derriere n'est visible.
-// Navigation declenchee automatiquement apres la durée, SANS revenir a la page precedente.
 
 type TransitionScreenProps = {
-  color: string;      // bgHex de l'unite
-  destination: string; // route cible (ex: "/lesson")
+  color: string;
   onNavigate: () => void;
+  practiceContent?: React.ReactNode;
 };
 
-const TransitionScreen = ({ color, onNavigate }: TransitionScreenProps) => {
+const TransitionScreen = ({ color, onNavigate, practiceContent }: TransitionScreenProps) => {
   const [gifSrc]   = useState(() => GIFS[Math.floor(Math.random() * GIFS.length)]);
   const [label]    = useState(() => TRANSITION_LABELS[Math.floor(Math.random() * TRANSITION_LABELS.length)]);
   const [duration] = useState(() => DURATIONS[Math.floor(Math.random() * DURATIONS.length)]);
   const [mounted,  setMounted]  = useState(false);
   const [progress, setProgress] = useState(0);
-  const [isDark,   setIsDark]   = useState(false);
+  const [done,     setDone]     = useState(false);
   const navigatedRef = useRef(false);
 
-  // Detection dark mode via classe "dark" sur <html>
-  useEffect(() => {
-    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
-    check();
-    const obs = new MutationObserver(check);
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-    return () => obs.disconnect();
-  }, []);
-
-  // Apparition douce
   useEffect(() => {
     const raf = requestAnimationFrame(() => requestAnimationFrame(() => setMounted(true)));
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  // Progression RAF + navigation à 100%
   useEffect(() => {
+    // Si on affiche le practiceContent, on arrête la barre et on ne navigue pas
+    if (practiceContent) return;
+
     const start = performance.now();
     let rafId: number;
 
@@ -111,10 +100,9 @@ const TransitionScreen = ({ color, onNavigate }: TransitionScreenProps) => {
       if (pct < 100) {
         rafId = requestAnimationFrame(tick);
       } else {
-        // Garde contre le double appel
         if (!navigatedRef.current) {
           navigatedRef.current = true;
-          // Petit délai visuel pour que la barre atteigne 100% à l'écran
+          setDone(true);
           setTimeout(onNavigate, 80);
         }
       }
@@ -122,14 +110,7 @@ const TransitionScreen = ({ color, onNavigate }: TransitionScreenProps) => {
 
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, [duration, onNavigate]);
-
-  // Couleur de fond : couleur unie de l'unite (pas de carte, pas de fond different)
-  // Textes blancs sur fond couleur — lisibles en toutes circonstances
-  const textPri   = "#ffffff";
-  const textSec   = "rgba(255,255,255,0.75)";
-  const trackBg   = "rgba(255,255,255,0.25)";
-  const trackFill = "#ffffff";
+  }, [duration, onNavigate, practiceContent]);
 
   const content = (
     <div
@@ -140,7 +121,6 @@ const TransitionScreen = ({ color, onNavigate }: TransitionScreenProps) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        // Fond plein couleur unie — masque tout ce qui est dessous
         backgroundColor: color,
         opacity: mounted ? 1 : 0,
         transition: "opacity 0.28s ease",
@@ -160,59 +140,55 @@ const TransitionScreen = ({ color, onNavigate }: TransitionScreenProps) => {
           transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
         }}
       >
-        {/* GIF — fond transparent, pas de conteneur separe */}
-        <img
-          src={gifSrc}
-          alt=""
-          draggable={false}
-          style={{
-            width: 160,
-            height: 160,
-            objectFit: "contain",
-            display: "block",
-            // Pas de borderRadius, pas de backgroundColor — couleur unie derriere
-          }}
-        />
-
-        {/* Textes */}
-        <div style={{ textAlign: "center" }}>
-          <p style={{
-            fontSize: 22,
-            fontWeight: 800,
-            color: textPri,
-            margin: 0,
-            letterSpacing: "-0.3px",
-            lineHeight: 1.2,
-          }}>
-            {label.headline}
-          </p>
-          <p style={{
-            fontSize: 14,
-            color: textSec,
-            margin: "8px 0 0",
-            fontWeight: 500,
-            lineHeight: 1.5,
-          }}>
-            {label.sub}
-          </p>
-        </div>
-
-        {/* Barre de progression blanche sur fond couleur */}
-        <div style={{
-          width: "100%",
-          height: 6,
-          backgroundColor: trackBg,
-          borderRadius: 99,
-          overflow: "hidden",
-        }}>
-          <div style={{
-            height: "100%",
-            width: `${progress}%`,
-            backgroundColor: trackFill,
-            borderRadius: 99,
-            willChange: "width",
-          }} />
-        </div>
+        {practiceContent ? (
+          // ── Mode Practice : contenu du modal sans overlay sombre ──
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 16,
+              width: "100%",
+              animation: "fadeSlideIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both",
+            }}
+          >
+            <style>{`
+              @keyframes fadeSlideIn {
+                from { opacity: 0; transform: translateY(16px); }
+                to   { opacity: 1; transform: translateY(0); }
+              }
+            `}</style>
+            <img src="/heart.svg" alt="" width={90} height={90} style={{ display: "block" }} />
+            <p style={{ color: "#fff", fontWeight: 800, fontSize: 22, textAlign: "center", margin: 0, lineHeight: 1.2 }}>
+              Practice lesson
+            </p>
+            <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 14, textAlign: "center", margin: 0, lineHeight: 1.5, fontWeight: 500 }}>
+              Use practice lessons to regain hearts and points. You cannot lose hearts or points in practice lessons.
+            </p>
+            {practiceContent}
+          </div>
+        ) : (
+          // ── Mode Normal : GIF + texte + barre ──
+          <>
+            <img
+              src={gifSrc}
+              alt=""
+              draggable={false}
+              style={{ width: 160, height: 160, objectFit: "contain", display: "block" }}
+            />
+            <div style={{ textAlign: "center" }}>
+              <p style={{ fontSize: 22, fontWeight: 800, color: "#ffffff", margin: 0, letterSpacing: "-0.3px", lineHeight: 1.2 }}>
+                {label.headline}
+              </p>
+              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.75)", margin: "8px 0 0", fontWeight: 500, lineHeight: 1.5 }}>
+                {label.sub}
+              </p>
+            </div>
+            <div style={{ width: "100%", height: 6, backgroundColor: "rgba(255,255,255,0.25)", borderRadius: 99, overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${progress}%`, backgroundColor: "#ffffff", borderRadius: 99, willChange: "width" }} />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -239,20 +215,19 @@ export const LessonButton = ({
   lessonChallengeCount = 5,
 }: Props) => {
   const router = useRouter();
-  const { open } = usePracticeModal();
 
-  const [showPopup,      setShowPopup]      = useState(false);
-  const [popupVisible,   setPopupVisible]   = useState(false);
-  const [pressing,       setPressing]       = useState(false);
-  const [showTransition, setShowTransition] = useState(false);
-  // Route cible mémorisée pour que le portal la connaisse
+  const [showPopup,         setShowPopup]         = useState(false);
+  const [popupVisible,      setPopupVisible]       = useState(false);
+  const [pressing,          setPressing]           = useState(false);
+  const [showTransition,    setShowTransition]     = useState(false);
+  const [showPracticeInTransition, setShowPracticeInTransition] = useState(false);
+
   const destinationRef = useRef<string>("/lesson");
+  const popupRef       = useRef<HTMLDivElement>(null);
 
-  const popupRef = useRef<HTMLDivElement>(null);
-
-  // ─── Sons ───────────────────────────────────────────────────────────────
-  const audioBoutonRef    = useRef<HTMLAudioElement | null>(null); // boutonsong1 → clic rond
-  const audioCommencerRef = useRef<HTMLAudioElement | null>(null); // boutonsong  → Commencer
+  // ─── Sons ────────────────────────────────────────────────────────────────
+  const audioBoutonRef    = useRef<HTMLAudioElement | null>(null);
+  const audioCommencerRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const a1 = new Audio("/boutonsong1.mp3");
@@ -314,7 +289,6 @@ export const LessonButton = ({
     setTimeout(() => setShowPopup(false), 200);
   };
 
-  // ─── Clic sur le bouton rond — boutonsong1 ───────────────────────────────
   const handleClick = () => {
     if (locked) return;
     playBouton();
@@ -322,15 +296,11 @@ export const LessonButton = ({
     else           openPopup();
   };
 
-  // ─── Clic "Commencer" — boutonsong + transition pour TOUS les boutons débloqués
   const handleStart = () => {
     playCommencer();
     closePopup();
 
-    // Lecon completee → meme logique : transition puis modal pratique
-    // On passe par la transition dans TOUS les cas (sauf locked)
     if (isCompleted) {
-      // Destination fictive vide — apres la transition on ouvre le modal
       destinationRef.current = "practice";
     } else {
       destinationRef.current = "/lesson";
@@ -339,20 +309,25 @@ export const LessonButton = ({
     setShowTransition(true);
   };
 
-  /**
-   * Appelee a la FIN du compte a rebours par TransitionScreen.
-   * On utilise router.replace pour NE PAS empiler l'historique :
-   * apres le cours, le bouton "retour" va directement a la bonne page.
-   */
   const handleTransitionDone = useCallback(() => {
-    setShowTransition(false);
     if (destinationRef.current === "practice") {
-      open(id);
+      // Affiche le contenu practice DANS la transition — pas de Dialog, pas d'overlay
+      setShowPracticeInTransition(true);
     } else {
-      // replace() au lieu de push() : evite le retour intermediaire
+      // Nouvelle page — on ne ferme pas la transition
       router.replace(destinationRef.current);
     }
-  }, [router, open, id]);
+  }, [router]);
+
+  const handlePracticeConfirm = () => {
+    // On ne ferme pas la transition — elle disparaît avec l'unmount
+    router.replace(`/lesson/${id}`);
+  };
+
+  const handlePracticeCancel = () => {
+    setShowPracticeInTransition(false);
+    setShowTransition(false);
+  };
 
   const handleButtonPress = () => {
     setPressing(true);
@@ -415,14 +390,51 @@ export const LessonButton = ({
     .bounce-infinite { animation: bounceInfinite 1s ease-in-out infinite; }
   `;
 
+  // ─── Contenu practice affiché dans la transition ──────────────────────────
+  const practiceButtons = showPracticeInTransition ? (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", marginTop: 8 }}>
+      <Button variant="primary"
+        onClick={handlePracticeConfirm}
+        style={{
+          width: "100%",
+          padding: "13px 0",
+          borderRadius: 14,
+          backgroundColor: "#ffffff",
+          color: colors.bgHex,
+          fontWeight: 800,
+          fontSize: 15,
+          border: "none",
+          cursor: "pointer",
+          letterSpacing: "0.3px",
+        }}
+      >
+        I understand
+      </Button>
+      <button
+        onClick={handlePracticeCancel}
+        style={{
+          background: "none",
+          border: "none",
+          color: "rgba(255,255,255,0.65)",
+          cursor: "pointer",
+          fontSize: 13,
+          fontWeight: 600,
+          padding: "6px 0",
+        }}
+      >
+        Annuler
+      </button>
+    </div>
+  ) : undefined;
+
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <>
       {showTransition && (
         <TransitionScreen
           color={colors.bgHex}
-          destination={destinationRef.current}
           onNavigate={handleTransitionDone}
+          practiceContent={practiceButtons}
         />
       )}
 
@@ -467,7 +479,6 @@ export const LessonButton = ({
                   : "translateX(-50%) translateY(-8px) scale(0.95)",
               }}
             >
-              {/* Fleche */}
               <div
                 className="absolute -top-[10px] left-1/2 -translate-x-1/2 w-0 h-0"
                 style={{
@@ -476,21 +487,16 @@ export const LessonButton = ({
                   borderBottom: `10px solid ${colors.popupArrow}`,
                 }}
               />
-
-              {/* Fermer */}
               <button
                 onClick={(e) => { e.stopPropagation(); closePopup(); }}
                 className="absolute top-2 right-2 text-white/70 hover:text-white transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
-
               <p className="text-white font-extrabold text-sm mb-1 pr-6">{title}</p>
               <p className="text-white/80 text-xs mb-4">
                 Lecon {index + 1} sur {totalCount}
               </p>
-
-              {/* Bouton Commencer — boutonsong.mp3 + transition */}
               <button
                 onMouseDown={handleButtonPress}
                 onClick={handleStart}
@@ -555,7 +561,6 @@ export const LessonButton = ({
             </div>
 
           ) : (
-            /* ── Boutons lecons normales (completees, verrouillees, golden) ── */
             <div
               className="relative"
               onClick={() => { handleClick(); handleButtonPress(); }}
