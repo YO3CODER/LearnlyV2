@@ -29,10 +29,10 @@ export const Items = ({
     startTransition(() => {
       refillHearts()
         .then(() => {
-          toast.success("Hearts refilled!");
+          toast.success("Cœurs rechargés !");
           router.refresh();
         })
-        .catch(() => toast.error("Something went wrong"));
+        .catch(() => toast.error("Une erreur est survenue"));
     });
   };
 
@@ -49,14 +49,14 @@ export const Items = ({
   return (
     <ul className="w-full">
 
-      {/* REFILL HEARTS */}
+      {/* RECHARGER LES CŒURS */}
       <li className="flex items-center w-full p-4 gap-x-4 border-t-2 border-border">
 
-        <Image src="/heart.svg" alt="Heart" height={60} width={60} />
+        <Image src="/heart.svg" alt="Cœur" height={60} width={60} />
 
         <div className="flex-1">
           <p className="text-slate-700 dark:text-foreground text-base lg:text-xl font-bold">
-            Refill hearts
+            Recharger les cœurs
           </p>
         </div>
 
@@ -66,7 +66,7 @@ export const Items = ({
           variant="primary"
         >
           {hearts === 5 ? (
-            "Full"
+            "Complet"
           ) : (
             <div className="flex items-center gap-x-2">
               <Image src="/points.svg" alt="Points" height={20} width={20} />
@@ -76,14 +76,14 @@ export const Items = ({
         </Button>
       </li>
 
-      {/* UNLIMITED HEARTS */}
+      {/* CŒURS ILLIMITÉS */}
       <li className="flex items-center w-full p-4 pt-8 gap-x-4 border-t-2 border-border">
 
-        <Image src="/heartInfin.svg" alt="Unlimited" height={60} width={60} />
+        <Image src="/heartInfin.svg" alt="Illimité" height={60} width={60} />
 
         <div className="flex-1">
           <p className="text-slate-700 dark:text-foreground text-base lg:text-xl font-bold">
-            Unlimited hearts
+            Cœurs illimités
           </p>
 
           <p className="text-sm text-slate-500 dark:text-muted-foreground">
@@ -96,7 +96,7 @@ export const Items = ({
           disabled={pending}
           variant="primary"
         >
-          {hasActiveSubscription ? "Settings" : "Upgrade"}
+          {hasActiveSubscription ? "Paramètres" : "Améliorer"}
         </Button>
       </li>
 
