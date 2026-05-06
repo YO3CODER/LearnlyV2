@@ -59,9 +59,9 @@ const colorMap: Record<string, {
 const GIFS = ["/1.gif", "/2.gif", "/3.gif"];
 const DURATIONS = [2000, 3000, 5000];
 const TRANSITION_LABELS = [
-  { headline: "Prepare-toi", sub: "La lecon commence dans un instant" },
+  { headline: "Prépare-toi", sub: "La leçon commence dans un instant" },
   { headline: "Concentre-toi", sub: "Quelques secondes et c'est parti" },
-  { headline: "Allez, on y va", sub: "La lecon se charge pour toi" },
+  { headline: "Allez, on y va !", sub: "La leçon se charge pour toi" },
 ];
 
 // ─── TransitionScreen ─────────────────────────────────────────────────────────
@@ -87,7 +87,6 @@ const TransitionScreen = ({ color, onNavigate, practiceContent }: TransitionScre
   }, []);
 
   useEffect(() => {
-    // Si on affiche le practiceContent, on arrête la barre et on ne navigue pas
     if (practiceContent) return;
 
     const start = performance.now();
@@ -141,7 +140,6 @@ const TransitionScreen = ({ color, onNavigate, practiceContent }: TransitionScre
         }}
       >
         {practiceContent ? (
-          // ── Mode Practice : contenu du modal sans overlay sombre ──
           <div
             style={{
               display: "flex",
@@ -160,15 +158,14 @@ const TransitionScreen = ({ color, onNavigate, practiceContent }: TransitionScre
             `}</style>
             <img src="/heart.svg" alt="" width={90} height={90} style={{ display: "block" }} />
             <p style={{ color: "#fff", fontWeight: 800, fontSize: 22, textAlign: "center", margin: 0, lineHeight: 1.2 }}>
-              Practice lesson
+              Leçon de pratique
             </p>
             <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 14, textAlign: "center", margin: 0, lineHeight: 1.5, fontWeight: 500 }}>
-              Use practice lessons to regain hearts and points. You cannot lose hearts or points in practice lessons.
+              Utilisez les leçons de pratique pour récupérer des cœurs et des points. Vous ne pouvez pas perdre de cœurs ni de points lors des leçons de pratique.
             </p>
             {practiceContent}
           </div>
         ) : (
-          // ── Mode Normal : GIF + texte + barre ──
           <>
             <img
               src={gifSrc}
@@ -211,16 +208,16 @@ export const LessonButton = ({
   percentage,
   unitColor,
   isLastLesson,
-  title = "Lecon",
+  title = "Leçon",
   lessonChallengeCount = 5,
 }: Props) => {
   const router = useRouter();
 
-  const [showPopup,         setShowPopup]         = useState(false);
-  const [popupVisible,      setPopupVisible]       = useState(false);
-  const [pressing,          setPressing]           = useState(false);
-  const [showTransition,    setShowTransition]     = useState(false);
-  const [showPracticeInTransition, setShowPracticeInTransition] = useState(false);
+  const [showPopup,                    setShowPopup]                    = useState(false);
+  const [popupVisible,                 setPopupVisible]                 = useState(false);
+  const [pressing,                     setPressing]                     = useState(false);
+  const [showTransition,               setShowTransition]               = useState(false);
+  const [showPracticeInTransition,     setShowPracticeInTransition]     = useState(false);
 
   const destinationRef = useRef<string>("/lesson");
   const popupRef       = useRef<HTMLDivElement>(null);
@@ -311,16 +308,13 @@ export const LessonButton = ({
 
   const handleTransitionDone = useCallback(() => {
     if (destinationRef.current === "practice") {
-      // Affiche le contenu practice DANS la transition — pas de Dialog, pas d'overlay
       setShowPracticeInTransition(true);
     } else {
-      // Nouvelle page — on ne ferme pas la transition
       router.replace(destinationRef.current);
     }
   }, [router]);
 
   const handlePracticeConfirm = () => {
-    // On ne ferme pas la transition — elle disparaît avec l'unmount
     router.replace(`/lesson/${id}`);
   };
 
@@ -408,7 +402,7 @@ export const LessonButton = ({
           letterSpacing: "0.3px",
         }}
       >
-        I understand
+        Je comprends
       </Button>
       <button
         onClick={handlePracticeCancel}
@@ -495,7 +489,7 @@ export const LessonButton = ({
               </button>
               <p className="text-white font-extrabold text-sm mb-1 pr-6">{title}</p>
               <p className="text-white/80 text-xs mb-4">
-                Lecon {index + 1} sur {totalCount}
+                Leçon {index + 1} sur {totalCount}
               </p>
               <button
                 onMouseDown={handleButtonPress}
@@ -534,7 +528,7 @@ export const LessonButton = ({
                   "bounce-infinite",
                 )}
               >
-                Start
+                Début
                 <div className="absolute -bottom-[10px] left-1/2 -translate-x-1/2" style={{ width: 0, height: 0, borderLeft: "6px solid transparent", borderRight: "6px solid transparent", borderTop: "8px solid hsl(var(--border))" }} />
                 <div className="absolute -bottom-[7px]  left-1/2 -translate-x-1/2" style={{ width: 0, height: 0, borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: "7px solid hsl(var(--background))" }} />
               </div>
@@ -574,7 +568,7 @@ export const LessonButton = ({
 
               {isPerfect && !isGolden && (
                 <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10 px-2 py-0.5 rounded-full bg-gradient-to-r from-yellow-400 to-amber-400 text-white text-[9px] font-extrabold uppercase tracking-wider shadow-sm whitespace-nowrap">
-                  Perfect
+                  Parfait
                 </div>
               )}
 

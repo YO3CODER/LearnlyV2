@@ -58,7 +58,7 @@ const TransitionOverlay = ({ onNavigate }: { onNavigate: () => void }) => {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: "#fbbf24", // amber — couleur "pratique"
+      backgroundColor: "#fbbf24",
       opacity: mounted ? 1 : 0,
       transition: "opacity 0.28s ease",
       pointerEvents: "all",
@@ -67,7 +67,7 @@ const TransitionOverlay = ({ onNavigate }: { onNavigate: () => void }) => {
     }}>
       <Image src="/heart.svg" alt="" width={80} height={80} />
       <p style={{ color: "#fff", fontWeight: 800, fontSize: 20 }}>
-        Preparation...
+        Préparation...
       </p>
       <div style={{ width: 200, height: 6, backgroundColor: "rgba(255,255,255,0.3)", borderRadius: 99, overflow: "hidden" }}>
         <div style={{ height: "100%", width: `${progress}%`, backgroundColor: "#fff", borderRadius: 99, willChange: "width" }} />
@@ -96,7 +96,6 @@ export const PracticeModal = () => {
   };
 
   const handleTransitionDone = () => {
-    // On ne ferme PAS la transition — elle disparaît avec l'unmount
     router.replace(`/lesson/${lessonId}`);
   };
 
@@ -110,13 +109,13 @@ export const PracticeModal = () => {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <div className="flex items-center w-full justify-center mb-5">
-              <Image src="/heart.svg" alt="Heart" height={100} width={100} />
+              <Image src="/heart.svg" alt="Cœur" height={100} width={100} />
             </div>
             <DialogTitle className="text-center font-bold text-2xl">
-              Practice lesson
+              Leçon de pratique
             </DialogTitle>
             <DialogDescription className="text-center text-base">
-              Use practice lessons to regain hearts and points. You cannot loose hearts or points in practice lessons.
+              Utilisez les leçons de pratique pour récupérer des cœurs et des points. Vous ne pouvez pas perdre de cœurs ni de points lors des leçons de pratique.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mb-4">
@@ -127,7 +126,7 @@ export const PracticeModal = () => {
                 size="lg"
                 onClick={handleConfirm}
               >
-                I understand
+                J'ai compris
               </Button>
             </div>
           </DialogFooter>
