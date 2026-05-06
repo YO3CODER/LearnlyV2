@@ -1,6 +1,6 @@
 "use client";
 
-import { Admin, Resource } from "react-admin";
+import { Admin, Resource, fetchUtils } from "react-admin";
 import simpleRestProvider from "ra-data-simple-rest";
 import { defaultTheme } from "react-admin";
 
@@ -31,18 +31,32 @@ import { ChallengeOptionList } from "./challengeOption/list";
 import { ChallengeOptionEdit } from "./challengeOption/edit";
 import { ChallengeOptionCreate } from "./challengeOption/create";
 
-const dataProvider = simpleRestProvider("/api");
+// ✅ dataProvider corrigé — force l'envoi de tous les champs dans le PUT
+const baseProvider = simpleRestProvider("/api", fetchUtils.fetchJson);
+
+const dataProvider = {
+  ...baseProvider,
+  update: async (resource: string, params: any) => {
+    return baseProvider.update(resource, {
+      ...params,
+      data: {
+        ...params.previousData, // valeurs existantes
+        ...params.data,         // nouvelles valeurs (écrase)
+      },
+    });
+  },
+};
 
 const theme = {
   ...defaultTheme,
   palette: {
     primary: {
-      main: "#4F46E5", // indigo
+      main: "#4F46E5",
       light: "#818CF8",
       dark: "#3730A3",
     },
     secondary: {
-      main: "#10B981", // vert
+      main: "#10B981",
     },
     background: {
       default: "#F9FAFB",

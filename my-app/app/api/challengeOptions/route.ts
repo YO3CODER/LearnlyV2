@@ -31,12 +31,13 @@ export const POST = async (req: Request) => {
     }
 
     const body = await req.json();
-    
-    // SUPPRIMER L'ID - CRUCIAL !
-    delete body.id;
-    
-    const data = await db.insert(challengeOptions).values(body).returning();
 
+    // ✅ Debug temporaire
+    console.log("BODY REÇU:", JSON.stringify(body, null, 2));
+
+    delete body.id;
+
+    const data = await db.insert(challengeOptions).values(body).returning();
     return NextResponse.json(data[0]);
   } catch (error) {
     console.error("Error in POST /api/challengeOptions:", error);
