@@ -8,10 +8,9 @@ import { getTopTenUsers, getUserProgress, getUserSubscription } from "@/db/queri
 import { Promo } from "@/components/promo";
 import { Quests } from "@/components/quests";
 import { LeaderboardClient } from "./leaderboard-client";
+import { auth } from "@clerk/nextjs/server";
 
 export const dynamic = "force-dynamic";
-
-// ─── Images ──────────────────────────────────────────────────────────────────
 
 const divisionImages = {
   Legendary: "/legendary.svg",
@@ -27,38 +26,27 @@ const legendImages = {
   Legendary: "/legendary.svg",
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-export const getDivision = (points: number) => {
+const getDivision = (points: number) => {
   if (points >= 5000) return {
-    name: "Légendaire",
-    image: divisionImages.Legendary,
-    color: "text-yellow-500",
-    bg: "bg-yellow-50 dark:bg-yellow-950/30",
+    name: "Légendaire", image: divisionImages.Legendary,
+    color: "text-yellow-500", bg: "bg-yellow-50 dark:bg-yellow-950/30",
     border: "border-yellow-200 dark:border-yellow-800",
     barColor: "bg-gradient-to-r from-yellow-400 to-orange-400",
   };
   if (points >= 3000) return {
-    name: "Diamant",
-    image: divisionImages.Diamond,
-    color: "text-cyan-500",
-    bg: "bg-cyan-50 dark:bg-cyan-950/30",
+    name: "Diamant", image: divisionImages.Diamond,
+    color: "text-cyan-500", bg: "bg-cyan-50 dark:bg-cyan-950/30",
     border: "border-cyan-200 dark:border-cyan-800",
     barColor: "bg-gradient-to-r from-cyan-400 to-blue-400",
   };
   if (points >= 2000) return {
-    name: "Platine",
-    image: divisionImages.Platinum,
-    color: "text-slate-500",
-    bg: "bg-card",
-    border: "border-border",
+    name: "Platine", image: divisionImages.Platinum,
+    color: "text-slate-500", bg: "bg-card", border: "border-border",
     barColor: "bg-gradient-to-r from-slate-400 to-slate-500",
   };
   return {
-    name: "Or",
-    image: divisionImages.Gold,
-    color: "text-yellow-500",
-    bg: "bg-yellow-50 dark:bg-yellow-950/30",
+    name: "Or", image: divisionImages.Gold,
+    color: "text-yellow-500", bg: "bg-yellow-50 dark:bg-yellow-950/30",
     border: "border-yellow-200 dark:border-yellow-800",
     barColor: "bg-gradient-to-r from-yellow-300 to-yellow-500",
   };
@@ -78,9 +66,9 @@ const getPrevThreshold = (points: number) => {
   return 0;
 };
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
 const LeaderboardPage = async () => {
+const { userId } = await auth();
+
   const [userProgress, userSubscription, leaderboard] = await Promise.all([
     getUserProgress(),
     getUserSubscription(),
@@ -144,13 +132,7 @@ const LeaderboardPage = async () => {
           <div className={`w-full rounded-2xl border-2 border-b-4 ${division.border} ${division.bg} p-4 mb-6`}>
             <div className="flex items-center gap-3 mb-3">
               <div className={`p-2 rounded-xl bg-background shadow-sm border-2 border-b-4 ${division.border}`}>
-                <Image
-                  src={division.image}
-                  alt={division.name}
-                  width={24}
-                  height={24}
-                  className="drop-shadow-sm"
-                />
+                <Image src={division.image} alt={division.name} width={24} height={24} className="drop-shadow-sm" />
               </div>
               <div>
                 <p className="text-xs text-muted-foreground font-medium">Votre division</p>
@@ -197,10 +179,10 @@ const LeaderboardPage = async () => {
             </p>
             <div className="grid grid-cols-4 gap-2">
               {[
-                { name: "Or",          image: legendImages.Gold,      req: "0 XP"    },
-                { name: "Platine",     image: legendImages.Platinum,  req: "2000 XP" },
-                { name: "Diamant",     image: legendImages.Diamond,   req: "3000 XP" },
-                { name: "Légendaire",  image: legendImages.Legendary, req: "5000 XP" },
+                { name: "Or",         image: legendImages.Gold,      req: "0 XP"    },
+                { name: "Platine",    image: legendImages.Platinum,  req: "2000 XP" },
+                { name: "Diamant",    image: legendImages.Diamond,   req: "3000 XP" },
+                { name: "Légendaire", image: legendImages.Legendary, req: "5000 XP" },
               ].map(({ name, image, req }) => {
                 const isCurrentDivision = division.name === name;
                 return (
@@ -223,17 +205,15 @@ const LeaderboardPage = async () => {
 
           <div className="h-px w-full bg-border mb-6 rounded-full" />
 
-          {/* ── Classement header + countdown ── */}
           <div className="w-full flex items-center justify-between mb-4">
             <p className="text-xs font-bold tracking-widest uppercase text-muted-foreground">
               Classement
             </p>
           </div>
 
-          {/* ── Leaderboard animé + countdown ── */}
           <LeaderboardClient
             leaderboard={leaderboard}
-            
+            currentUserId={userId}
           />
 
         </div>
