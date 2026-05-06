@@ -29,37 +29,37 @@ export default function Home() {
       <div className="relative max-w-[988px] mx-auto flex-1 w-full flex flex-col lg:flex-row
         items-center justify-center p-6 gap-8 lg:gap-16 z-10"
       >
-        {/* Hero illustration */}
+        {/* Illustration hero */}
         <div className="relative w-[220px] h-[220px] lg:w-[420px] lg:h-[420px] mb-4 lg:mb-0 shrink-0">
           <div className="absolute inset-0 bg-blue-200/30 dark:bg-blue-800/20 rounded-full blur-2xl scale-110" />
           <Image src="/hero.svg" fill alt="Hero" className="relative drop-shadow-xl" />
         </div>
 
-        {/* Content */}
+        {/* Contenu */}
         <div className="flex flex-col items-center lg:items-start gap-y-8">
 
-          {/* Text */}
+          {/* Texte */}
           <div className="space-y-3 text-center lg:text-left">
 
             <p className="text-xs font-semibold tracking-widest uppercase text-blue-400">
-              Welcome to Learnly
+              Bienvenue sur Learnly
             </p>
 
             <h1 className="text-3xl lg:text-5xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-tight max-w-[480px]">
-              Learn, practice, and{" "}
+              Apprends, pratique, et{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-500">
-                master
+                maîtrise
               </span>{" "}
-              new skills with Learnly.
+              de nouvelles compétences avec Learnly.
             </h1>
 
             <p className="text-slate-600 dark:text-slate-400 text-sm lg:text-base font-medium max-w-[380px]">
-              Join thousands of learners and start your journey today — for free.
+              Rejoins des milliers d&apos;apprenants et commence ton parcours aujourd&apos;hui — gratuitement.
             </p>
 
           </div>
 
-          {/* Buttons */}
+          {/* Boutons */}
           <div className="flex flex-col items-center gap-y-3 w-full max-w-[330px]">
 
             <ClerkLoading>
@@ -76,7 +76,7 @@ export default function Home() {
                     transition-all duration-200"
                   asChild
                 >
-                  <Link href="/learn">Continue Learning →</Link>
+                  <Link href="/learn">Continuer l&apos;apprentissage →</Link>
                 </Button>
               ) : (
                 <>
@@ -87,7 +87,7 @@ export default function Home() {
                         bg-gradient-to-r from-blue-500 to-blue-500
                         hover:opacity-90 text-white transition-all duration-200"
                     >
-                      Get Started — it&apos;s free
+                      Commencer — c&apos;est gratuit
                     </Button>
                   </SignUpButton>
 
@@ -101,7 +101,7 @@ export default function Home() {
                         hover:bg-slate-100 dark:hover:bg-slate-800
                         transition-all duration-200"
                     >
-                      I already have an account
+                      J&apos;ai déjà un compte
                     </Button>
                   </SignInButton>
                 </>

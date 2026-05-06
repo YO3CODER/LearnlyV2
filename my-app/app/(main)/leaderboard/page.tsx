@@ -67,7 +67,7 @@ const getPrevThreshold = (points: number) => {
 };
 
 const LeaderboardPage = async () => {
-const { userId } = await auth();
+  const { userId } = await auth();
 
   const [userProgress, userSubscription, leaderboard] = await Promise.all([
     getUserProgress(),
@@ -111,7 +111,7 @@ const { userId } = await auth();
             <div className="absolute inset-0 bg-blue-200/30 dark:bg-blue-800/20 rounded-full blur-xl scale-150" />
             <Image
               src="/leaderboard.ico"
-              alt="Leaderboard"
+              alt="Classement"
               height={90}
               width={90}
               className="relative drop-shadow-md"
@@ -119,13 +119,13 @@ const { userId } = await auth();
           </div>
 
           <p className="text-xs font-semibold tracking-widest uppercase text-blue-400 mb-1">
-            Rankings
+            Classement
           </p>
           <h1 className="font-extrabold text-foreground text-3xl tracking-tight mb-1">
-            Leaderboard
+            Classement
           </h1>
           <p className="text-muted-foreground text-center text-sm mb-6 max-w-sm">
-            See where you stand among other learners in the community.
+            Découvre ta position parmi les autres apprenants de la communauté.
           </p>
 
           {/* ── Division Card ── */}
@@ -164,7 +164,7 @@ const { userId } = await auth();
 
             {!nextDiv && (
               <div className="flex items-center gap-2 mt-1">
-                <Image src="/legendary.svg" alt="Legendary" width={16} height={16} />
+                <Image src="/legendary.svg" alt="Légendaire" width={16} height={16} />
                 <p className="text-xs font-bold text-yellow-600 dark:text-yellow-400">
                   Vous avez atteint la division maximale !
                 </p>
@@ -172,7 +172,7 @@ const { userId } = await auth();
             )}
           </div>
 
-          {/* ── Divisions Legend ── */}
+          {/* ── Légende des divisions ── */}
           <div className="w-full mb-6">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3">
               Divisions

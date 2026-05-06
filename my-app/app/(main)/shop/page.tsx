@@ -43,28 +43,28 @@ const ShopPage = async () => {
         <Quests points={userProgress.points} />
       </StickyWrapper>
 
-      {/* MAIN */}
+      {/* PRINCIPAL */}
       <FeedWrapper>
         <div className="w-full flex flex-col items-center">
 
           <Image
             src="/shop.ico"
-            alt="Shop"
+            alt="Boutique"
             height={90}
             width={90}
           />
 
-          {/* TITLE */}
+          {/* TITRE */}
           <h1 className="text-center font-bold text-foreground text-2xl my-6">
-            Shop
+            Boutique
           </h1>
 
           {/* DESCRIPTION */}
           <p className="text-muted-foreground text-center text-lg mb-6">
-            Spend your points on cool stuff.
+            Dépense tes points pour des trucs sympas.
           </p>
 
-          {/* ITEMS */}
+          {/* ARTICLES */}
           <Items
             hearts={userProgress.hearts}
             points={userProgress.points}

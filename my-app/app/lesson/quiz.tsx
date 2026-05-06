@@ -204,7 +204,7 @@ export const Quiz = ({
           });
           if (initialPercentage === 100) setHearts((prev) => Math.min(prev + 1, 5));
         })
-        .catch(() => toast.error("Something went wrong. Please try again."));
+        .catch(() => toast.error("Une erreur est survenue. Veuillez réessayer."));
     });
   };
 
@@ -220,11 +220,9 @@ export const Quiz = ({
           if (!response?.error) setHearts((prev) => Math.max(prev - 1, 0));
           startWrongCountdown();
         })
-        .catch(() => toast.error("Something went wrong. Please try again."));
+        .catch(() => toast.error("Une erreur est survenue. Veuillez réessayer."));
     });
   };
-
-  // ── Vérifications par type ──
 
   const isWordBankCorrect = () => {
     const correctIds = [...options]
@@ -253,7 +251,6 @@ export const Quiz = ({
   const isTranslateCorrect = () => {
     const correctOption = options.find((o) => o.correct);
     if (!correctOption) return false;
-    // Accepte aussi les variantes séparées par "|"
     const variants = correctOption.text.split("|").map(normalize);
     return variants.includes(normalize(translateValue));
   };
@@ -272,14 +269,10 @@ export const Quiz = ({
       const left = options.find((o) => o.id === leftId);
       const right = options.find((o) => o.id === rightId);
       if (!left || !right) return false;
-      // La colonne droite porte le même `text` que la paire correcte
       return left.audioSrc === right.audioSrc || left.text === right.audioSrc;
     });
   };
 
-  // ── Vérification MATCH via ordre déclaré ──
-  // On encode la paire correcte avec la colonne `order` :
-  // left.order === right.order → c'est une paire valide
   const isMatchCorrectByOrder = () => {
     const leftItems = options.filter((o) => !o.correct);
     if (matchPairs.length !== leftItems.length) return false;
@@ -332,7 +325,6 @@ export const Quiz = ({
       return;
     }
 
-    // SELECT / ASSIST
     if (!selectedOption) return;
     if (status === "correct") { onNext(); setStatus("none"); setSelectedOption(undefined); return; }
     const correctOption = options.find((o) => o.correct);
@@ -362,11 +354,11 @@ export const Quiz = ({
             <Image src="/finish.svg" alt="Finish" className="block lg:hidden relative drop-shadow-lg" height={60} width={60} />
           </div>
           <div className="space-y-2">
-            <p className="text-xs font-semibold tracking-widest uppercase text-blue-400">Lesson Complete</p>
+            <p className="text-xs font-semibold tracking-widest uppercase text-blue-400">Leçon terminée</p>
             <h1 className="text-2xl lg:text-4xl font-extrabold tracking-tight leading-tight">
-              Great job! 🎉<br />
+              Bravo ! 🎉<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-500">
-                You&apos;ve completed the lesson.
+                Tu as terminé la leçon.
               </span>
             </h1>
           </div>
@@ -382,18 +374,17 @@ export const Quiz = ({
 
   const title =
     challenge.type === "ASSIST"
-      ? "Select the correct meaning"
+      ? "Sélectionne la bonne signification"
       : challenge.type === "FILL_BLANK"
-        ? "Fill in the blanks"
+        ? "Complète les espaces vides"
         : challenge.type === "TRANSLATE"
-          ? "Translate this sentence"
+          ? "Traduis cette phrase"
           : challenge.type === "LISTEN"
-            ? "Write what you hear"
+            ? "Écris ce que tu entends"
             : challenge.type === "MATCH"
-              ? "Match the pairs"
+              ? "Associe les paires"
               : challenge.question;
 
-  // ── Désactivation du footer ──
   const isFillBlankDone = () => {
     const blankCount = (challenge.question.match(/___/g) ?? []).length;
     return fillBlankSelectedBlanks.filter((b) => b !== null).length === blankCount;
@@ -419,10 +410,9 @@ export const Quiz = ({
               ? !isMatchDone()
               : !selectedOption);
 
-  // Audio pour LISTEN — première option qui a un audioSrc
   const listenAudioSrc = options.find((o) => o.audioSrc)?.audioSrc ?? "";
 
-  const footerLabel = countdown !== null ? `Next in ${countdown}s…` : undefined;
+  const footerLabel = countdown !== null ? `Prochain dans ${countdown}s…` : undefined;
 
   const slideClasses = [
     "transition-all duration-300 ease-in-out",
@@ -438,7 +428,7 @@ export const Quiz = ({
       {finishAudio}
       <Header hearts={hearts} percentage={percentage} hasActiveSubscription={!!userSubscription?.isActive} />
 
-      {/* Streak toast */}
+      {/* Toast streak */}
       <div className={[
         "fixed top-6 left-1/2 -translate-x-1/2 z-50",
         "transition-all duration-500 ease-out",
@@ -447,8 +437,8 @@ export const Quiz = ({
         <div className="flex items-center gap-x-3 bg-orange-500 text-white px-5 py-3 rounded-2xl shadow-lg shadow-orange-200 dark:shadow-orange-900">
           <span className="text-xl leading-none">🔥</span>
           <div className="flex flex-col leading-tight">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-orange-100">{streak} in a row</span>
-            <span className="text-base font-extrabold tracking-tight">On a roll!</span>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-orange-100">{streak} d&apos;affilée</span>
+            <span className="text-base font-extrabold tracking-tight">En pleine forme !</span>
           </div>
         </div>
       </div>
@@ -463,9 +453,9 @@ export const Quiz = ({
                   <div className="relative overflow-hidden rounded-2xl border border-amber-200 dark:border-amber-800 bg-gradient-to-r from-amber-50 dark:from-amber-950/30 via-orange-50 dark:via-orange-950/20 to-amber-50 dark:to-amber-950/30 px-5 py-3.5">
                     <div className="absolute left-0 top-0 h-full w-1 rounded-l-2xl bg-gradient-to-b from-amber-400 to-orange-400" />
                     <div className="flex flex-col gap-y-0.5 pl-2">
-                      <p className="text-[11px] font-bold uppercase tracking-widest text-amber-400">Review Round</p>
+                      <p className="text-[11px] font-bold uppercase tracking-widest text-amber-400">Tour de révision</p>
                       <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
-                        Questions you missed — let&apos;s nail them this time.
+                        Les questions que tu as manquées — maîtrisons-les cette fois.
                       </p>
                     </div>
                   </div>
@@ -476,7 +466,6 @@ export const Quiz = ({
                 </h1>
 
                 <div>
-                 
                   {(challenge.type === "ASSIST" ||
                     challenge.type === "TRANSLATE" ||
                     challenge.type === "LISTEN") && (
