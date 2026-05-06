@@ -41,10 +41,6 @@ const questCategories = [
   { key: "challenges", label: "Défis",      icon: "/challenge.svg"  },
 ];
 
-// ─── Particules confetti ──────────────────────────────────────────────────────
-// Générées côté client via un <canvas> invisible, donc pas de problème SSR.
-// On les injecte en CSS pur pour les quêtes complétées.
-
 const animStyles = `
   /* ── Entrée ── */
   @keyframes popIn {
@@ -104,10 +100,10 @@ const animStyles = `
     100% { transform: translateY(48px)  rotate(720deg); opacity:0; }
   }
 
-  /* ── Scale press (touch feedback) ── */
-  @keyframes tapFeedback {
-    0%,100% { transform: scale(1);    }
-    50%      { transform: scale(0.95); }
+  /* ── Ligne de séparation animée ── */
+  @keyframes lineGrow {
+    from { width:0; opacity:0; }
+    to   { width:100%; opacity:1; }
   }
 
   /* Classes utilitaires */
@@ -118,7 +114,7 @@ const animStyles = `
     transition: transform 0.18s ease, box-shadow 0.18s ease;
   }
   .quest-card:hover  { transform: translateY(-3px) scale(1.015); }
-  .quest-card:active { animation: tapFeedback 0.18s ease both; }
+  .quest-card:active { transform: scale(0.96); }
 
   .quest-icon { transition: transform 0.15s ease; }
   .quest-card:hover .quest-icon { animation: wobble 0.55s ease both; }
@@ -154,14 +150,7 @@ const animStyles = `
     animation: confettiDrop 0.9s ease-out both;
   }
 
-  /* Ligne de séparation animée */
-  @keyframes lineGrow {
-    from { width:0; opacity:0; }
-    to   { width:100%; opacity:1; }
-  }
   .divider-line { animation: lineGrow 0.6s ease both; }
-
-  /* Catégorie header */
   .cat-header { animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1) both; }
 `;
 
@@ -239,10 +228,10 @@ const QuestsPage = async () => {
           {/* ── Stats ─────────────────────────────────────────────────────── */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full mb-6">
             {[
-              { src: "/xp-bolt.svg",   alt: "XP",     val: userProgress.points, label: "XP Total",     bg: "bg-yellow-50 dark:bg-yellow-950/30", border: "border-yellow-200 dark:border-yellow-800", text: "text-yellow-500 dark:text-yellow-300", sub: "text-yellow-400 dark:text-yellow-400", delay: "0.28s" },
-              { src: "/streak.svg",    alt: "Streak",  val: streak,              label: "Jours streak",  bg: "bg-red-50 dark:bg-red-950/30",       border: "border-red-200 dark:border-red-800",       text: "text-red-600 dark:text-red-400",       sub: "text-red-500 dark:text-red-500",       delay: "0.33s" },
-              { src: "/book.svg",      alt: "Leçons",  val: lessonsCompleted,    label: "Leçons",        bg: "bg-blue-50 dark:bg-blue-950/30",      border: "border-blue-200 dark:border-blue-800",     text: "text-blue-600 dark:text-blue-400",     sub: "text-blue-500 dark:text-blue-500",     delay: "0.38s" },
-              { src: "/challenge.svg", alt: "Défis",   val: challengesCompleted, label: "Défis",         bg: "bg-purple-50 dark:bg-purple-950/30",  border: "border-purple-200 dark:border-purple-800", text: "text-purple-600 dark:text-purple-400", sub: "text-purple-500 dark:text-purple-500", delay: "0.43s" },
+              { src: "/xp-bolt.svg",   alt: "XP",     val: userProgress.points, label: "XP Total",    bg: "bg-yellow-50 dark:bg-yellow-950/30", border: "border-yellow-200 dark:border-yellow-800", text: "text-yellow-500 dark:text-yellow-300", sub: "text-yellow-400 dark:text-yellow-400", delay: "0.28s" },
+              { src: "/streak.svg",    alt: "Streak",  val: streak,              label: "Jours streak", bg: "bg-red-50 dark:bg-red-950/30",       border: "border-red-200 dark:border-red-800",       text: "text-red-600 dark:text-red-400",       sub: "text-red-500 dark:text-red-500",       delay: "0.33s" },
+              { src: "/book.svg",      alt: "Leçons",  val: lessonsCompleted,    label: "Leçons",       bg: "bg-blue-50 dark:bg-blue-950/30",      border: "border-blue-200 dark:border-blue-800",     text: "text-blue-600 dark:text-blue-400",     sub: "text-blue-500 dark:text-blue-500",     delay: "0.38s" },
+              { src: "/challenge.svg", alt: "Défis",   val: challengesCompleted, label: "Défis",        bg: "bg-purple-50 dark:bg-purple-950/30",  border: "border-purple-200 dark:border-purple-800", text: "text-purple-600 dark:text-purple-400", sub: "text-purple-500 dark:text-purple-500", delay: "0.43s" },
             ].map(({ src, alt, val, label, bg, border, text, sub, delay }) => (
               <div
                 key={label}
@@ -268,7 +257,6 @@ const QuestsPage = async () => {
               <p className="text-sm font-extrabold text-orange-600 dark:text-orange-400">
                 {completedCount} / {quests.length} quêtes complétées
               </p>
-              {/* Mini barre globale */}
               <div className="w-full h-2 bg-orange-100 dark:bg-orange-900/40 rounded-full overflow-hidden mt-1 border border-orange-200 dark:border-orange-800">
                 <div
                   className="h-full rounded-full progress-bar"
@@ -294,10 +282,8 @@ const QuestsPage = async () => {
             const style          = getQuestStyle(key);
 
             return (
-              <div
-                key={key}
-                className="w-full mb-8"
-              >
+              <div key={key} className="w-full mb-8">
+
                 {/* En-tête catégorie */}
                 <div
                   className="cat-header flex items-center gap-2 mb-3"
@@ -347,10 +333,7 @@ const QuestsPage = async () => {
                             }`}
                         >
                           {completed ? (
-                            <div
-                              className="completed-badge"
-                              style={{ animationDelay: cardDelay }}
-                            >
+                            <div className="completed-badge" style={{ animationDelay: cardDelay }}>
                               <Image src="/check.svg" alt="Complété" width={24} height={24} />
                             </div>
                           ) : (
@@ -391,7 +374,6 @@ const QuestsPage = async () => {
                                   ? "linear-gradient(90deg,#fbbf24,#f59e0b,#fbbf24)"
                                   : `linear-gradient(90deg,${style.bar[0]},${style.bar[1]},${style.bar[0]})`,
                                 animationDelay: cardDelay,
-                                // Lueur sur la barre
                                 boxShadow: progress > 5
                                   ? `0 0 8px ${style.glow ?? "rgba(251,191,36,0.4)"}`
                                   : "none",
