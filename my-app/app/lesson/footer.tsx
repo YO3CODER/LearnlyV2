@@ -24,10 +24,10 @@ export const Footer = ({
 
   const buttonLabel = () => {
     if (label) return label;
-    if (status === "none") return "Check";
-    if (status === "correct") return "Next →";
-    if (status === "wrong") return "Retry";
-    if (status === "completed") return "Continue";
+    if (status === "none") return "Vérifier";
+    if (status === "correct") return "Suivant →";
+    if (status === "wrong") return "Réessayer";
+    if (status === "completed") return "Continuer";
   };
 
   return (
@@ -36,7 +36,6 @@ export const Footer = ({
         "lg:h-[140px] h-[100px] transition-colors duration-300 border-t-2",
         status === "none" && "bg-background border-border",
 
-        /* Vert plus visible */
         status === "correct" &&
         "bg-green-950/80 border-green-600 shadow-[0_-4px_20px_rgba(34,197,94,0.25)]",
 
@@ -56,11 +55,11 @@ export const Footer = ({
 
             <div>
               <p className="font-extrabold text-base lg:text-xl text-green-300 tracking-tight">
-                Nicely done!
+                Bravo !
               </p>
 
               <p className="text-xs lg:text-sm font-medium text-green-200">
-                Keep it up 🔥
+                Continue comme ça 🔥
               </p>
             </div>
           </div>
@@ -75,11 +74,11 @@ export const Footer = ({
 
             <div>
               <p className="font-extrabold text-base lg:text-xl text-red-400 tracking-tight">
-                Try again.
+                Réessaie.
               </p>
 
               <p className="text-xs lg:text-sm font-medium text-red-300">
-                {label ?? "You can do it! 💪"}
+                {label ?? "Tu peux le faire ! 💪"}
               </p>
             </div>
           </div>
@@ -93,11 +92,11 @@ export const Footer = ({
             onClick={() => (window.location.href = `/lesson/${lessonId}`)}
             className="rounded-xl font-bold border-2 border-b-4 border-slate-600 bg-slate-700 hover:bg-slate-600 text-white"
           >
-            Practice again
+            Pratiquer à nouveau
           </Button>
         )}
 
-        {/* Main button */}
+        {/* Bouton principal */}
         <Button
           disabled={disabled}
           onClick={onCheck}
