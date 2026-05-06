@@ -1,6 +1,7 @@
 import {
   SimpleForm, Create, TextInput, ReferenceInput,
-  required, BooleanInput, ImageInput, ImageField, useNotify, NumberInput
+  required, BooleanInput, ImageInput, ImageField,
+  useNotify, NumberInput
 } from "react-admin";
 import { useFormContext } from "react-hook-form";
 import { useState } from "react";
@@ -38,7 +39,9 @@ const ImageUploader = () => {
       >
         <ImageField source="src" title="title" />
       </ImageInput>
-      {preview && <img src={preview} alt="Preview" style={{ width: 200, marginTop: 8, borderRadius: 8 }} />}
+      {preview && (
+        <img src={preview} alt="Preview" style={{ width: 200, marginTop: 8, borderRadius: 8 }} />
+      )}
     </>
   );
 };
@@ -70,9 +73,17 @@ const AudioUploader = () => {
   return (
     <div style={{ marginBottom: 16 }}>
       <p style={{ fontWeight: 600, marginBottom: 8, color: "#374151" }}>Audio (optionnel)</p>
-      <input type="file" accept="audio/*" onChange={handleChange}
-        style={{ padding: "8px", border: "1px solid #D1D5DB", borderRadius: "8px", width: "100%" }} />
-      {audioUrl && <audio controls style={{ marginTop: 8, width: "100%" }}><source src={audioUrl} /></audio>}
+      <input
+        type="file"
+        accept="audio/*"
+        onChange={handleChange}
+        style={{ padding: "8px", border: "1px solid #D1D5DB", borderRadius: "8px", width: "100%" }}
+      />
+      {audioUrl && (
+        <audio controls style={{ marginTop: 8, width: "100%" }}>
+          <source src={audioUrl} />
+        </audio>
+      )}
     </div>
   );
 };
@@ -80,24 +91,28 @@ const AudioUploader = () => {
 export const ChallengeOptionCreate = () => {
   const transform = (data: any) => {
     const { imageFile, ...rest } = data;
-    return rest;
+    return {
+      ...rest,
+      order: rest.order ?? null,
+      blank: rest.blank ?? null,
+    };
   };
 
   return (
     <Create transform={transform}>
       <SimpleForm>
-        <TextInput source="text" validate={[required()]} label="Text" />
-        <BooleanInput source="correct" label="Correct option" />
         <ReferenceInput source="challengeId" reference="challenges" />
+        <TextInput source="text" validate={[required()]} label="Texte" fullWidth />
+        <BooleanInput source="correct" label="Option correcte" />
         <NumberInput
           source="order"
           label="Order (WORD_BANK uniquement)"
-          helperText="Position du mot dans la phrase correcte."
+          helperText="Position du mot dans la phrase correcte. Laisser vide si non applicable."
         />
         <NumberInput
           source="blank"
           label="Blank index (FILL_BLANK uniquement)"
-          helperText="Index du blanc que cette option remplit (0, 1, 2...)"
+          helperText="Index du blanc que cette option remplit (0, 1, 2...). Laisser vide si non applicable."
         />
         <ImageUploader />
         <TextInput source="imageSrc" label="URL Image (auto)" disabled />

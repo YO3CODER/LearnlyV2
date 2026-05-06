@@ -1,6 +1,7 @@
-import { 
-  SimpleForm, Edit, TextInput, ReferenceInput, 
-  required, BooleanInput, ImageInput, ImageField, useNotify 
+import {
+  SimpleForm, Edit, TextInput, ReferenceInput,
+  required, BooleanInput, ImageInput, ImageField,
+  useNotify, NumberInput
 } from "react-admin";
 import { useFormContext } from "react-hook-form";
 import { useState } from "react";
@@ -16,7 +17,6 @@ const ImageUploader = () => {
     if (!file) return;
     const formData = new FormData();
     formData.append("file", file);
-
     try {
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       if (!res.ok) throw new Error();
@@ -56,10 +56,8 @@ const AudioUploader = () => {
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     const formData = new FormData();
     formData.append("file", file);
-
     try {
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       if (!res.ok) throw new Error();
@@ -74,19 +72,12 @@ const AudioUploader = () => {
 
   return (
     <div style={{ marginBottom: 16 }}>
-      <p style={{ fontWeight: 600, marginBottom: 8, color: "#374151" }}>
-        Audio (optionnel)
-      </p>
+      <p style={{ fontWeight: 600, marginBottom: 8, color: "#374151" }}>Audio (optionnel)</p>
       <input
         type="file"
         accept="audio/*"
         onChange={handleChange}
-        style={{
-          padding: "8px",
-          border: "1px solid #D1D5DB",
-          borderRadius: "8px",
-          width: "100%",
-        }}
+        style={{ padding: "8px", border: "1px solid #D1D5DB", borderRadius: "8px", width: "100%" }}
       />
       {audioUrl && (
         <audio controls style={{ marginTop: 8, width: "100%" }}>
@@ -100,16 +91,31 @@ const AudioUploader = () => {
 export const ChallengeOptionEdit = () => {
   const transform = (data: any) => {
     const { imageFile, ...rest } = data;
-    return rest;
+    return {
+      ...rest,
+      order: rest.order ?? null,
+      blank: rest.blank ?? null,
+    };
   };
 
   return (
     <Edit transform={transform}>
       <SimpleForm>
-        <TextInput source="id" disabled label="Id" />
-        <TextInput source="text" validate={[required()]} label="Text" />
-        <BooleanInput source="correct" label="Correct option" />
+        <TextInput source="id" disabled label="ID" />
         <ReferenceInput source="challengeId" reference="challenges" />
+        <TextInput source="text" validate={[required()]} label="Texte" fullWidth />
+        <BooleanInput source="correct" label="Option correcte" />
+        {/* ✅ Ajoutés ici aussi, absents dans ta version originale */}
+        <NumberInput
+          source="order"
+          label="Order (WORD_BANK uniquement)"
+          helperText="Position du mot dans la phrase correcte. Laisser vide si non applicable."
+        />
+        <NumberInput
+          source="blank"
+          label="Blank index (FILL_BLANK uniquement)"
+          helperText="Index du blanc que cette option remplit (0, 1, 2...). Laisser vide si non applicable."
+        />
         <ImageUploader />
         <TextInput source="imageSrc" label="URL Image (auto)" disabled />
         <AudioUploader />
