@@ -171,7 +171,7 @@ export const FillBlank = ({
       )}
       {activeBlank === null && selectedBlanks.some((b) => b === null) && status === "none" && (
         <p className="text-xs text-neutral-400 font-semibold text-center">
-          Appuyez sur un blanc pour le remplir
+          Appuyez sur un blanc pour le remplire
         </p>
       )}
     </div>
