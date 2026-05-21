@@ -10,23 +10,45 @@ const db = drizzle(sql, { schema });
 
 const main = async () => {
   try {
-    console.log("Resetting the database");
+    console.log("🔄 Resetting the database");
 
-    await db.delete(schema.courses);
-    await db.delete(schema.userProgress);
-    await db.delete(schema.units);
-    await db.delete(schema.lessons);
-    await db.delete(schema.challenges);
-    await db.delete(schema.challengeOptions);
-    await db.delete(schema.challengeProgress);
-    await db.delete(schema.userSubscription);
+    // ================================================
+    // RESET AVEC TRUNCATE + RESTART IDENTITY
+    // ================================================
+    await sql`
+      TRUNCATE TABLE 
+        user_progress,
+        challenge_progress,
+        challenge_options,
+        challenges,
+        lessons,
+        units,
+        courses,
+        user_subscription
+      RESTART IDENTITY CASCADE
+    `;
 
-    console.log("Resetting finished");
+    console.log("✅ Database reset successfully!");
+
+    // ================================================
+    // INSÉRER TES DONNÉES ICI
+    // ================================================
+    console.log("📚 Inserting data...");
+
+    // Example: Insert a course
+    const courses = await db
+      .insert(schema.courses)
+      .values([
+        { title: "Spanish", imageSrc: "/es.svg" },
+      ])
+      .returning();
+
+    console.log("✅ Data inserted successfully!");
+
   } catch (error) {
     console.error(error);
-    throw new Error("Failed to reset the database");
+    throw new Error("Failed to seed the database");
   }
 };
 
 main();
-

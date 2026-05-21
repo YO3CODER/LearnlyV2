@@ -533,6 +533,21 @@ const main = async () => {
       { challengeId: 67, correct: false, text: "150", blank: 0 },
     ]);
 
+    // ================================================
+    // RÉINITIALISER TOUTES LES SÉQUENCES
+    // ================================================
+    console.log("🔄 Resetting sequences...");
+    
+    await sql`SELECT setval('courses_id_seq', (SELECT COALESCE(MAX(id), 0) + 1 FROM courses))`;
+    await sql`SELECT setval('units_id_seq', (SELECT COALESCE(MAX(id), 0) + 1 FROM units))`;
+    await sql`SELECT setval('lessons_id_seq', (SELECT COALESCE(MAX(id), 0) + 1 FROM lessons))`;
+    await sql`SELECT setval('challenges_id_seq', (SELECT COALESCE(MAX(id), 0) + 1 FROM challenges))`;
+    await sql`SELECT setval('challenge_options_id_seq', (SELECT COALESCE(MAX(id), 0) + 1 FROM challenge_options))`;
+    await sql`SELECT setval('challenge_progress_id_seq', (SELECT COALESCE(MAX(id), 0) + 1 FROM challenge_progress))`;
+    await sql`SELECT setval('user_subscription_id_seq', (SELECT COALESCE(MAX(id), 0) + 1 FROM user_subscription))`;
+
+    console.log("✅ Seeding finished successfully!");
+
     console.log("✅ Seed Mathématiques Niveau 1 terminé !");
 
   } catch (error) {
