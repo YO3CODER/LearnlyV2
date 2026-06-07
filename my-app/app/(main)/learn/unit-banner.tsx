@@ -62,7 +62,7 @@ export const UnitBanner = ({
         </div>
         <h3 className="text-xl lg:text-xl font-extrabold text-white leading-tight" style={{ fontFamily: "'Fredoka', sans-serif" }}>
           {title}
-          <h4 className="text-sm text-gray-400" style={{ fontFamily: "'Outfit', sans-serif" }}>{description}</h4>
+          <h4 className="text-sm text-white/80" style={{ fontFamily: "'Lexend', sans-serif" }}>{description}</h4>
         </h3>
       </div>
 
