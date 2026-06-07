@@ -50,7 +50,7 @@ export const Footer = ({
         {status === "correct" && (
           <div className="flex items-center gap-x-3">
             <div className="w-10 h-10 lg:w-14 lg:h-14 rounded-2xl bg-green-700 flex items-center justify-center shrink-0 shadow-lg">
-              <CheckCircle className="h-5 w-5 lg:h-7 lg:w-7 text-gray stroke-[2.7]" />
+              <CheckCircle className="h-5 w-5 lg:h-7 lg:w-7 text-white stroke-[2.7]" />
             </div>
 
             <div>
@@ -105,16 +105,16 @@ export const Footer = ({
           className={cn(
             "ml-auto rounded-xl font-bold tracking-wide transition-all duration-200 border-2 border-b-4",
             status === "none" &&
-            "bg-green-500 hover:bg-green-600 text-gray border-green-600",
+            "bg-green-500 hover:bg-green-600 text-white border-green-600",
 
             status === "correct" &&
-            "bg-green-500 hover:bg-green-600 text-gray border-green-700 scale-105",
+            "bg-green-500 hover:bg-green-600 text-white border-green-700 scale-105",
 
             status === "wrong" &&
-            "bg-red-400 hover:bg-red-500 text-gray opacity-70 border-red-600",
+            "bg-red-400 hover:bg-red-500 text-white opacity-70 border-red-600",
 
             status === "completed" &&
-            "bg-green-500 hover:bg-green-600 text-gray border-green-600"
+            "bg-green-500 hover:bg-green-600 text-white border-green-600"
           )}
         >
           {buttonLabel()}

@@ -45,9 +45,9 @@ export const Sidebar = ({ className }: Props) => {
       {/* NAVIGATION */}
       <div className="flex flex-col gap-y-1 flex-1 w-full px-2">
         <SidebarItem href="/learn"       iconSrc="/learn.svg" />
-        <SidebarItem href="/leaderboard" iconSrc="/leaderboard.ico" />
-        <SidebarItem href="/quests"      iconSrc="/question.svg" />
-        <SidebarItem href="/shop"        iconSrc="/shop.ico" />
+        <SidebarItem href="/leaderboard" iconSrc="/leaderboard.svg" />
+        <SidebarItem href="/quests"      iconSrc="/quest.svg" />
+        <SidebarItem href="/shop"        iconSrc="/shop.svg" />
       </div>
 
       {/* THEME */}

@@ -7,9 +7,9 @@ import { cn } from "@/lib/utils";
 
 const routes = [
   { label: "Learn", href: "/learn", iconSrc: "/learn.svg" },
-  { label: "Leaderboard", href: "/leaderboard", iconSrc: "/leaderboard.ico" },
-  { label: "Quests", href: "/quests", iconSrc: "/question.svg" },
-  { label: "Shop", href: "/shop", iconSrc: "/shop.ico" },
+  { label: "Leaderboard", href: "/leaderboard", iconSrc: "/leaderboard.svg" },
+  { label: "Quests", href: "/quests", iconSrc: "/quest.svg" },
+  { label: "Shop", href: "/shop", iconSrc: "/shop.svg" },
 ];
 
 export const MobileNavbar = () => {
