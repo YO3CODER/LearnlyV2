@@ -237,16 +237,17 @@ export const LessonButton = ({
   }, []);
 
   const playBouton = () => {
-    const a = audioBoutonRef.current;
-    if (a) { a.currentTime = 0; a.play().catch(() => {}); }
-    if ("vibrate" in navigator) navigator.vibrate([12, 30, 12]);
-  };
-
-  const playCommencer = () => {
-    const a = audioCommencerRef.current;
-    if (a) { a.currentTime = 0; a.play().catch(() => {}); }
-    if ("vibrate" in navigator) navigator.vibrate([10, 20, 10]);
-  };
+  const a = audioBoutonRef.current;
+  if (a) { a.currentTime = 0; a.play().catch(() => {}); }
+  // Double tap léger style Duolingo
+  if ("vibrate" in navigator) navigator.vibrate([8, 50, 8]);
+};
+const playCommencer = () => {
+  const a = audioCommencerRef.current;
+  if (a) { a.currentTime = 0; a.play().catch(() => {}); }
+  // Pattern satisfaisant : tap + confirmation
+  if ("vibrate" in navigator) navigator.vibrate([10, 40, 20, 40, 40]);
+};
 
   // ─── Layout sinusoidal ───────────────────────────────────────────────────
   const cycleLength = 8;
