@@ -131,7 +131,7 @@ export const ChallengeOptionEdit = () => {
       <SimpleForm toolbar={<CustomToolbar />}>
         <TextInput source="id" disabled label="ID" />
         <ReferenceInput source="challengeId" reference="challenges" />
-        <TextInput source="text" validate={[required()]} label="Texte" fullWidth />
+        <TextInput source="text" validate={[required()]} label="text" fullWidth />
         <BooleanInput source="correct" label="Option correcte" />
         <NumberInput
           source="order"

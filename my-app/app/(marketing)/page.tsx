@@ -38,7 +38,7 @@ export default function Home() {
         {/* Contenu */}
         <div className="flex flex-col items-center lg:items-start gap-y-8">
 
-          {/* Texte */}
+          {/* text */}
           <div className="space-y-3 text-center lg:text-left">
 
             <p className="text-xs font-semibold tracking-widest uppercase text-blue-400">
@@ -72,7 +72,7 @@ export default function Home() {
                   size="lg"
                   className="w-full rounded-xl font-bold
                     bg-gradient-to-r from-blue-500 to-blue-500
-                    hover:opacity-90 texte-gray shadow-md shadow-blue-200 dark:shadow-blue-900
+                    hover:opacity-90 text-gray shadow-md shadow-blue-200 dark:shadow-blue-900
                     transition-all duration-200"
                   asChild
                 >
@@ -85,7 +85,7 @@ export default function Home() {
                       size="lg"
                       className="w-full rounded-xl font-bold shadow-md shadow-blue-100 dark:shadow-blue-900
                         bg-gradient-to-r from-blue-500 to-blue-500
-                        hover:opacity-90 texte-gray transition-all duration-200"
+                        hover:opacity-90 text-gray transition-all duration-200"
                     >
                       Commencer — c&apos;est gratuit
                     </Button>

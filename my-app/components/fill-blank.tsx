@@ -69,7 +69,7 @@ export const FillBlank = ({
       <div className="flex flex-wrap items-center gap-x-2 gap-y-3 text-xl font-bold text-neutral-700 dark:text-neutral-200 leading-relaxed">
         {parts.map((part, i) => (
           <span key={i} className="flex flex-wrap items-center gap-x-2">
-            {/* Texte avant le blank */}
+            {/* text avant le blank */}
             {part && <span>{part}</span>}
 
             {/* Blank (sauf après le dernier morceau) */}

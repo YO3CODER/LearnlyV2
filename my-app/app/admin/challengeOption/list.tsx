@@ -56,7 +56,7 @@ export const ChallengeOptionList = () => {
       <Datagrid rowClick="edit">
         <NumberField source="id" label="ID" />
         <ReferenceField source="challengeId" reference="challenges" label="Défi" />
-        <TextField source="text" label="Texte" />
+        <TextField source="text" label="text" />
         <CorrectBadge label="Statut" />
         <NumberField source="order" label="Order" emptyText="—" />
         <NumberField source="blank" label="Blank" emptyText="—" />

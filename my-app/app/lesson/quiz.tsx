@@ -434,7 +434,7 @@ export const Quiz = ({
         "transition-all duration-500 ease-out",
         showStreak ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-3 pointer-events-none",
       ].join(" ")}>
-        <div className="flex items-center gap-x-3 bg-orange-500 texte-gray px-5 py-3 rounded-2xl shadow-lg shadow-orange-200 dark:shadow-orange-900">
+        <div className="flex items-center gap-x-3 bg-orange-500 text-gray px-5 py-3 rounded-2xl shadow-lg shadow-orange-200 dark:shadow-orange-900">
           <span className="text-xl leading-none">🔥</span>
           <div className="flex flex-col leading-tight">
             <span className="text-[11px] font-bold uppercase tracking-widest text-orange-100">{streak} d&apos;affilée</span>
