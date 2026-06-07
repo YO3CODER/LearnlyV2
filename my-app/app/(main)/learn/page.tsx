@@ -68,14 +68,16 @@ const LearnPage = async () => {
           />
         </div>
 
-        <StickyUnitBanner
-          units={units.map((unit, index) => ({
-            id: unit.id,
-            title: unit.title,
-            description: unit.description,
-            color: ["blue","purple","green","orange","pink","indigo","teal","red"][index % 8],
-          }))}
-        />
+       <StickyUnitBanner
+  units={units.map((unit, index) => ({
+    id: unit.id,
+    title: unit.title,
+    description: unit.description,
+    color: ["blue","purple","green","orange","pink","indigo","teal","red"][index % 8],
+    order: unit.order,
+    index: index,
+  }))}
+/>
 
         {units.map((unit, index) => (
           <div key={unit.id}>

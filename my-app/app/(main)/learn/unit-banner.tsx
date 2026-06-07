@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
+import { ArrowLeft, BookOpen } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -8,13 +8,16 @@ type Props = {
   description: string;
   color?: string;
   accentColor?: string;
+  order?: number;
+  index?: number;
 };
 
 export const UnitBanner = ({
   title,
   description,
   color = "blue",
-  accentColor = "blue",
+  order = 1,
+  index = 0,
 }: Props) => {
   const getBgColor = () => {
     const colors: Record<string, string> = {
@@ -30,59 +33,51 @@ export const UnitBanner = ({
     return colors[color] || colors.blue;
   };
 
-  const getBorderColor = () => {
-    const borders: Record<string, string> = {
-      blue: "border-blue-700",
-      purple: "border-purple-700",
-      green: "border-green-700",
-      red: "border-red-700",
-      orange: "border-orange-700",
-      pink: "border-pink-700",
-      indigo: "border-indigo-700",
-      teal: "border-teal-700",
+  const getButtonColor = () => {
+    const colors: Record<string, string> = {
+      blue: "bg-blue-600 hover:bg-blue-700 border-blue-800",
+      purple: "bg-purple-600 hover:bg-purple-700 border-purple-800",
+      green: "bg-green-600 hover:bg-green-700 border-green-800",
+      red: "bg-red-600 hover:bg-red-700 border-red-800",
+      orange: "bg-orange-600 hover:bg-orange-700 border-orange-800",
+      pink: "bg-pink-600 hover:bg-pink-700 border-pink-800",
+      indigo: "bg-indigo-600 hover:bg-indigo-700 border-indigo-800",
+      teal: "bg-teal-600 hover:bg-teal-700 border-teal-800",
     };
-    return borders[color] || borders.blue;
+    return colors[color] || colors.blue;
   };
 
   return (
-    <div
-      className={`w-full rounded-2xl px-5 py-4 lg:py-5 flex items-center justify-between
-      ${getBgColor()}
-      border-2 border-b-4 ${getBorderColor()}
-      relative overflow-hidden`}
-    >
-      {/* Text */}
-      <div className="relative z-10 space-y-0.5">
-        <h3 className="text-xl font-extrabold text-white tracking-tight">
+    <div className={`w-full rounded-2xl px-5 py-4 lg:py-5 flex items-center justify-between ${getBgColor()} relative overflow-hidden`}>
+
+      {/* Gauche : flèche + label + titre */}
+      <div className="relative z-10 flex flex-col gap-1">
+        <div className="flex items-center gap-1.5">
+          <ArrowLeft className="h-3.5 w-3.5 text-white/90 font-bold" />
+          <span className="text-gray-100 text-[11px] font-bold uppercase tracking-widest">
+            Chapitre {index + 1}, Unité {order}
+          </span>
+        </div>
+        <h3 className="text-lg font-bold text-white ">
           {title}
         </h3>
-        <p className="hidden lg:block text-white/80 text-sm font-medium">
-          {description}
-        </p>
       </div>
 
-      {/* Séparateur vertical */}
-      <div className="relative z-10 shrink-0 mx-4 flex flex-col">
-        <div className="w-[2px] h-10 bg-white/60 rounded-full" />
-        <div className="w-[2px] h-[4px] bg-black/20 rounded-full" />
-      </div>
-
-      {/* CTA */}
-      <Link href="/lesson" className="relative z-10">
+      {/* Droite : bouton Guide */}
+      <Link href="/lesson" className="relative z-10 shrink-0">
         <Button
           size="default"
           variant="secondary"
-          className="flex items-center justify-center
-            bg-background hover:bg-background/90
-            dark:bg-background/15 dark:hover:bg-background/25
-            text-muted-foreground-700 dark:text-gray
-            border-2 border-b-4 border-border-200 dark:border-white/20
+          className={`flex items-center gap-2 px-4 h-11
+            ${getButtonColor()}
+            text-white font-bold text-sm uppercase tracking-wide
+            border-2 border-b-4
             rounded-xl
-            transition-all duration-200
-            shadow-md active:scale-95 active:border-b-2
-            w-10 h-10 p-0"
+            transition-all duration-150
+            shadow-md active:scale-95 active:border-b-2`}
         >
           <BookOpen className="h-5 w-5" />
+          Guide
         </Button>
       </Link>
     </div>

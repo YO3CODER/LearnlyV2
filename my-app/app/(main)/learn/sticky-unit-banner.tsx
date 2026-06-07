@@ -8,6 +8,8 @@ type UnitInfo = {
   title: string;
   description: string;
   color: string;
+  order: number;
+  index: number;
 };
 
 type Props = {
@@ -55,7 +57,8 @@ export const StickyUnitBanner = ({ units }: Props) => {
         title={activeUnit.title}
         description={activeUnit.description}
         color={activeUnit.color}
-        accentColor={activeUnit.color}
+        order={activeUnit.order}
+        index={activeUnit.index}
       />
     </div>
   );

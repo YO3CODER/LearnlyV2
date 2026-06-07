@@ -50,28 +50,29 @@ export const UserProgress = ({
       </Link>
 
       {/* Streak */}
-      <Button variant="ghost" className="px-2 gap-x-1">
-        <Flame className={cn(
-          "h-5 w-5",
-          streak > 0
-            ? "text-orange-500 fill-orange-500"
-            : "text-muted-foreground fill-muted-foreground"
-        )} />
-        <span className={cn(
-          "font-extrabold text-sm",
-          streak > 0 ? "text-orange-500" : "text-muted-foreground"
-        )}>
-          {streak}
-        </span>
-      </Button>
+<Button variant="ghost" className="px-2 gap-x-1">
+  <Image
+    src="/flamme.svg"
+    height={22}
+    width={22}
+    alt="Streak"
+    className={cn(streak === 0 && "opacity-40 grayscale")}
+  />
+  <span className={cn(
+    "font-extrabold text-sm",
+    streak > 0 ? "text-orange-500" : "text-muted-foreground"
+  )}>
+    {streak}
+  </span>
+</Button>
 
-      {/* Points */}
-      <Link href="/shop">
-        <Button variant="ghost" className="px-2 gap-x-1">
-          <Image src="/xp-bolt.svg" height={22} width={22} alt="Points" />
-          <span className="font-extrabold text-sm text-yellow-300">{points}</span>
-        </Button>
-      </Link>
+{/* Points */}
+<Link href="/shop">
+  <Button variant="ghost" className="px-2 gap-x-1">
+    <Image src="/xp-bolt.svg" height={22} width={22} alt="Points" />
+    <span className="font-extrabold text-sm text-yellow-300">{points}</span>
+  </Button>
+</Link>
 
       {/* Hearts */}
       <Link href="/shop" onClick={handleHeartClick}>
