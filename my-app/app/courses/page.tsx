@@ -12,7 +12,7 @@ const CoursesPage = async () => {
   ]);
 
   return (
-    <div className="min-h-full bg-white">
+    <div className="min-h-full bg-gray">
       <div className="max-w-[912px] mx-auto px-6 py-16">
 
         {/* Header centré style Duolingo */}
@@ -24,7 +24,7 @@ const CoursesPage = async () => {
             height={88}
             className="mx-auto mb-6 drop-shadow-md"
           />
-          <h1 className="text-3xl font-extrabold text-gray-600 tracking-tight">
+          <h1 className="text-3xl font-extrabold text-gray-300 tracking-tight">
             Que veux-tu apprendre aujourd'hui ?
           </h1>
         </div>
