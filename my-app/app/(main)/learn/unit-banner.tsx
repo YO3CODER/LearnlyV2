@@ -53,7 +53,9 @@ export const UnitBanner = ({
       {/* Gauche : flèche + label + titre */}
       <div className="relative z-10 flex flex-col gap-2 flex-1">
         <div className="flex items-center gap-2">
-          <ArrowLeft className="h-4 w-4 text-white/80 flex-shrink-0" />
+          <Link href="/courses" className="inline-flex">
+  <ArrowLeft className="h-4 w-4 text-white/80 flex-shrink-0 hover:opacity-90 transition-opacity" />
+</Link>
           <span className="text-white/70 text-xs font-bold  tracking-wider" style={{ fontFamily: "'Outfit', sans-serif" }}>
             Chapitre {index + 1}, Unité {order}
           </span>
