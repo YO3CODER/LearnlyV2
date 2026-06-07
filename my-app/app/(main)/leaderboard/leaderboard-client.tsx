@@ -114,7 +114,6 @@ const CountdownBadge = () => {
 };
 
 // ─── RankSpotlight ────────────────────────────────────────────────────────────
-// Overlay plein écran qui affiche le rang de l'utilisateur pendant 3 secondes
 
 const RankSpotlight = ({
   entry,
@@ -129,7 +128,6 @@ const RankSpotlight = ({
   const [leaving,  setLeaving]  = useState(false);
   const division = getDivision(entry.points);
 
-  // Apparition
   useEffect(() => {
     const raf = requestAnimationFrame(() =>
       requestAnimationFrame(() => setVisible(true))
@@ -137,7 +135,6 @@ const RankSpotlight = ({
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  // Disparition après 3s
   useEffect(() => {
     const leaveTimer = setTimeout(() => setLeaving(true), 3000);
     const doneTimer  = setTimeout(() => onDone(),         3400);
@@ -158,9 +155,7 @@ const RankSpotlight = ({
         backgroundColor: "rgba(0,0,0,0.55)",
         backdropFilter: "blur(6px)",
         opacity:   leaving ? 0 : visible ? 1 : 0,
-        transition: leaving
-          ? "opacity 0.4s ease"
-          : "opacity 0.35s ease",
+        transition: leaving ? "opacity 0.4s ease" : "opacity 0.35s ease",
         pointerEvents: leaving ? "none" : "all",
       }}
       onClick={() => { setLeaving(true); setTimeout(onDone, 400); }}
@@ -177,80 +172,30 @@ const RankSpotlight = ({
             : "transform 0.5s cubic-bezier(0.34,1.56,0.64,1)",
         }}
       >
-        {/* Badge rang */}
-        <div style={{
-          fontSize: 13,
-          fontWeight: 800,
-          color: "rgba(255,255,255,0.7)",
-          letterSpacing: "0.15em",
-          textTransform: "uppercase",
-        }}>
+        <div style={{ fontSize: 13, fontWeight: 800, color: "rgba(255,255,255,0.7)", letterSpacing: "0.15em", textTransform: "uppercase" }}>
           Votre classement
         </div>
-
-        {/* Numéro de rang */}
-        <div style={{
-          fontSize: 96,
-          fontWeight: 900,
-          color: "#ffffff",
-          lineHeight: 1,
-          letterSpacing: "-4px",
-          textShadow: "0 4px 32px rgba(0,0,0,0.4)",
-          fontVariantNumeric: "tabular-nums",
-        }}>
+        <div style={{ fontSize: 96, fontWeight: 900, color: "#ffffff", lineHeight: 1, letterSpacing: "-4px", textShadow: "0 4px 32px rgba(0,0,0,0.4)", fontVariantNumeric: "tabular-nums" }}>
           #{rank}
         </div>
-
-        {/* Médaille si top 3 */}
         {isTop3 && (
-          <Image
-            src={medalImages[rank - 1]}
-            alt={`#${rank}`}
-            width={56}
-            height={56}
-            className="drop-shadow-xl"
-          />
+          <Image src={medalImages[rank - 1]} alt={`#${rank}`} width={56} height={56} className="drop-shadow-xl" />
         )}
-
-        {/* Card utilisateur */}
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 14,
-          backgroundColor: "rgba(255,255,255,0.12)",
-          border: "1.5px solid rgba(255,255,255,0.2)",
-          borderRadius: 20,
-          padding: "14px 22px",
-          backdropFilter: "blur(8px)",
-          minWidth: 240,
-        }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14, backgroundColor: "rgba(255,255,255,0.12)", border: "1.5px solid rgba(255,255,255,0.2)", borderRadius: 20, padding: "14px 22px", backdropFilter: "blur(8px)", minWidth: 240 }}>
           <Avatar className="h-12 w-12 border-2 border-white/30 shadow-md">
             <AvatarImage className="object-cover" src={entry.userImageSrc} alt={entry.userName} />
           </Avatar>
           <div>
-            <p style={{ color: "#fff", fontWeight: 800, fontSize: 16, margin: 0 }}>
-              {entry.userName}
-            </p>
+            <p style={{ color: "#fff", fontWeight: 800, fontSize: 16, margin: 0 }}>{entry.userName}</p>
             <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 3 }}>
               <Image src={division.image} alt={division.name} width={13} height={13} />
-              <span style={{ color: "rgba(255,255,255,0.75)", fontSize: 12, fontWeight: 600 }}>
-                {division.name}
-              </span>
+              <span style={{ color: "rgba(255,255,255,0.75)", fontSize: 12, fontWeight: 600 }}>{division.name}</span>
               <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>·</span>
-              <span style={{ color: "rgba(255,255,255,0.75)", fontSize: 12, fontWeight: 700 }}>
-                {entry.points} XP
-              </span>
+              <span style={{ color: "rgba(255,255,255,0.75)", fontSize: 12, fontWeight: 700 }}>{entry.points} XP</span>
             </div>
           </div>
         </div>
-
-        {/* Hint */}
-        <p style={{
-          color: "rgba(255,255,255,0.4)",
-          fontSize: 12,
-          fontWeight: 500,
-          marginTop: 4,
-        }}>
+        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, fontWeight: 500, marginTop: 4 }}>
           Appuie pour continuer
         </p>
       </div>
@@ -277,74 +222,58 @@ const AnimatedRow = ({
     let timeoutId: ReturnType<typeof setTimeout>;
     const rafId = requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        timeoutId = setTimeout(() => setVisible(true), index * 100);
+        timeoutId = setTimeout(() => setVisible(true), index * 80);
       });
     });
     return () => { cancelAnimationFrame(rafId); clearTimeout(timeoutId); };
   }, [index]);
 
-  const isTop3        = index < 3;
-  const entryDivision = getDivision(entry.points);
+  const isTop3 = index < 3;
+  const rankColors = ["text-yellow-500", "text-slate-400", "text-amber-600"];
 
   return (
     <div
       style={{
-        opacity:    visible ? 1 : 0,
-        transform:  visible ? "translateY(0) scale(1)" : "translateY(24px) scale(0.96)",
-        transition: "opacity 0.5s cubic-bezier(0.34,1.56,0.64,1), transform 0.5s cubic-bezier(0.34,1.56,0.64,1)",
+        opacity:   visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(16px)",
+        transition: "opacity 0.4s ease, transform 0.4s ease",
       }}
-      className={`flex items-center w-full p-3 px-4 rounded-2xl border-2 border-b-4 transition-colors
-        ${isCurrentUser
-          ? "bg-blue-100 dark:bg-blue-900/40 border-blue-400 dark:border-blue-600 ring-2 ring-blue-400/30"
-          : isTop3
-          ? "bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800"
-          : "hover:bg-muted border-transparent"
-        }`}
+      className={`flex items-center w-full px-4 py-3 rounded-2xl transition-colors
+        ${isCurrentUser ? "bg-muted/80 dark:bg-muted/40" : "hover:bg-muted/40"}
+      `}
     >
-      {/* Rank */}
-      <div className="w-8 flex items-center justify-center shrink-0">
+      {/* Rang */}
+      <div className="w-8 shrink-0 flex items-center justify-center">
         {isTop3 ? (
-          <Image src={medalImages[index]} alt={`Médaille ${index + 1}`} width={24} height={24} className="drop-shadow-md" />
+          <Image
+            src={medalImages[index]}
+            alt={`#${index + 1}`}
+            width={28}
+            height={28}
+          />
         ) : (
-          <span className="font-extrabold text-sm text-muted-foreground">{index + 1}</span>
+          <span className={`font-extrabold text-sm ${isCurrentUser ? "text-foreground" : "text-muted-foreground"}`}>
+            {index + 1}
+          </span>
         )}
       </div>
 
       {/* Avatar */}
-      <Avatar className="h-11 w-11 ml-3 mr-4 border-2 border-border shadow-sm">
+      <Avatar className="h-12 w-12 mx-4 shrink-0">
         <AvatarImage className="object-cover" src={entry.userImageSrc} alt={entry.userName} />
       </Avatar>
 
-      {/* Name + Division */}
-      <div className="flex-1">
-        <div className="flex items-center gap-1.5">
-          <p className="font-extrabold text-foreground text-sm">{entry.userName}</p>
-          {isCurrentUser && (
-            <span className="text-[9px] font-bold bg-blue-500 text-white px-1.5 py-0.5 rounded-full uppercase tracking-wide">
-              Vous
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-1 mt-0.5">
-          <Image src={entryDivision.image} alt={entryDivision.name} width={12} height={12} className="drop-shadow-sm" />
-          <span className={`text-[10px] font-semibold ${entryDivision.color}`}>
-            {entryDivision.name}
-          </span>
-        </div>
+      {/* Nom */}
+      <div className="flex-1 min-w-0">
+        <p className={`font-bold text-sm truncate ${isCurrentUser ? "text-foreground" : "text-foreground"}`}>
+          {entry.userName}
+        </p>
       </div>
 
       {/* XP */}
-      <div className={`flex items-center gap-x-1.5 px-3 py-1 rounded-xl text-xs font-extrabold
-        ${isCurrentUser
-          ? "bg-blue-500 text-white"
-          : isTop3
-          ? "bg-blue-100 dark:bg-blue-900/50 text-blue-500"
-          : "bg-muted text-muted-foreground"
-        }`}
-      >
-        <Image src="/xp-bolt.svg" alt="XP" width={12} height={12} />
+      <span className="text-sm font-bold text-muted-foreground tabular-nums shrink-0">
         {entry.points} XP
-      </div>
+      </span>
     </div>
   );
 };
@@ -352,12 +281,11 @@ const AnimatedRow = ({
 // ─── LeaderboardClient ────────────────────────────────────────────────────────
 
 export const LeaderboardClient = ({ leaderboard, currentUserId }: Props) => {
-  const [mounted,         setMounted]         = useState(false);
-  const [showSpotlight,   setShowSpotlight]   = useState(false);
+  const [mounted,       setMounted]       = useState(false);
+  const [showSpotlight, setShowSpotlight] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    // Lance le spotlight après que les animations de liste soient bien engagées
     const timer = setTimeout(() => setShowSpotlight(true), 400);
     return () => clearTimeout(timer);
   }, []);
@@ -379,7 +307,6 @@ export const LeaderboardClient = ({ leaderboard, currentUserId }: Props) => {
 
   return (
     <>
-      {/* Spotlight rang utilisateur */}
       {showSpotlight && currentUserEntry && currentUserRank && (
         <RankSpotlight
           entry={currentUserEntry}
@@ -388,12 +315,10 @@ export const LeaderboardClient = ({ leaderboard, currentUserId }: Props) => {
         />
       )}
 
-      {/* Countdown */}
       <div className="w-full flex justify-end mb-3">
         <CountdownBadge />
       </div>
 
-      {/* Liste */}
       <div className="w-full space-y-2">
         {leaderboard.map((entry, index) => {
           if (!entry.userId) return null;

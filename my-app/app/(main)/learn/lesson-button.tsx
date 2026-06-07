@@ -484,12 +484,12 @@ const playCommencer = () => {
               />
               <button
                 onClick={(e) => { e.stopPropagation(); closePopup(); }}
-                className="absolute top-2 right-2 text-white/70 hover:text-white transition-colors"
+                className="absolute top-2 right-2 texte-gray/70 hover:texte-gray transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
-              <p className="text-white font-extrabold text-sm mb-1 pr-6">{title}</p>
-              <p className="text-white/80 text-xs mb-4">
+              <p className="texte-gray font-extrabold text-sm mb-1 pr-6">{title}</p>
+              <p className="texte-gray/80 text-xs mb-4">
                 Leçon {index + 1} sur {totalCount}
               </p>
               <button
@@ -550,7 +550,7 @@ const playCommencer = () => {
                   </defs>
                 </svg>
                 <DuoButton bgHex={colors.bgHex} borderHex={colors.borderHex} isLocked={locked}>
-                  <Icon className={cn("h-9 w-9 relative z-10", locked ? "fill-white text-white stroke-white opacity-60" : "fill-white text-white drop-shadow-sm", isCompleted && !isGolden && "fill-none stroke-white stroke-[4]")} />
+                  <Icon className={cn("h-9 w-9 relative z-10", locked ? "fill-white texte-gray stroke-white opacity-60" : "fill-white texte-gray drop-shadow-sm", isCompleted && !isGolden && "fill-none stroke-white stroke-[4]")} />
                 </DuoButton>
               </CircularProgressbarWithChildren>
             </div>
@@ -568,7 +568,7 @@ const playCommencer = () => {
               )}
 
               {isPerfect && !isGolden && (
-                <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10 px-2 py-0.5 rounded-full bg-gradient-to-r from-yellow-400 to-amber-400 text-white text-[9px] font-extrabold uppercase tracking-wider shadow-sm whitespace-nowrap">
+                <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10 px-2 py-0.5 rounded-full bg-gradient-to-r from-yellow-400 to-amber-400 texte-gray text-[9px] font-extrabold uppercase tracking-wider shadow-sm whitespace-nowrap">
                   Parfait
                 </div>
               )}
@@ -579,7 +579,7 @@ const playCommencer = () => {
                 isLocked={locked}
                 isGoldenBtn={isGolden && !locked}
               >
-                <Icon className={cn("h-9 w-9 relative z-10", locked ? "fill-white text-white stroke-white opacity-60" : "fill-white text-white drop-shadow-sm", isCompleted && !isGolden && "fill-none stroke-white stroke-[4]")} />
+                <Icon className={cn("h-9 w-9 relative z-10", locked ? "fill-white texte-gray stroke-white opacity-60" : "fill-white texte-gray drop-shadow-sm", isCompleted && !isGolden && "fill-none stroke-white stroke-[4]")} />
               </DuoButton>
             </div>
           )}

@@ -53,10 +53,10 @@ export const UnitBanner = ({
     >
       {/* Text */}
       <div className="relative z-10 space-y-0.5">
-        <h3 className="text-xl font-extrabold text-white tracking-tight">
+        <h3 className="text-xl font-extrabold texte-gray tracking-tight">
           {title}
         </h3>
-        <p className="hidden lg:block text-white/80 text-sm font-medium">
+        <p className="hidden lg:block texte-gray/80 text-sm font-medium">
           {description}
         </p>
       </div>
@@ -75,7 +75,7 @@ export const UnitBanner = ({
           className="flex items-center justify-center
             bg-background hover:bg-background/90
             dark:bg-background/15 dark:hover:bg-background/25
-            text-muted-foreground-700 dark:text-white
+            text-muted-foreground-700 dark:texte-gray
             border-2 border-b-4 border-border-200 dark:border-white/20
             rounded-xl
             transition-all duration-200

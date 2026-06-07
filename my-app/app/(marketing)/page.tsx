@@ -72,7 +72,7 @@ export default function Home() {
                   size="lg"
                   className="w-full rounded-xl font-bold
                     bg-gradient-to-r from-blue-500 to-blue-500
-                    hover:opacity-90 text-white shadow-md shadow-blue-200 dark:shadow-blue-900
+                    hover:opacity-90 texte-gray shadow-md shadow-blue-200 dark:shadow-blue-900
                     transition-all duration-200"
                   asChild
                 >
@@ -85,7 +85,7 @@ export default function Home() {
                       size="lg"
                       className="w-full rounded-xl font-bold shadow-md shadow-blue-100 dark:shadow-blue-900
                         bg-gradient-to-r from-blue-500 to-blue-500
-                        hover:opacity-90 text-white transition-all duration-200"
+                        hover:opacity-90 texte-gray transition-all duration-200"
                     >
                       Commencer — c&apos;est gratuit
                     </Button>

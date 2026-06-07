@@ -31,7 +31,7 @@ export const Card = ({
       <div className="min-h-[20px] w-full flex items-center justify-end">
         {active && (
           <div className="rounded-md bg-green-600 flex items-center justify-center p-1">
-            <Check className="text-white stroke-[4] h-3 w-3" />
+            <Check className="texte-gray stroke-[4] h-3 w-3" />
           </div>
         )}
       </div>

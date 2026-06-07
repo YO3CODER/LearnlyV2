@@ -110,7 +110,7 @@ const LeaderboardPage = async () => {
           <div className="relative mb-2">
             <div className="absolute inset-0 bg-blue-200/30 dark:bg-blue-800/20 rounded-full blur-xl scale-150" />
             <Image
-              src="/leaderboard.ico"
+              src="/ligue.svg"
               alt="Classement"
               height={90}
               width={90}
