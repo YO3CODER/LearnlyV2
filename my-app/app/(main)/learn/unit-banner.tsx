@@ -16,16 +16,16 @@ export const UnitBanner = ({
   color = "blue",
   accentColor = "blue",
 }: Props) => {
-  const getGradientColors = () => {
+  const getBgColor = () => {
     const colors: Record<string, string> = {
-      blue: "from-blue-400 to-blue-600",
-      purple: "from-purple-400 to-purple-600",
-      green: "from-green-400 to-green-600",
-      red: "from-red-400 to-red-600",
-      orange: "from-orange-400 to-orange-600",
-      pink: "from-pink-400 to-pink-600",
-      indigo: "from-indigo-400 to-indigo-600",
-      teal: "from-teal-400 to-teal-600",
+      blue: "bg-blue-500",
+      purple: "bg-purple-500",
+      green: "bg-green-500",
+      red: "bg-red-500",
+      orange: "bg-orange-500",
+      pink: "bg-pink-500",
+      indigo: "bg-indigo-500",
+      teal: "bg-teal-500",
     };
     return colors[color] || colors.blue;
   };
@@ -44,31 +44,16 @@ export const UnitBanner = ({
     return borders[color] || borders.blue;
   };
 
-  const getShadowColor = () => {
-    const shadows: Record<string, string> = {
-      blue: "shadow-blue-300/50 dark:shadow-blue-900/50",
-      purple: "shadow-purple-300/50 dark:shadow-purple-900/50",
-      green: "shadow-green-300/50 dark:shadow-green-900/50",
-      red: "shadow-red-300/50 dark:shadow-red-900/50",
-      orange: "shadow-orange-300/50 dark:shadow-orange-900/50",
-      pink: "shadow-pink-300/50 dark:shadow-pink-900/50",
-      indigo: "shadow-indigo-300/50 dark:shadow-indigo-900/50",
-      teal: "shadow-teal-300/50 dark:shadow-teal-900/50",
-    };
-    return shadows[color] || shadows.blue;
-  };
-
   return (
     <div
       className={`w-full rounded-2xl px-5 py-4 lg:py-5 flex items-center justify-between
-      bg-gradient-to-r ${getGradientColors()}
+      ${getBgColor()}
       border-2 border-b-4 ${getBorderColor()}
-      shadow-lg ${getShadowColor()}
       relative overflow-hidden`}
     >
       {/* Text */}
       <div className="relative z-10 space-y-0.5">
-        <h3 className="text-xl font-extrabold text-white tracking-tight drop-shadow-sm">
+        <h3 className="text-xl font-extrabold text-white tracking-tight">
           {title}
         </h3>
         <p className="hidden lg:block text-white/80 text-sm font-medium">

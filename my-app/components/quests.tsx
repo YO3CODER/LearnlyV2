@@ -2,124 +2,78 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { quests } from "@/constants";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 
 type Props = {
   points: number;
 };
 
 export const Quests = ({ points }: Props) => {
+  const dailyQuest = quests[0];
+  const progress = Math.min((points / dailyQuest.value) * 100, 100);
+  const isCompleted = progress >= 100;
+
   return (
-    <div
-      className="
-        rounded-2xl p-5 space-y-5
-        bg-card
-        border-2 border-b-4 border-border
-        shadow-sm
-      "
-    >
+    <div className="rounded-2xl bg-card border-2 border-b-4 border-border shadow-sm p-5">
       {/* Header */}
-      <div className="flex items-center justify-between w-full">
-        <div>
-          <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground mb-1">
-            Daily
-          </p>
-
-          <h3 className="font-extrabold text-lg text-foreground tracking-tight">
-            Quests
-          </h3>
-        </div>
-
-        <Link href="/quests">
-          <Button
-            size="sm"
-            variant="primaryOutline"
-            className="
-              rounded-xl text-xs font-bold
-              border-border
-              text-foreground
-              bg-background
-              hover:bg-accent
-            "
-          >
-            View all
-          </Button>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-extrabold text-lg text-foreground">
+          Quêtes du jour
+        </h3>
+        <Link
+          href="/quests"
+          className="text-xs font-extrabold tracking-wide text-sky-400 hover:text-sky-500 transition-colors uppercase"
+        >
+          Afficher tout
         </Link>
       </div>
 
-      {/* Divider */}
-      <div className="h-px bg-border" />
+      {/* Quest row */}
+      <div className="flex items-center gap-4">
+        {/* XP icon */}
+        <div className="shrink-0">
+          <Image
+            src="/xp-bolt.svg"
+            alt="XP"
+            width={40}
+            height={40}
+          />
+        </div>
 
-      {/* List */}
-      <ul className="w-full space-y-4">
-        {quests.map((quest) => {
-          const progress = Math.min((points / quest.value) * 100, 100);
-          const isCompleted = progress >= 100;
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-extrabold text-foreground mb-2">
+            Gagne {dailyQuest.value} XP
+          </p>
 
-          return (
-            <li
-              key={quest.title}
-              className="flex items-center gap-x-3 w-full"
-            >
-              {/* Icon */}
+          {/* Progress bar */}
+          <div className="relative h-6 rounded-full bg-muted border border-border overflow-hidden">
+            {/* Fill */}
+            {progress > 0 && (
               <div
-                className={`
-                  shrink-0 w-10 h-10 rounded-xl
-                  flex items-center justify-center
-                  border-2 border-b-4 border-border
-                  ${
-                    isCompleted
-                      ? "bg-muted"
-                      : "bg-background"
-                  }
-                `}
-              >
-                <Image
-                  src="/xp-bolt.svg"
-                  alt="Points"
-                  width={24}
-                  height={24}
-                  className="opacity-90"
-                />
-              </div>
+                className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-yellow-300 to-yellow-400 transition-all duration-700"
+                style={{ width: `${progress}%` }}
+              />
+            )}
+            {/* Label */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-xs font-bold text-muted-foreground">
+                {Math.min(points, dailyQuest.value)} / {dailyQuest.value}
+              </span>
+            </div>
+          </div>
+        </div>
 
-              {/* Content */}
-              <div className="flex flex-col gap-y-1.5 w-full">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-foreground">
-                    {quest.title}
-                  </p>
-
-                  <span
-                    className={`text-[11px] font-bold ${
-                      isCompleted
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    {isCompleted
-                      ? "✓ Done"
-                      : `${Math.floor(progress)}%`}
-                  </span>
-                </div>
-
-                <Progress
-                  value={progress}
-                  className={`
-                    h-2 rounded-full bg-muted
-                    ${
-                      isCompleted
-                        ? "[&>div]:bg-primary"
-                        : "[&>div]:bg-muted-foreground"
-                    }
-                  `}
-                />
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+        {/* Chest icon */}
+        <div className="shrink-0">
+          <Image
+            src="/quete8.svg"
+            alt="Récompense"
+            width={40}
+            height={40}
+            className={isCompleted ? "opacity-100" : "opacity-60"}
+          />
+        </div>
+      </div>
     </div>
   );
 };
