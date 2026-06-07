@@ -57,7 +57,7 @@ export const UnitBanner = ({
   <ArrowLeft className="h-4 w-4 text-white/80 flex-shrink-0 hover:opacity-90 transition-opacity" />
 </Link>
           <span className="text-white/70 text-xs font-bold  tracking-wider" style={{ fontFamily: "'Outfit', sans-serif" }}>
-            Chapitre {index + 1}, Unité {order}
+            Unité {order}
           </span>
         </div>
         <h3 className="text-xl lg:text-xl font-extrabold text-white leading-tight" style={{ fontFamily: "'Fredoka', sans-serif" }}>
