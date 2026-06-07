@@ -67,7 +67,7 @@ export const UnitBanner = ({
       <Link href="/lesson" className="relative z-10 shrink-0 ml-4">
         <Button
           size="default"
-          className={`flex items-center gap-2 px-5 h-12 lg:h-14
+          className={`flex items-center gap-2 px-5 h-9 lg:h-10
             ${getButtonColor()}
             text-white font-extrabold text-sm lg:text-base uppercase tracking-wide
             border-2 border-b-4
@@ -76,7 +76,7 @@ export const UnitBanner = ({
             shadow-lg active:scale-95 active:border-b-2 active:shadow-md`}
           style={{ fontFamily: "'Outfit', sans-serif" }}
         >
-          <MoveRight className="h-3 w-3 lg:h-4 lg:w-4" />
+          <MoveRight className="h-5 w-5 lg:h-6 lg:w-6" />
         </Button>
       </Link>
     </div>
