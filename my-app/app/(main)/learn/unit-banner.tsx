@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, BookOpen } from "lucide-react";
+import { ArrowLeft, BookOpen, MoveRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -48,36 +48,35 @@ export const UnitBanner = ({
   };
 
   return (
-    <div className={`w-full rounded-2xl px-5 py-4 lg:py-5 flex items-center justify-between ${getBgColor()} relative overflow-hidden`}>
+    <div className={`w-full rounded-2xl px-6 py-6 lg:py-8 flex items-center justify-between ${getBgColor()} relative overflow-hidden`}>
 
       {/* Gauche : flèche + label + titre */}
-      <div className="relative z-10 flex flex-col gap-1">
-        <div className="flex items-center gap-1.5">
-          <ArrowLeft className="h-3.5 w-3.5 text-white/90 font-bold" />
-          <span className="text-gray-100 text-[11px] font-bold uppercase tracking-widest">
+      <div className="relative z-10 flex flex-col gap-2 flex-1">
+        <div className="flex items-center gap-2">
+          <ArrowLeft className="h-4 w-4 text-white/80 flex-shrink-0" />
+          <span className="text-white/70 text-xs font-bold  tracking-wider" style={{ fontFamily: "'Outfit', sans-serif" }}>
             Chapitre {index + 1}, Unité {order}
           </span>
         </div>
-        <h3 className="text-lg font-bold text-white ">
+        <h3 className="text-xl lg:text-xl font-extrabold text-white leading-tight" style={{ fontFamily: "'Fredoka', sans-serif" }}>
           {title}
         </h3>
       </div>
 
       {/* Droite : bouton Guide */}
-      <Link href="/lesson" className="relative z-10 shrink-0">
+      <Link href="/lesson" className="relative z-10 shrink-0 ml-4">
         <Button
           size="default"
-          variant="secondary"
-          className={`flex items-center gap-2 px-4 h-11
+          className={`flex items-center gap-2 px-5 h-12 lg:h-14
             ${getButtonColor()}
-            text-white font-bold text-sm uppercase tracking-wide
+            text-white font-extrabold text-sm lg:text-base uppercase tracking-wide
             border-2 border-b-4
-            rounded-xl
+            rounded-2xl
             transition-all duration-150
-            shadow-md active:scale-95 active:border-b-2`}
+            shadow-lg active:scale-95 active:border-b-2 active:shadow-md`}
+          style={{ fontFamily: "'Outfit', sans-serif" }}
         >
-          <BookOpen className="h-5 w-5" />
-          Guide
+          <MoveRight className="h-3 w-3 lg:h-4 lg:w-4" />
         </Button>
       </Link>
     </div>
