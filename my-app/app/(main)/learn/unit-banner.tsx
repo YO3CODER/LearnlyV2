@@ -69,7 +69,7 @@ export const UnitBanner = ({
       <Link href="/lesson" className="relative z-10 shrink-0 ml-4">
         <Button
           size="default"
-          className={`flex items-center gap-2 px-5 h-9 lg:h-10
+          className={`flex items-center gap-2 px-5 h-12 lg:h-14
             ${getButtonColor()}
             text-white font-extrabold text-sm lg:text-base uppercase tracking-wide
             border-2 border-b-4
