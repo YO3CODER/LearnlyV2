@@ -456,17 +456,39 @@ export const Quiz = ({
       {showStreak && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/95 backdrop-blur-sm transition-opacity duration-500" style={{ opacity: showStreak ? 1 : 0 }}>
           <div className="flex flex-col items-center gap-6">
-            <Image 
-              src={streakGif}
-              alt="Streak" 
-              width={200}
-              height={200}
-              className="drop-shadow-lg"
-              unoptimized
-            />
-            <p className="text-3xl lg:text-4xl font-extrabold text-gray-800 text-center font-poppins">
+            <motion.div
+              initial={{ scale: 0, rotate: -20 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 12, duration: 0.6 }}
+            >
+              <Image 
+                src={streakGif}
+                alt="Streak" 
+                width={200}
+                height={200}
+                className="drop-shadow-lg"
+                unoptimized
+              />
+            </motion.div>
+            <motion.p 
+              className="text-3xl lg:text-4xl font-extrabold text-gray-800 text-center"
+              style={{ fontFamily: "'Fredoka', sans-serif" }}
+              initial={{ opacity: 0, scale: 0.5, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{
+                delay: 0.2,
+                type: "spring",
+                stiffness: 180,
+                damping: 14,
+                duration: 0.7
+              }}
+              whileInView={{
+                scale: [1, 1.08, 1.02, 1.1, 1],
+                transition: { delay: 0.5, duration: 0.6, times: [0, 0.25, 0.5, 0.75, 1] }
+              }}
+            >
               {streak} {streakText}
-            </p>
+            </motion.p>
           </div>
         </div>
       )}
