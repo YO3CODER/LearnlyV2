@@ -32,6 +32,19 @@ type Props = {
   | null;
 };
 
+const STREAK_TEXTS = [
+  "d'affilée !!",
+  "en continu !",
+  "sans arrêt !",
+  "d'enfer !",
+  "impeccable !",
+  "parfait !",
+  "inarrêtable !",
+  "magnifique !",
+  "incroyable !",
+  "foudroyant !",
+];
+
 export const Quiz = ({
   initialPercentage,
   initialHearts,
@@ -86,6 +99,7 @@ export const Quiz = ({
   const [streak, setStreak] = useState(0);
   const [showStreak, setShowStreak] = useState(false);
   const [streakGif, setStreakGif] = useState("/1.gif");
+  const [streakText, setStreakText] = useState("d'affilée !!");
   const streakTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const STREAK_GIFS = ["/1.gif", "/2.gif", "/3.gif"];
@@ -189,7 +203,9 @@ export const Quiz = ({
 
   const triggerStreakToast = () => {
     const randomGif = STREAK_GIFS[Math.floor(Math.random() * STREAK_GIFS.length)];
+    const randomText = STREAK_TEXTS[Math.floor(Math.random() * STREAK_TEXTS.length)];
     setStreakGif(randomGif);
+    setStreakText(randomText);
     streakControls.play();
     setShowStreak(true);
     if (streakTimeoutRef.current) clearTimeout(streakTimeoutRef.current);
@@ -363,7 +379,7 @@ export const Quiz = ({
           <div className="space-y-2">
             <p className="text-xs font-semibold tracking-widest uppercase text-blue-400">Leçon terminée</p>
             <h1 className="text-2xl lg:text-4xl font-extrabold tracking-tight leading-tight">
-              Bravo ! 🎉<br />
+              Bravo !<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-500">
                 Tu as terminé la leçon.
               </span>
@@ -448,8 +464,8 @@ export const Quiz = ({
               className="drop-shadow-lg"
               unoptimized
             />
-            <p className="text-3xl lg:text-4xl font-extrabold text-gray-800 text-center">
-              {streak} d&apos;affilé !!
+            <p className="text-3xl lg:text-4xl font-extrabold text-gray-800 text-center font-poppins">
+              {streak} {streakText}
             </p>
           </div>
         </div>
