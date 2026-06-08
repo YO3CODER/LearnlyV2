@@ -6,6 +6,7 @@ import Confetti from "react-confetti";
 import { useRouter } from "next/navigation";
 import { useState, useTransition, useEffect, useRef } from "react";
 import { useAudio, useWindowSize, useMount } from "react-use";
+import { motion } from "framer-motion";
 
 import { completeLesson, reduceHearts } from "@/actions/user-progress";
 import { useHeartsModal } from "@/store/use-hearts-modal";
@@ -18,7 +19,6 @@ import { Footer } from "./footer";
 import { Challenge } from "./challenge";
 import { ResultCard } from "./result-card";
 import { QuestionBubble } from "./question-bubble";
-import { motion } from "framer-motion";
 
 type Props = {
   initialPercentage: number;
@@ -372,24 +372,97 @@ export const Quiz = ({
         {incorrectAudio}
         <Confetti width={width} height={height} recycle={false} numberOfPieces={500} tweenDuration={10000} />
         <div className="flex flex-col gap-y-6 lg:gap-y-10 max-w-lg mx-auto text-center items-center justify-center h-full px-6">
-          <div className="relative">
+          <motion.div
+            className="relative"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 12, duration: 0.6 }}
+          >
             <div className="absolute inset-0 bg-blue-200/40 dark:bg-blue-800/20 rounded-full blur-2xl scale-150" />
             <Image src="/finish.svg" alt="Finish" className="hidden lg:block relative drop-shadow-lg" height={110} width={110} />
             <Image src="/finish.svg" alt="Finish" className="block lg:hidden relative drop-shadow-lg" height={60} width={60} />
-          </div>
-          <div className="space-y-2">
-            <p className="text-xs font-semibold tracking-widest uppercase text-blue-400">Leçon terminée</p>
-            <h1 className="text-2xl lg:text-4xl font-extrabold tracking-tight leading-tight">
+          </motion.div>
+          
+          <motion.div 
+            className="space-y-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            <motion.p 
+              className="text-xs font-semibold tracking-widest uppercase text-blue-400"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.4 }}
+            >
+              Leçon terminée
+            </motion.p>
+            <motion.h1 
+              className="text-2xl lg:text-4xl font-extrabold tracking-tight leading-tight"
+              style={{ fontFamily: "'Fredoka', sans-serif" }}
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ 
+                opacity: 1, 
+                scale: [0, 1.15, 0.95, 1.08, 1]
+              }}
+              transition={{
+                delay: 0.4,
+                duration: 0.8,
+                ease: "easeOut",
+                scale: {
+                  type: "spring",
+                  stiffness: 150,
+                  damping: 12,
+                  duration: 0.9
+                }
+              }}
+            >
               Bravo !<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-500">
                 Tu as terminé la leçon.
               </span>
-            </h1>
-          </div>
-          <div className="flex items-center gap-x-4 w-full">
-            <ResultCard variant="points" value={totalChallenges * 10} />
-            <ResultCard variant="hearts" value={hearts} />
-          </div>
+            </motion.h1>
+          </motion.div>
+
+          <motion.div 
+            className="flex items-center gap-x-4 w-full"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, x: -20 }}
+              animate={{ opacity: 1, scale: [0.8, 1.05, 0.95, 1.02, 1], x: 0 }}
+              transition={{
+                delay: 0.7,
+                duration: 0.7,
+                ease: "easeOut",
+                scale: {
+                  type: "spring",
+                  stiffness: 150,
+                  damping: 12,
+                }
+              }}
+            >
+              <ResultCard variant="points" value={totalChallenges * 10} />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, x: 20 }}
+              animate={{ opacity: 1, scale: [0.8, 1.05, 0.95, 1.02, 1], x: 0 }}
+              transition={{
+                delay: 0.8,
+                duration: 0.7,
+                ease: "easeOut",
+                scale: {
+                  type: "spring",
+                  stiffness: 150,
+                  damping: 12,
+                }
+              }}
+            >
+              <ResultCard variant="hearts" value={hearts} />
+            </motion.div>
+          </motion.div>
         </div>
         <Footer lessonId={lessonId} status="completed" onCheck={() => router.push("/learn")} />
       </>
