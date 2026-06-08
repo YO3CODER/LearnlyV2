@@ -90,7 +90,7 @@ export const Footer = ({
             variant="default"
             size={isMobile ? "sm" : "lg"}
             onClick={() => (window.location.href = `/lesson/${lessonId}`)}
-            className="rounded-xl font-bold border-2 border-b-4 border-slate-600 bg-slate-700 hover:bg-slate-600 text-gray"
+            className="rounded-xl font-bold border-2 border-b-4 border-slate-600 bg-slate-700 hover:bg-slate-600 text-white"
           >
             Pratiquer à nouveau
           </Button>

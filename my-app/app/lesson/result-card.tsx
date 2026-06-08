@@ -28,7 +28,7 @@ export const ResultCard = ({ value, variant }: Props) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.3 }}
         className={cn(
-          "p-1.5 text-gray rounded-t-xl font-bold text-center uppercase text-xs",
+          "p-1.5 text-white rounded-t-xl font-bold text-center uppercase text-xs",
           variant === "hearts" && "bg-rose-500",
           variant === "points" && "bg-orange-400"
         )}

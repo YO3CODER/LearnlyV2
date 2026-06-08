@@ -52,6 +52,7 @@ export const Quiz = ({
   const [finishAudio, , finishControls] = useAudio({ src: "/finish.mp3", autoPlay: false });
   const [correctAudio, _c, correctControls] = useAudio({ src: "/correct.wav" });
   const [incorrectAudio, _i, incorrectControls] = useAudio({ src: "/incorrect.wav" });
+  const [streakAudio, , streakControls] = useAudio({ src: "/affile.mp3", autoPlay: false });
   const [pending, startTransition] = useTransition();
 
   const [lessonId] = useState(initialLessonId);
@@ -84,7 +85,10 @@ export const Quiz = ({
 
   const [streak, setStreak] = useState(0);
   const [showStreak, setShowStreak] = useState(false);
+  const [streakGif, setStreakGif] = useState("/1.gif");
   const streakTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
+  const STREAK_GIFS = ["/1.gif", "/2.gif", "/3.gif"];
 
   const [slideState, setSlideState] = useState<"idle" | "exit" | "enter">("idle");
   const slideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -184,9 +188,12 @@ export const Quiz = ({
   }, [countdown]);
 
   const triggerStreakToast = () => {
+    const randomGif = STREAK_GIFS[Math.floor(Math.random() * STREAK_GIFS.length)];
+    setStreakGif(randomGif);
+    streakControls.play();
     setShowStreak(true);
     if (streakTimeoutRef.current) clearTimeout(streakTimeoutRef.current);
-    streakTimeoutRef.current = setTimeout(() => setShowStreak(false), 2500);
+    streakTimeoutRef.current = setTimeout(() => setShowStreak(false), 3000);
   };
 
   const handleCorrect = () => {
@@ -199,7 +206,7 @@ export const Quiz = ({
           setPercentage((prev) => Math.min(prev + 100 / totalChallenges, 100));
           setStreak((prev) => {
             const next = prev + 1;
-            if (next >= 3) triggerStreakToast();
+            if (next >= 3 && next % 2 === 1) triggerStreakToast();
             return next;
           });
           if (initialPercentage === 100) setHearts((prev) => Math.min(prev + 1, 5));
@@ -426,22 +433,27 @@ export const Quiz = ({
       {incorrectAudio}
       {correctAudio}
       {finishAudio}
+      {streakAudio}
       <Header hearts={hearts} percentage={percentage} hasActiveSubscription={!!userSubscription?.isActive} />
 
-      {/* Toast streak */}
-      <div className={[
-        "fixed top-6 left-1/2 -translate-x-1/2 z-50",
-        "transition-all duration-500 ease-out",
-        showStreak ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-3 pointer-events-none",
-      ].join(" ")}>
-        <div className="flex items-center gap-x-3 bg-orange-500 text-gray px-5 py-3 rounded-2xl shadow-lg shadow-orange-200 dark:shadow-orange-900">
-          <span className="text-xl leading-none">🔥</span>
-          <div className="flex flex-col leading-tight">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-orange-100">{streak} d&apos;affilée</span>
-            <span className="text-base font-extrabold tracking-tight">En pleine forme !</span>
+      {/* Streak animation - GIF avec fond blanc */}
+      {showStreak && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/95 backdrop-blur-sm transition-opacity duration-500" style={{ opacity: showStreak ? 1 : 0 }}>
+          <div className="flex flex-col items-center gap-6">
+            <Image 
+              src={streakGif}
+              alt="Streak" 
+              width={200}
+              height={200}
+              className="drop-shadow-lg"
+              unoptimized
+            />
+            <p className="text-3xl lg:text-4xl font-extrabold text-gray-800 text-center">
+              {streak} d&apos;affilé !!
+            </p>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="flex-1 overflow-y-auto">
         <div className="min-h-full flex items-center justify-center py-8">
