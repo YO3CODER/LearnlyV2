@@ -18,6 +18,7 @@ import { Footer } from "./footer";
 import { Challenge } from "./challenge";
 import { ResultCard } from "./result-card";
 import { QuestionBubble } from "./question-bubble";
+import { motion } from "framer-motion";
 
 type Props = {
   initialPercentage: number;
