@@ -10,7 +10,7 @@ const routes = [
   { label: "Leaderboard", href: "/leaderboard", iconSrc: "/leaderboard.svg" },
   { label: "Quests", href: "/quests", iconSrc: "/quest.svg" },
   { label: "Shop", href: "/shop", iconSrc: "/shop.svg" },
-  {label:"maitre lucas" , href:"/maitrelucas.fr" ,iconSrc:"/study.svg"}
+  {label:"maitre lucas" , href: "https://maitrelucas.fr/" ,iconSrc:"/study.svg"}
 ];
 
 export const MobileNavbar = () => {
