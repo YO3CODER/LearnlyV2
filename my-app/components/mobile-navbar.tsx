@@ -39,6 +39,14 @@ const courses = [
     videoId: "TV-leAqi8ps",
     description: "Description du cours 2",
     isPreview: true
+  } , 
+
+   {
+    title: "Résoudre une équation",
+    href: "https://youtu.be/ezGlju-nR6s?si=fcSSX7JfG-W1N9sL",
+    videoId: "TV-leAqi8ps",
+    description: "résoudre une équation",
+    isPreview: true
   }
   // Ajoute d'autres cours ici
 ];
