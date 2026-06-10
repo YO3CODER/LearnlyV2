@@ -33,8 +33,10 @@ const courses = [
   },
   {
     title: "Cours 2",
-    href: "https://maitrelucas.fr/cours2",
-    description: "Description du cours 2"
+    href: "https://youtu.be/TV-leAqi8ps?si=8BvCnHwH-W1K2WJv",
+    videoId: "TV-leAqi8ps",
+    description: "Description du cours 2",
+    isPreview: true
   }
   // Ajoute d'autres cours ici
 ];
@@ -42,6 +44,8 @@ const courses = [
 export const MobileNavbar = () => {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [videoOpen, setVideoOpen] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
   return (
     <>
@@ -142,8 +146,14 @@ export const MobileNavbar = () => {
                   <button
                     key={index}
                     onClick={() => {
-                      window.open(course.href, "_blank");
-                      setOpen(false);
+                      if (course.isPreview && course.videoId) {
+                        setSelectedVideo(course.videoId);
+                        setVideoOpen(true);
+                        setOpen(false);
+                      } else {
+                        window.open(course.href, "_blank");
+                        setOpen(false);
+                      }
                     }}
                     className={cn(
                       "w-full px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform active:scale-95 text-sm",
@@ -161,6 +171,48 @@ export const MobileNavbar = () => {
               <button
                 type="button"
                 onClick={() => setOpen(false)}
+                className={cn(
+                  "w-full px-6 py-2 rounded-lg font-semibold transition-all duration-200 transform active:scale-95 text-sm",
+                  buttonStyles.danger
+                )}
+              >
+                Fermer
+              </button>
+            </div>
+          </DialogPanel>
+        </div>
+      </Dialog>
+
+      {/* Modal vidéo YouTube */}
+      <Dialog open={videoOpen} onClose={setVideoOpen} className="relative z-50">
+        <DialogBackdrop
+          transition
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+        />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <DialogPanel
+            transition
+            className="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all duration-500 data-closed:scale-95 data-closed:opacity-0 data-enter:duration-500 data-enter:ease-out data-leave:duration-300 data-leave:ease-in w-full max-w-2xl border border-gray-200 flex flex-col z-50"
+          >
+            {/* Vidéo */}
+            <div className="relative w-full bg-black" style={{ paddingBottom: "56.25%" }}>
+              {selectedVideo && (
+                <iframe
+                  className="absolute top-0 left-0 w-full h-full"
+                  src={`https://www.youtube.com/embed/${selectedVideo}`}
+                  title="Vidéo YouTube"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="border-t border-gray-200 px-6 py-4 flex-shrink-0">
+              <button
+                type="button"
+                onClick={() => setVideoOpen(false)}
                 className={cn(
                   "w-full px-6 py-2 rounded-lg font-semibold transition-all duration-200 transform active:scale-95 text-sm",
                   buttonStyles.danger
