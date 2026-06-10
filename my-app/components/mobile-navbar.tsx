@@ -44,33 +44,149 @@ type Course = {
   videoId: string;
   isPreview: boolean;
   category: keyof typeof courseButtonColor;
+  pdfFiche?: string;    // ex: "/fiches/atome.pdf"
+  pdfCorrige?: string;  // ex: "/fiches/atome-corrige.pdf"
 };
 
 const courses: Course[] = [
-  { title: "Écriture du A en cursive (a)",  href: "https://youtu.be/UhdIYcwkEsI", videoId: "UhdIYcwkEsI", isPreview: true, category: "Français" },
-  { title: "Atome",                          href: "https://youtu.be/TV-leAqi8ps", videoId: "TV-leAqi8ps", isPreview: true, category: "Sciences" },
-  { title: "Résoudre une équation",          href: "https://youtu.be/ezGlju-nR6s", videoId: "ezGlju-nR6s", isPreview: true, category: "Maths"    },
-  { title: "Résoudre une équation 4ème (1)", href: "https://youtu.be/uV_EmbYu9_E", videoId: "uV_EmbYu9_E", isPreview: true, category: "Maths"    },
-  { title: "La photosynthèse",               href: "https://youtu.be/dQw4w9WgXcQ", videoId: "dQw4w9WgXcQ", isPreview: true, category: "Sciences" },
-  { title: "Conjugaison : le passé composé", href: "https://youtu.be/dQw4w9WgXcQ", videoId: "dQw4w9WgXcQ", isPreview: true, category: "Français" },
-  { title: "La respiration cellulaire",      href: "https://youtu.be/dQw4w9WgXcQ", videoId: "dQw4w9WgXcQ", isPreview: true, category: "Sciences" },
-  { title: "La règle de trois",              href: "https://youtu.be/dQw4w9WgXcQ", videoId: "dQw4w9WgXcQ", isPreview: true, category: "Maths"    },
-  { title: "Les figures géométriques",       href: "https://youtu.be/dQw4w9WgXcQ", videoId: "dQw4w9WgXcQ", isPreview: true, category: "Maths"    },
-  { title: "La chaîne alimentaire",          href: "https://youtu.be/dQw4w9WgXcQ", videoId: "dQw4w9WgXcQ", isPreview: true, category: "Sciences" },
-  { title: "Les nombres décimaux",           href: "https://youtu.be/dQw4w9WgXcQ", videoId: "dQw4w9WgXcQ", isPreview: true, category: "Maths"    },
-  { title: "La Révolution française",        href: "https://youtu.be/dQw4w9WgXcQ", videoId: "dQw4w9WgXcQ", isPreview: true, category: "Histoire" },
+  {
+    title: "Écriture du A en cursive (a)",
+    href: "https://youtu.be/UhdIYcwkEsI",
+    videoId: "UhdIYcwkEsI",
+    isPreview: true,
+    category: "Français",
+    // pdfFiche: "/fiches/ecriture-a.pdf",
+    // pdfCorrige: "/fiches/ecriture-a-corrige.pdf",
+  },
+  {
+    title: "Atome",
+    href: "https://youtu.be/TV-leAqi8ps",
+    videoId: "TV-leAqi8ps",
+    isPreview: true,
+    category: "Sciences",
+    // pdfFiche: "/fiches/atome.pdf",
+    // pdfCorrige: "/fiches/atome-corrige.pdf",
+  },
+  {
+    title: "Résoudre une équation",
+    href: "https://youtu.be/ezGlju-nR6s",
+    videoId: "ezGlju-nR6s",
+    isPreview: true,
+    category: "Maths",
+    // pdfFiche: "/fiches/equation.pdf",
+    // pdfCorrige: "/fiches/equation-corrige.pdf",
+  },
+  {
+    title: "Résoudre une équation 4ème (1)",
+    href: "https://youtu.be/uV_EmbYu9_E",
+    videoId: "uV_EmbYu9_E",
+    isPreview: true,
+    category: "Maths",
+    // pdfFiche: "/fiches/equation-4eme.pdf",
+    // pdfCorrige: "/fiches/equation-4eme-corrige.pdf",
+  },
+  {
+    title: "La photosynthèse",
+    href: "https://youtu.be/dQw4w9WgXcQ",
+    videoId: "dQw4w9WgXcQ",
+    isPreview: true,
+    category: "Sciences",
+    // pdfFiche: "/fiches/photosynthese.pdf",
+    // pdfCorrige: "/fiches/photosynthese-corrige.pdf",
+  },
+  {
+    title: "Conjugaison : le passé composé",
+    href: "https://youtu.be/dQw4w9WgXcQ",
+    videoId: "dQw4w9WgXcQ",
+    isPreview: true,
+    category: "Français",
+    // pdfFiche: "/fiches/passe-compose.pdf",
+    // pdfCorrige: "/fiches/passe-compose-corrige.pdf",
+  },
+  {
+    title: "La respiration cellulaire",
+    href: "https://youtu.be/dQw4w9WgXcQ",
+    videoId: "dQw4w9WgXcQ",
+    isPreview: true,
+    category: "Sciences",
+    // pdfFiche: "/fiches/respiration-cellulaire.pdf",
+    // pdfCorrige: "/fiches/respiration-cellulaire-corrige.pdf",
+  },
+  {
+    title: "La règle de trois",
+    href: "https://youtu.be/dQw4w9WgXcQ",
+    videoId: "dQw4w9WgXcQ",
+    isPreview: true,
+    category: "Maths",
+    // pdfFiche: "/fiches/regle-de-trois.pdf",
+    // pdfCorrige: "/fiches/regle-de-trois-corrige.pdf",
+  },
+  {
+    title: "Les figures géométriques",
+    href: "https://youtu.be/dQw4w9WgXcQ",
+    videoId: "dQw4w9WgXcQ",
+    isPreview: true,
+    category: "Maths",
+    // pdfFiche: "/fiches/figures-geometriques.pdf",
+    // pdfCorrige: "/fiches/figures-geometriques-corrige.pdf",
+  },
+  {
+    title: "La chaîne alimentaire",
+    href: "https://youtu.be/dQw4w9WgXcQ",
+    videoId: "dQw4w9WgXcQ",
+    isPreview: true,
+    category: "Sciences",
+    // pdfFiche: "/fiches/chaine-alimentaire.pdf",
+    // pdfCorrige: "/fiches/chaine-alimentaire-corrige.pdf",
+  },
+  {
+    title: "Les nombres décimaux",
+    href: "https://youtu.be/dQw4w9WgXcQ",
+    videoId: "dQw4w9WgXcQ",
+    isPreview: true,
+    category: "Maths",
+    // pdfFiche: "/fiches/nombres-decimaux.pdf",
+    // pdfCorrige: "/fiches/nombres-decimaux-corrige.pdf",
+  },
+  {
+    title: "La Révolution française",
+    href: "https://youtu.be/dQw4w9WgXcQ",
+    videoId: "dQw4w9WgXcQ",
+    isPreview: true,
+    category: "Histoire",
+    // pdfFiche: "/fiches/revolution-francaise.pdf",
+    // pdfCorrige: "/fiches/revolution-francaise-corrige.pdf",
+  },
+  {
+    title: "La conjugaison des verbes en -er au présent CE1 - CE2 - Cycle 2 - Français",
+    href: "https://youtu.be/luyObngrtJg?si=8-lrCRwV8e0PxkUE",
+    videoId: "luyObngrtJg",
+    isPreview: true,
+    category: "Français",
+    // pdfFiche: "/fiches/verbes-er-present.pdf",
+    // pdfCorrige: "/fiches/verbes-er-present-corrige.pdf",
+  },
+  {
+    title: "Apprendre TOUTE la CONJUGAISON du CE1 !",
+    href: "https://youtu.be/GFJmHJEqt0w?si=2wVc8Mj6YNvsYv2P",
+    videoId: "GFJmHJEqt0w",
+    isPreview: true,
+    category: "Français",
+    // pdfFiche: "/fiches/conjugaison-ce1.pdf",
+    // pdfCorrige: "/fiches/conjugaison-ce1-corrige.pdf",
+  },
 ];
 
 const routes = [
-  { label: "Learn",        href: "/learn",       iconSrc: "/learn.svg" },
-  { label: "Leaderboard",  href: "/leaderboard",  iconSrc: "/leaderboard.svg" },
-  { label: "Quests",       href: "/quests",       iconSrc: "/quest.svg" },
-  { label: "Shop",         href: "/shop",         iconSrc: "/shop.svg" },
-  { label: "study", href: "#",             iconSrc: "/study.svg", isModal: true },
+  { label: "Learn",       href: "/learn",       iconSrc: "/learn.svg" },
+  { label: "Leaderboard", href: "/leaderboard", iconSrc: "/leaderboard.svg" },
+  { label: "Quests",      href: "/quests",      iconSrc: "/quest.svg" },
+  { label: "Shop",        href: "/shop",        iconSrc: "/shop.svg" },
+  { label: "study",       href: "#",            iconSrc: "/study.svg", isModal: true },
 ];
 
 const RECENT_KEY    = "courses_recent";
-const COMPLETED_KEY = "courses_completed"; // ← manuel uniquement
+const COMPLETED_KEY = "courses_completed";
 const MAX_RECENT    = 3;
 
 // ─── Composant ──────────────────────────────────────────────────────────────
@@ -78,15 +194,17 @@ const MAX_RECENT    = 3;
 export const MobileNavbar = () => {
   const pathname = usePathname();
 
-  const [open, setOpen]                   = useState(false);
-  const [videoOpen, setVideoOpen]         = useState(false);
-  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
-  const [selectedTitle, setSelectedTitle] = useState("");
-  const [selectedVideoId, setSelectedVideoId] = useState("");
-  const [search, setSearch]               = useState("");
-  const [category, setCategory]           = useState<Category>("Tout");
-  const [recentIds, setRecentIds]         = useState<string[]>([]);
-  const [completedIds, setCompletedIds]   = useState<string[]>([]);
+  const [open, setOpen]                         = useState(false);
+  const [videoOpen, setVideoOpen]               = useState(false);
+  const [selectedVideo, setSelectedVideo]       = useState<string | null>(null);
+  const [selectedTitle, setSelectedTitle]       = useState("");
+  const [selectedVideoId, setSelectedVideoId]   = useState("");
+  const [selectedPdfFiche, setSelectedPdfFiche]     = useState<string | undefined>();
+  const [selectedPdfCorrige, setSelectedPdfCorrige] = useState<string | undefined>();
+  const [search, setSearch]                     = useState("");
+  const [category, setCategory]                 = useState<Category>("Tout");
+  const [recentIds, setRecentIds]               = useState<string[]>([]);
+  const [completedIds, setCompletedIds]         = useState<string[]>([]);
 
   useEffect(() => {
     try {
@@ -124,6 +242,8 @@ export const MobileNavbar = () => {
     setSelectedVideo(course.videoId);
     setSelectedVideoId(course.videoId);
     setSelectedTitle(course.title);
+    setSelectedPdfFiche(course.pdfFiche);
+    setSelectedPdfCorrige(course.pdfCorrige);
     setVideoOpen(true);
     setOpen(false);
   };
@@ -195,7 +315,7 @@ export const MobileNavbar = () => {
             <div className="px-6 py-5 flex flex-col items-center border-b border-gray-200 flex-shrink-0">
               <Image src="/mascot.svg" alt="Mascotte" height={56} width={56} className="mb-3" />
               <DialogTitle as="h2" className="text-center font-bold text-2xl text-blue-400 mb-0.5" style={fredoka}>
-                Cours 
+                Cours
               </DialogTitle>
               <p className="text-center text-gray-400 text-sm" style={fredoka}>
                 Choisis un cours pour commencer
@@ -363,6 +483,61 @@ export const MobileNavbar = () => {
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 />
+              )}
+            </div>
+
+            {/* ── Boutons PDF ── */}
+            <div className="px-5 py-2.5 flex gap-2 border-b border-gray-100 flex-shrink-0">
+              {/* Fiche PDF */}
+              {selectedPdfFiche ? (
+                <a
+                  href={selectedPdfFiche}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={fredoka}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-sm bg-sky-500 text-white border-sky-600 border-b-4 hover:bg-sky-500/90 active:border-b-0 transition-all duration-200 active:scale-95 transform"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                  Fiche PDF
+                </a>
+              ) : (
+                <span
+                  style={fredoka}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-sm bg-gray-100 text-gray-400 border-gray-200 border-b-4 cursor-not-allowed select-none"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                  Fiche PDF
+                </span>
+              )}
+
+              {/* Corrigé PDF */}
+              {selectedPdfCorrige ? (
+                <a
+                  href={selectedPdfCorrige}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={fredoka}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-sm bg-violet-500 text-white border-violet-600 border-b-4 hover:bg-violet-500/90 active:border-b-0 transition-all duration-200 active:scale-95 transform"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  Corrigé PDF
+                </a>
+              ) : (
+                <span
+                  style={fredoka}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-sm bg-gray-100 text-gray-400 border-gray-200 border-b-4 cursor-not-allowed select-none"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  Corrigé PDF
+                </span>
               )}
             </div>
 
