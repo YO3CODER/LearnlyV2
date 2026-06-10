@@ -14,6 +14,7 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/re
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SidebarItem } from "./sidebar-item";
+import { Cours } from "@/lib/cours-utils";
 
 type Props = {
   className?: string;
@@ -24,7 +25,6 @@ const fredoka = { fontFamily: "'Fredoka', sans-serif" } as const;
 // ─── Données ────────────────────────────────────────────────────────────────
 
 type Category = "Tout" | "Maths" | "Français" | "Sciences" | "Histoire";
-
 const ALL_CATEGORIES: Category[] = ["Tout", "Maths", "Français", "Sciences", "Histoire"];
 
 const categoryColors: Record<Category, string> = {
@@ -43,6 +43,13 @@ const categoryActiveColors: Record<Category, string> = {
   Histoire: "bg-amber-500 text-white border-amber-600",
 };
 
+const categoryBadgeColors: Record<string, string> = {
+  Maths:    "bg-sky-100 text-sky-700",
+  Français: "bg-violet-100 text-violet-700",
+  Sciences: "bg-emerald-100 text-emerald-700",
+  Histoire: "bg-amber-100 text-amber-700",
+};
+
 const courseButtonColor: Record<string, string> = {
   Maths:    "bg-sky-400 text-white border-sky-500 border-b-4 hover:bg-sky-400/90 active:border-b-0",
   Français: "bg-violet-500 text-white border-violet-600 border-b-4 hover:bg-violet-500/90 active:border-b-0",
@@ -50,79 +57,12 @@ const courseButtonColor: Record<string, string> = {
   Histoire: "bg-amber-400 text-gray-900 border-amber-500 border-b-4 hover:bg-amber-400/90 active:border-b-0",
 };
 
-type Course = {
-  title: string;
-  href: string;
-  videoId: string;
-  isPreview: boolean;
-  category: keyof typeof courseButtonColor;
-  pdfCours?: string;    // ex: "/fiches/atome-cours.pdf"
-  pdfFiche?: string;    // ex: "/fiches/atome.pdf"
-  pdfCorrige?: string;  // ex: "/fiches/atome-corrige.pdf"
+const cardAccentColor: Record<string, string> = {
+  Maths:    "border-sky-400",
+  Français: "border-violet-500",
+  Sciences: "border-emerald-500",
+  Histoire: "border-amber-400",
 };
-
-const courses: Course[] = [
-  { title: "Écriture du A en cursive (a)",  href: "https://youtu.be/UhdIYcwkEsI", videoId: "UhdIYcwkEsI", isPreview: true, category: "Français",
-    // pdfCours: "/fiches/ecriture-a-cours.pdf",
-    // pdfFiche: "/fiches/ecriture-a.pdf",
-    // pdfCorrige: "/fiches/ecriture-a-corrige.pdf",
-  },
-  { title: "Atome",                          href: "https://youtu.be/TV-leAqi8ps", videoId: "TV-leAqi8ps", isPreview: true, category: "Sciences",
-    // pdfCours: "/fiches/atome-cours.pdf",
-    // pdfFiche: "/fiches/atome.pdf",
-    // pdfCorrige: "/fiches/atome-corrige.pdf",
-  },
-  { title: "Résoudre une équation",          href: "https://youtu.be/ezGlju-nR6s", videoId: "ezGlju-nR6s", isPreview: true, category: "Maths",
-    // pdfCours: "/fiches/equation-cours.pdf",
-    // pdfFiche: "/fiches/equation.pdf",
-    // pdfCorrige: "/fiches/equation-corrige.pdf",
-  },
-  { title: "Résoudre une équation 4ème (1)", href: "https://youtu.be/uV_EmbYu9_E", videoId: "uV_EmbYu9_E", isPreview: true, category: "Maths",
-    // pdfCours: "/fiches/equation-4eme-cours.pdf",
-    // pdfFiche: "/fiches/equation-4eme.pdf",
-    // pdfCorrige: "/fiches/equation-4eme-corrige.pdf",
-  },
-  { title: "La photosynthèse",               href: "https://youtu.be/dQw4w9WgXcQ", videoId: "dQw4w9WgXcQ", isPreview: true, category: "Sciences",
-    // pdfCours: "/fiches/photosynthese-cours.pdf",
-    // pdfFiche: "/fiches/photosynthese.pdf",
-    // pdfCorrige: "/fiches/photosynthese-corrige.pdf",
-  },
-  { title: "Conjugaison : le passé composé", href: "https://youtu.be/dQw4w9WgXcQ", videoId: "dQw4w9WgXcQ", isPreview: true, category: "Français",
-    // pdfCours: "/fiches/passe-compose-cours.pdf",
-    // pdfFiche: "/fiches/passe-compose.pdf",
-    // pdfCorrige: "/fiches/passe-compose-corrige.pdf",
-  },
-  { title: "La respiration cellulaire",      href: "https://youtu.be/dQw4w9WgXcQ", videoId: "dQw4w9WgXcQ", isPreview: true, category: "Sciences",
-    // pdfCours: "/fiches/respiration-cellulaire-cours.pdf",
-    // pdfFiche: "/fiches/respiration-cellulaire.pdf",
-    // pdfCorrige: "/fiches/respiration-cellulaire-corrige.pdf",
-  },
-  { title: "La règle de trois",              href: "https://youtu.be/dQw4w9WgXcQ", videoId: "dQw4w9WgXcQ", isPreview: true, category: "Maths",
-    // pdfCours: "/fiches/regle-de-trois-cours.pdf",
-    // pdfFiche: "/fiches/regle-de-trois.pdf",
-    // pdfCorrige: "/fiches/regle-de-trois-corrige.pdf",
-  },
-  { title: "Les figures géométriques",       href: "https://youtu.be/dQw4w9WgXcQ", videoId: "dQw4w9WgXcQ", isPreview: true, category: "Maths",
-    // pdfCours: "/fiches/figures-geometriques-cours.pdf",
-    // pdfFiche: "/fiches/figures-geometriques.pdf",
-    // pdfCorrige: "/fiches/figures-geometriques-corrige.pdf",
-  },
-  { title: "La chaîne alimentaire",          href: "https://youtu.be/dQw4w9WgXcQ", videoId: "dQw4w9WgXcQ", isPreview: true, category: "Sciences",
-    // pdfCours: "/fiches/chaine-alimentaire-cours.pdf",
-    // pdfFiche: "/fiches/chaine-alimentaire.pdf",
-    // pdfCorrige: "/fiches/chaine-alimentaire-corrige.pdf",
-  },
-  { title: "Les nombres décimaux",           href: "https://youtu.be/dQw4w9WgXcQ", videoId: "dQw4w9WgXcQ", isPreview: true, category: "Maths",
-    // pdfCours: "/fiches/nombres-decimaux-cours.pdf",
-    // pdfFiche: "/fiches/nombres-decimaux.pdf",
-    // pdfCorrige: "/fiches/nombres-decimaux-corrige.pdf",
-  },
-  { title: "La Révolution française",        href: "https://youtu.be/dQw4w9WgXcQ", videoId: "dQw4w9WgXcQ", isPreview: true, category: "Histoire",
-    // pdfCours: "/fiches/revolution-francaise-cours.pdf",
-    // pdfFiche: "/fiches/revolution-francaise.pdf",
-    // pdfCorrige: "/fiches/revolution-francaise-corrige.pdf",
-  },
-];
 
 const RECENT_KEY    = "courses_recent";
 const COMPLETED_KEY = "courses_completed";
@@ -150,10 +90,16 @@ const IconCheck = () => (
   </svg>
 );
 
+const IconPlay = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+    <polygon points="5 3 19 12 5 21 5 3" />
+  </svg>
+);
+
 // ─── Bouton PDF réutilisable ─────────────────────────────────────────────────
 
 type PdfButtonProps = {
-  href?: string;
+  href?: string | null;
   label: string;
   icon: React.ReactNode;
   activeClass: string;
@@ -188,21 +134,102 @@ const PdfButton = ({ href, label, icon, activeClass }: PdfButtonProps) => {
   );
 };
 
+// ─── Carte de cours (identique à CoursPage) ──────────────────────────────────
+
+type CourseCardProps = {
+  course: Cours;
+  isCompleted: boolean;
+  isRecent: boolean;
+  onPlay: (course: Cours) => void;
+  index: number;
+};
+
+const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCardProps) => (
+  <div
+    style={{ animationDelay: `${index * 40}ms` }}
+    className={cn(
+      "bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col overflow-hidden opacity-0 animate-[fadeSlideIn_0.4s_cubic-bezier(0.34,1.56,0.64,1)_forwards] border-l-4",
+      cardAccentColor[course.categorie]
+    )}
+  >
+    {/* Miniature YouTube */}
+    <div className="relative w-full bg-gray-100" style={{ paddingBottom: "56.25%" }}>
+      <img
+        src={`https://img.youtube.com/vi/${course.videoId}/mqdefault.jpg`}
+        alt={course.titre}
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+      {isCompleted && (
+        <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center shadow">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </div>
+      )}
+      {isRecent && !isCompleted && (
+        <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-orange-400 text-white text-xs font-semibold shadow" style={fredoka}>
+          Récent
+        </div>
+      )}
+    </div>
+
+    {/* Contenu */}
+    <div className="p-3 flex flex-col flex-grow gap-2">
+      <span
+        style={fredoka}
+        className={cn("self-start text-xs font-semibold px-2 py-0.5 rounded-full", categoryBadgeColors[course.categorie])}
+      >
+        {course.categorie}
+      </span>
+      <p className="text-sm font-semibold text-gray-800 leading-snug line-clamp-2 flex-grow" style={fredoka}>
+        {course.titre}
+      </p>
+      <button
+        onClick={() => onPlay(course)}
+        style={fredoka}
+        className={cn(
+          "w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg font-semibold text-sm transition-all duration-200 transform active:scale-95",
+          courseButtonColor[course.categorie]
+        )}
+      >
+        <IconPlay />
+        {isCompleted ? "Revoir" : "Commencer"}
+      </button>
+    </div>
+  </div>
+);
+
 // ─── Composant principal ─────────────────────────────────────────────────────
 
 export const Sidebar = ({ className }: Props) => {
+  const [courses, setCourses]                       = useState<Cours[]>([]);
+  const [coursesLoading, setCoursesLoading]         = useState(false);
   const [open, setOpen]                             = useState(false);
   const [videoOpen, setVideoOpen]                   = useState(false);
   const [selectedVideo, setSelectedVideo]           = useState<string | null>(null);
   const [selectedTitle, setSelectedTitle]           = useState("");
   const [selectedVideoId, setSelectedVideoId]       = useState("");
-  const [selectedPdfCours, setSelectedPdfCours]     = useState<string | undefined>();
-  const [selectedPdfFiche, setSelectedPdfFiche]     = useState<string | undefined>();
-  const [selectedPdfCorrige, setSelectedPdfCorrige] = useState<string | undefined>();
+  const [selectedPdfCours, setSelectedPdfCours]     = useState<string | null | undefined>();
+  const [selectedPdfFiche, setSelectedPdfFiche]     = useState<string | null | undefined>();
+  const [selectedPdfCorrige, setSelectedPdfCorrige] = useState<string | null | undefined>();
   const [search, setSearch]                         = useState("");
   const [category, setCategory]                     = useState<Category>("Tout");
   const [recentIds, setRecentIds]                   = useState<string[]>([]);
   const [completedIds, setCompletedIds]             = useState<string[]>([]);
+
+  const openModal = () => {
+    setSearch("");
+    setCategory("Tout");
+    setOpen(true);
+    if (courses.length === 0) {
+      setCoursesLoading(true);
+      fetch("/api/cours")
+        .then((res) => res.json())
+        .then(setCourses)
+        .catch(() => setCourses([]))
+        .finally(() => setCoursesLoading(false));
+    }
+  };
 
   useEffect(() => {
     try {
@@ -215,21 +242,21 @@ export const Sidebar = ({ className }: Props) => {
 
   const filteredCourses = useMemo(() =>
     courses.filter((c) => {
-      const matchSearch   = c.title.toLowerCase().includes(search.toLowerCase());
-      const matchCategory = category === "Tout" || c.category === category;
+      const matchSearch   = c.titre.toLowerCase().includes(search.toLowerCase());
+      const matchCategory = category === "Tout" || c.categorie === category;
       return matchSearch && matchCategory;
     }),
-    [search, category]
+    [search, category, courses]
   );
 
   const recentCourses = useMemo(() =>
     recentIds
       .map((id) => courses.find((c) => c.videoId === id))
-      .filter(Boolean) as Course[],
-    [recentIds]
+      .filter(Boolean) as Cours[],
+    [recentIds, courses]
   );
 
-  const playVideo = (course: Course) => {
+  const playVideo = (course: Cours) => {
     const nextRecent = [
       course.videoId,
       ...recentIds.filter((id) => id !== course.videoId),
@@ -239,7 +266,7 @@ export const Sidebar = ({ className }: Props) => {
 
     setSelectedVideo(course.videoId);
     setSelectedVideoId(course.videoId);
-    setSelectedTitle(course.title);
+    setSelectedTitle(course.titre);
     setSelectedPdfCours(course.pdfCours);
     setSelectedPdfFiche(course.pdfFiche);
     setSelectedPdfCorrige(course.pdfCorrige);
@@ -248,8 +275,7 @@ export const Sidebar = ({ className }: Props) => {
   };
 
   const toggleCompleted = (videoId: string) => {
-    const isCompleted = completedIds.includes(videoId);
-    const next = isCompleted
+    const next = completedIds.includes(videoId)
       ? completedIds.filter((id) => id !== videoId)
       : [...completedIds, videoId];
     setCompletedIds(next);
@@ -284,10 +310,10 @@ export const Sidebar = ({ className }: Props) => {
           <SidebarItem href="/leaderboard" iconSrc="/leaderboard.svg" />
           <SidebarItem href="/quests"      iconSrc="/quest.svg" />
           <SidebarItem href="/shop"        iconSrc="/shop.svg" />
-          <SidebarItem href="/cours"        iconSrc="/study1.svg" />
-          
+          <SidebarItem href="/cours"       iconSrc="/study1.svg" />
+
           <button
-            onClick={() => { setOpen(true); setSearch(""); setCategory("Tout"); }}
+            onClick={openModal}
             className="flex items-center justify-center h-12 w-12 rounded-xl transition-all duration-200 text-gray-400 hover:text-gray-200 hover:bg-card"
             title="Study"
           >
@@ -321,11 +347,11 @@ export const Sidebar = ({ className }: Props) => {
           <DialogPanel
             transition
             className="relative transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all duration-500 data-closed:scale-95 data-closed:opacity-0 data-enter:duration-500 data-enter:ease-out data-leave:duration-300 data-leave:ease-in w-full max-w-md border border-gray-200 flex flex-col"
-            style={{ maxHeight: "85vh" }}
+            style={{ maxHeight: "90vh" }}
           >
             {/* Header */}
-            <div className="px-6 py-5 flex flex-col items-center border-b border-gray-200 flex-shrink-0">
-              <Image src="/mascot.svg" alt="Mascotte" height={56} width={56} className="mb-3" />
+            <div className="px-6 py-4 flex flex-col items-center border-b border-gray-200 flex-shrink-0">
+              <Image src="/mascot.svg" alt="Mascotte" height={48} width={48} className="mb-2" />
               <DialogTitle as="h2" className="text-center font-bold text-2xl text-blue-400 mb-0.5" style={fredoka}>
                 Cours
               </DialogTitle>
@@ -375,82 +401,85 @@ export const Sidebar = ({ className }: Props) => {
                 ))}
               </div>
 
-              {/* Compteur */}
               {(search || category !== "Tout") && (
                 <p className="text-xs text-gray-400 px-1" style={fredoka}>
                   {filteredCourses.length} cours trouvé{filteredCourses.length !== 1 ? "s" : ""}
+                  {category !== "Tout" && ` en ${category}`}
+                  {search && ` pour « ${search} »`}
                 </p>
               )}
             </div>
 
-            {/* Liste scrollable */}
-            <div className="px-4 py-3 overflow-y-auto flex-grow">
+            {/* Contenu scrollable */}
+            <div className="px-4 py-3 overflow-y-auto flex-grow space-y-4">
 
-              {/* Récents */}
-              {recentCourses.length > 0 && !search && category === "Tout" && (
-                <div className="mb-4">
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 px-1" style={fredoka}>
-                    Récemment regardés
-                  </p>
-                  <div className="space-y-2">
-                    {recentCourses.map((course, index) => {
-                      const isCompleted = completedIds.includes(course.videoId);
-                      return (
-                        <button
-                          key={"recent-" + index}
-                          onClick={() => playVideo(course)}
-                          style={{ ...fredoka, animationDelay: `${index * 60}ms` }}
-                          className={cn(
-                            "w-full px-4 py-2.5 rounded-lg font-semibold text-sm text-left flex items-center justify-between gap-2 transition-all duration-200 transform active:scale-95 opacity-0 animate-[fadeSlideIn_0.4s_cubic-bezier(0.34,1.56,0.64,1)_forwards]",
-                            courseButtonColor[course.category]
-                          )}
-                        >
-                          <span>{course.title}</span>
-                          <span className={cn(
-                            "text-xs flex-shrink-0 px-2 py-0.5 rounded-full font-semibold",
-                            isCompleted
-                              ? "bg-white/30 text-white"
-                              : "bg-white/20 text-white/70"
-                          )}>
-                            {isCompleted ? "Terminé" : "Récent"}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <div className="mt-3 mb-1 border-t border-gray-100" />
+              {/* Chargement */}
+              {coursesLoading && (
+                <div className="flex items-center justify-center py-16">
+                  <p className="text-gray-400 text-sm" style={fredoka}>Chargement des cours…</p>
                 </div>
               )}
 
-              {/* Liste principale */}
-              {filteredCourses.length === 0 ? (
-                <p className="text-center text-gray-400 text-sm py-8" style={fredoka}>
-                  Aucun cours trouvé pour &ldquo;{search}&rdquo;
-                </p>
-              ) : (
-                <div className="space-y-2.5">
-                  {filteredCourses.map((course, index) => {
-                    const isCompleted = completedIds.includes(course.videoId);
-                    return (
+              {!coursesLoading && (
+                <>
+                  {/* Récents */}
+                  {recentCourses.length > 0 && !search && category === "Tout" && (
+                    <section>
+                      <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2" style={fredoka}>
+                        Récemment regardés
+                      </h2>
+                      <div className="grid grid-cols-2 gap-3">
+                        {recentCourses.map((course, index) => (
+                          <CourseCard
+                            key={"recent-" + course.id}
+                            course={course}
+                            isCompleted={completedIds.includes(course.videoId)}
+                            isRecent={true}
+                            onPlay={playVideo}
+                            index={index}
+                          />
+                        ))}
+                      </div>
+                      <div className="mt-4 border-t border-gray-100" />
+                    </section>
+                  )}
+
+                  {/* Grille principale */}
+                  {filteredCourses.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                      <div className="text-4xl mb-3">🔍</div>
+                      <p className="text-gray-500 font-semibold" style={fredoka}>Aucun cours trouvé</p>
+                      <p className="text-gray-400 text-sm mt-1" style={fredoka}>Essaie un autre mot-clé ou catégorie</p>
                       <button
-                        key={index}
-                        onClick={() => playVideo(course)}
-                        style={{ ...fredoka, animationDelay: `${index * 40}ms` }}
-                        className={cn(
-                          "w-full px-4 py-3 rounded-lg font-semibold text-sm text-left flex items-center justify-between gap-2 transition-all duration-200 transform active:scale-95 opacity-0 animate-[fadeSlideIn_0.4s_cubic-bezier(0.34,1.56,0.64,1)_forwards]",
-                          courseButtonColor[course.category]
-                        )}
+                        onClick={() => { setSearch(""); setCategory("Tout"); }}
+                        style={fredoka}
+                        className="mt-3 px-4 py-2 rounded-lg bg-sky-500 text-white text-sm font-semibold border-b-4 border-sky-600 hover:bg-sky-500/90 active:border-b-0 transition-all"
                       >
-                        <span>{course.title}</span>
-                        {isCompleted && (
-                          <span className="flex-shrink-0 w-5 h-5 rounded-full bg-white/30 flex items-center justify-center text-xs font-bold">
-                            ✓
-                          </span>
-                        )}
+                        Tout afficher
                       </button>
-                    );
-                  })}
-                </div>
+                    </div>
+                  ) : (
+                    <section>
+                      {!search && category === "Tout" && (
+                        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2" style={fredoka}>
+                          Tous les cours
+                        </h2>
+                      )}
+                      <div className="grid grid-cols-2 gap-3">
+                        {filteredCourses.map((course, index) => (
+                          <CourseCard
+                            key={course.id}
+                            course={course}
+                            isCompleted={completedIds.includes(course.videoId)}
+                            isRecent={recentIds.includes(course.videoId)}
+                            onPlay={playVideo}
+                            index={index}
+                          />
+                        ))}
+                      </div>
+                    </section>
+                  )}
+                </>
               )}
             </div>
 
@@ -477,14 +506,12 @@ export const Sidebar = ({ className }: Props) => {
             transition
             className="relative transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all duration-500 data-closed:scale-95 data-closed:opacity-0 data-enter:duration-500 data-enter:ease-out data-leave:duration-300 data-leave:ease-in w-full max-w-2xl border border-gray-200 flex flex-col"
           >
-            {/* Titre */}
             <div className="px-5 py-3 border-b border-gray-100 flex-shrink-0">
               <p className="text-sm font-semibold text-gray-700 truncate" style={fredoka}>
                 {selectedTitle}
               </p>
             </div>
 
-            {/* iFrame */}
             <div className="relative w-full bg-black" style={{ paddingBottom: "56.25%" }}>
               {selectedVideo && (
                 <iframe
@@ -498,29 +525,12 @@ export const Sidebar = ({ className }: Props) => {
               )}
             </div>
 
-            {/* ── Boutons PDF ── */}
             <div className="px-5 py-2.5 flex gap-2 border-b border-gray-100 flex-shrink-0">
-              <PdfButton
-                href={selectedPdfCours}
-                label="Cours PDF"
-                icon={<IconBook />}
-                activeClass="bg-amber-400 text-gray-900 border-amber-500"
-              />
-              <PdfButton
-                href={selectedPdfFiche}
-                label="Fiche PDF"
-                icon={<IconFile />}
-                activeClass="bg-sky-500 text-white border-sky-600"
-              />
-              <PdfButton
-                href={selectedPdfCorrige}
-                label="Corrigé PDF"
-                icon={<IconCheck />}
-                activeClass="bg-violet-500 text-white border-violet-600"
-              />
+              <PdfButton href={selectedPdfCours} label="Cours PDF" icon={<IconBook />} activeClass="bg-amber-400 text-gray-900 border-amber-500" />
+              <PdfButton href={selectedPdfFiche} label="Fiche PDF" icon={<IconFile />} activeClass="bg-sky-500 text-white border-sky-600" />
+              <PdfButton href={selectedPdfCorrige} label="Corrigé PDF" icon={<IconCheck />} activeClass="bg-violet-500 text-white border-violet-600" />
             </div>
 
-            {/* Footer vidéo — deux boutons */}
             <div className="border-t border-gray-200 px-5 py-3 flex-shrink-0 flex gap-2">
               <button
                 type="button"
@@ -533,9 +543,8 @@ export const Sidebar = ({ className }: Props) => {
                     : "bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-500/90"
                 )}
               >
-                {isCurrentCompleted ? "Marquer non terminé" : "Marquer comme terminé"}
+                {isCurrentCompleted ? "Marquer non terminé" : "Marquer comme terminé ✓"}
               </button>
-
               <button
                 type="button"
                 style={fredoka}
