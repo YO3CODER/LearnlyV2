@@ -44,6 +44,7 @@ type Course = {
   videoId: string;
   isPreview: boolean;
   category: keyof typeof courseButtonColor;
+  pdfCours?: string;    // ex: "/fiches/atome-cours.pdf"
   pdfFiche?: string;    // ex: "/fiches/atome.pdf"
   pdfCorrige?: string;  // ex: "/fiches/atome-corrige.pdf"
 };
@@ -55,6 +56,7 @@ const courses: Course[] = [
     videoId: "UhdIYcwkEsI",
     isPreview: true,
     category: "Français",
+    // pdfCours: "/fiches/ecriture-a-cours.pdf",
     // pdfFiche: "/fiches/ecriture-a.pdf",
     // pdfCorrige: "/fiches/ecriture-a-corrige.pdf",
   },
@@ -64,6 +66,7 @@ const courses: Course[] = [
     videoId: "TV-leAqi8ps",
     isPreview: true,
     category: "Sciences",
+    // pdfCours: "/fiches/atome-cours.pdf",
     // pdfFiche: "/fiches/atome.pdf",
     // pdfCorrige: "/fiches/atome-corrige.pdf",
   },
@@ -73,6 +76,7 @@ const courses: Course[] = [
     videoId: "ezGlju-nR6s",
     isPreview: true,
     category: "Maths",
+    // pdfCours: "/fiches/equation-cours.pdf",
     // pdfFiche: "/fiches/equation.pdf",
     // pdfCorrige: "/fiches/equation-corrige.pdf",
   },
@@ -82,6 +86,7 @@ const courses: Course[] = [
     videoId: "uV_EmbYu9_E",
     isPreview: true,
     category: "Maths",
+    // pdfCours: "/fiches/equation-4eme-cours.pdf",
     // pdfFiche: "/fiches/equation-4eme.pdf",
     // pdfCorrige: "/fiches/equation-4eme-corrige.pdf",
   },
@@ -91,6 +96,7 @@ const courses: Course[] = [
     videoId: "dQw4w9WgXcQ",
     isPreview: true,
     category: "Sciences",
+    // pdfCours: "/fiches/photosynthese-cours.pdf",
     // pdfFiche: "/fiches/photosynthese.pdf",
     // pdfCorrige: "/fiches/photosynthese-corrige.pdf",
   },
@@ -100,6 +106,7 @@ const courses: Course[] = [
     videoId: "dQw4w9WgXcQ",
     isPreview: true,
     category: "Français",
+    // pdfCours: "/fiches/passe-compose-cours.pdf",
     // pdfFiche: "/fiches/passe-compose.pdf",
     // pdfCorrige: "/fiches/passe-compose-corrige.pdf",
   },
@@ -109,6 +116,7 @@ const courses: Course[] = [
     videoId: "dQw4w9WgXcQ",
     isPreview: true,
     category: "Sciences",
+    // pdfCours: "/fiches/respiration-cellulaire-cours.pdf",
     // pdfFiche: "/fiches/respiration-cellulaire.pdf",
     // pdfCorrige: "/fiches/respiration-cellulaire-corrige.pdf",
   },
@@ -118,6 +126,7 @@ const courses: Course[] = [
     videoId: "dQw4w9WgXcQ",
     isPreview: true,
     category: "Maths",
+    // pdfCours: "/fiches/regle-de-trois-cours.pdf",
     // pdfFiche: "/fiches/regle-de-trois.pdf",
     // pdfCorrige: "/fiches/regle-de-trois-corrige.pdf",
   },
@@ -127,6 +136,7 @@ const courses: Course[] = [
     videoId: "dQw4w9WgXcQ",
     isPreview: true,
     category: "Maths",
+    // pdfCours: "/fiches/figures-geometriques-cours.pdf",
     // pdfFiche: "/fiches/figures-geometriques.pdf",
     // pdfCorrige: "/fiches/figures-geometriques-corrige.pdf",
   },
@@ -136,6 +146,7 @@ const courses: Course[] = [
     videoId: "dQw4w9WgXcQ",
     isPreview: true,
     category: "Sciences",
+    // pdfCours: "/fiches/chaine-alimentaire-cours.pdf",
     // pdfFiche: "/fiches/chaine-alimentaire.pdf",
     // pdfCorrige: "/fiches/chaine-alimentaire-corrige.pdf",
   },
@@ -145,6 +156,7 @@ const courses: Course[] = [
     videoId: "dQw4w9WgXcQ",
     isPreview: true,
     category: "Maths",
+    // pdfCours: "/fiches/nombres-decimaux-cours.pdf",
     // pdfFiche: "/fiches/nombres-decimaux.pdf",
     // pdfCorrige: "/fiches/nombres-decimaux-corrige.pdf",
   },
@@ -154,6 +166,7 @@ const courses: Course[] = [
     videoId: "dQw4w9WgXcQ",
     isPreview: true,
     category: "Histoire",
+    // pdfCours: "/fiches/revolution-francaise-cours.pdf",
     // pdfFiche: "/fiches/revolution-francaise.pdf",
     // pdfCorrige: "/fiches/revolution-francaise-corrige.pdf",
   },
@@ -163,6 +176,7 @@ const courses: Course[] = [
     videoId: "luyObngrtJg",
     isPreview: true,
     category: "Français",
+    // pdfCours: "/fiches/verbes-er-present-cours.pdf",
     // pdfFiche: "/fiches/verbes-er-present.pdf",
     // pdfCorrige: "/fiches/verbes-er-present-corrige.pdf",
   },
@@ -172,6 +186,7 @@ const courses: Course[] = [
     videoId: "GFJmHJEqt0w",
     isPreview: true,
     category: "Français",
+    // pdfCours: "/fiches/conjugaison-ce1-cours.pdf",
     // pdfFiche: "/fiches/conjugaison-ce1.pdf",
     // pdfCorrige: "/fiches/conjugaison-ce1-corrige.pdf",
   },
@@ -189,22 +204,83 @@ const RECENT_KEY    = "courses_recent";
 const COMPLETED_KEY = "courses_completed";
 const MAX_RECENT    = 3;
 
-// ─── Composant ──────────────────────────────────────────────────────────────
+// ─── Icônes SVG ─────────────────────────────────────────────────────────────
+
+const IconBook = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+  </svg>
+);
+
+const IconFile = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
+  </svg>
+);
+
+const IconCheck = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+);
+
+// ─── Bouton PDF réutilisable ─────────────────────────────────────────────────
+
+type PdfButtonProps = {
+  href?: string;
+  label: string;
+  icon: React.ReactNode;
+  activeClass: string;
+};
+
+const PdfButton = ({ href, label, icon, activeClass }: PdfButtonProps) => {
+  if (href) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={fredoka}
+        className={cn(
+          "flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg font-semibold text-sm border-b-4 hover:opacity-90 active:border-b-0 transition-all duration-200 active:scale-95 transform",
+          activeClass
+        )}
+      >
+        {icon}
+        {label}
+      </a>
+    );
+  }
+  return (
+    <span
+      style={fredoka}
+      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg font-semibold text-sm bg-gray-100 text-gray-400 border-gray-200 border-b-4 cursor-not-allowed select-none"
+    >
+      {icon}
+      {label}
+    </span>
+  );
+};
+
+// ─── Composant principal ─────────────────────────────────────────────────────
 
 export const MobileNavbar = () => {
   const pathname = usePathname();
 
-  const [open, setOpen]                         = useState(false);
-  const [videoOpen, setVideoOpen]               = useState(false);
-  const [selectedVideo, setSelectedVideo]       = useState<string | null>(null);
-  const [selectedTitle, setSelectedTitle]       = useState("");
-  const [selectedVideoId, setSelectedVideoId]   = useState("");
+  const [open, setOpen]                             = useState(false);
+  const [videoOpen, setVideoOpen]                   = useState(false);
+  const [selectedVideo, setSelectedVideo]           = useState<string | null>(null);
+  const [selectedTitle, setSelectedTitle]           = useState("");
+  const [selectedVideoId, setSelectedVideoId]       = useState("");
+  const [selectedPdfCours, setSelectedPdfCours]     = useState<string | undefined>();
   const [selectedPdfFiche, setSelectedPdfFiche]     = useState<string | undefined>();
   const [selectedPdfCorrige, setSelectedPdfCorrige] = useState<string | undefined>();
-  const [search, setSearch]                     = useState("");
-  const [category, setCategory]                 = useState<Category>("Tout");
-  const [recentIds, setRecentIds]               = useState<string[]>([]);
-  const [completedIds, setCompletedIds]         = useState<string[]>([]);
+  const [search, setSearch]                         = useState("");
+  const [category, setCategory]                     = useState<Category>("Tout");
+  const [recentIds, setRecentIds]                   = useState<string[]>([]);
+  const [completedIds, setCompletedIds]             = useState<string[]>([]);
 
   useEffect(() => {
     try {
@@ -242,6 +318,7 @@ export const MobileNavbar = () => {
     setSelectedVideo(course.videoId);
     setSelectedVideoId(course.videoId);
     setSelectedTitle(course.title);
+    setSelectedPdfCours(course.pdfCours);
     setSelectedPdfFiche(course.pdfFiche);
     setSelectedPdfCorrige(course.pdfCorrige);
     setVideoOpen(true);
@@ -488,57 +565,24 @@ export const MobileNavbar = () => {
 
             {/* ── Boutons PDF ── */}
             <div className="px-5 py-2.5 flex gap-2 border-b border-gray-100 flex-shrink-0">
-              {/* Fiche PDF */}
-              {selectedPdfFiche ? (
-                <a
-                  href={selectedPdfFiche}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={fredoka}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-sm bg-sky-500 text-white border-sky-600 border-b-4 hover:bg-sky-500/90 active:border-b-0 transition-all duration-200 active:scale-95 transform"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
-                  </svg>
-                  Fiche PDF
-                </a>
-              ) : (
-                <span
-                  style={fredoka}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-sm bg-gray-100 text-gray-400 border-gray-200 border-b-4 cursor-not-allowed select-none"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
-                  </svg>
-                  Fiche PDF
-                </span>
-              )}
-
-              {/* Corrigé PDF */}
-              {selectedPdfCorrige ? (
-                <a
-                  href={selectedPdfCorrige}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={fredoka}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-sm bg-violet-500 text-white border-violet-600 border-b-4 hover:bg-violet-500/90 active:border-b-0 transition-all duration-200 active:scale-95 transform"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
-                  Corrigé PDF
-                </a>
-              ) : (
-                <span
-                  style={fredoka}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-sm bg-gray-100 text-gray-400 border-gray-200 border-b-4 cursor-not-allowed select-none"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
-                  Corrigé PDF
-                </span>
-              )}
+              <PdfButton
+                href={selectedPdfCours}
+                label="Cours PDF"
+                icon={<IconBook />}
+                activeClass="bg-amber-400 text-gray-900 border-amber-500"
+              />
+              <PdfButton
+                href={selectedPdfFiche}
+                label="Fiche PDF"
+                icon={<IconFile />}
+                activeClass="bg-sky-500 text-white border-sky-600"
+              />
+              <PdfButton
+                href={selectedPdfCorrige}
+                label="Corrigé PDF"
+                icon={<IconCheck />}
+                activeClass="bg-violet-500 text-white border-violet-600"
+              />
             </div>
 
             {/* Footer vidéo — deux boutons */}
