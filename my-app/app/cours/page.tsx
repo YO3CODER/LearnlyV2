@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState, useMemo, useEffect } from "react";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const fredoka = { fontFamily: "'Fredoka', sans-serif" } as const;
 
@@ -14,16 +15,16 @@ type Category = "Tout" | "Maths" | "Français" | "Sciences" | "Histoire";
 const ALL_CATEGORIES: Category[] = ["Tout", "Maths", "Français", "Sciences", "Histoire"];
 
 const categoryColors: Record<Category, string> = {
-  Tout:     "bg-gray-100 text-gray-700 border-gray-300",
-  Maths:    "bg-sky-100 text-sky-700 border-sky-300",
+  Tout: "bg-gray-100 text-gray-700 border-gray-300",
+  Maths: "bg-sky-100 text-sky-700 border-sky-300",
   Français: "bg-violet-100 text-violet-700 border-violet-300",
   Sciences: "bg-emerald-100 text-emerald-700 border-emerald-300",
   Histoire: "bg-amber-100 text-amber-700 border-amber-300",
 };
 
 const categoryActiveColors: Record<Category, string> = {
-  Tout:     "bg-gray-600 text-white border-gray-700",
-  Maths:    "bg-sky-500 text-white border-sky-600",
+  Tout: "bg-gray-600 text-white border-gray-700",
+  Maths: "bg-sky-500 text-white border-sky-600",
   Français: "bg-violet-500 text-white border-violet-600",
   Sciences: "bg-emerald-500 text-white border-emerald-600",
   Histoire: "bg-amber-500 text-white border-amber-600",
@@ -31,7 +32,7 @@ const categoryActiveColors: Record<Category, string> = {
 
 // Couleurs de fond pour les badges de catégorie sur les cartes
 const categoryBadgeColors: Record<string, string> = {
-  Maths:    "bg-sky-100 text-sky-700",
+  Maths: "bg-sky-100 text-sky-700",
   Français: "bg-violet-100 text-violet-700",
   Sciences: "bg-emerald-100 text-emerald-700",
   Histoire: "bg-amber-100 text-amber-700",
@@ -39,7 +40,7 @@ const categoryBadgeColors: Record<string, string> = {
 
 // Couleurs du bouton "Commencer" par catégorie
 const courseButtonColor: Record<string, string> = {
-  Maths:    "bg-sky-400 text-white border-sky-500 border-b-4 hover:bg-sky-400/90 active:border-b-0",
+  Maths: "bg-sky-400 text-white border-sky-500 border-b-4 hover:bg-sky-400/90 active:border-b-0",
   Français: "bg-violet-500 text-white border-violet-600 border-b-4 hover:bg-violet-500/90 active:border-b-0",
   Sciences: "bg-emerald-500 text-white border-emerald-600 border-b-4 hover:bg-emerald-500/90 active:border-b-0",
   Histoire: "bg-amber-400 text-gray-900 border-amber-500 border-b-4 hover:bg-amber-400/90 active:border-b-0",
@@ -47,7 +48,7 @@ const courseButtonColor: Record<string, string> = {
 
 // Couleur de la bordure gauche des cartes
 const cardAccentColor: Record<string, string> = {
-  Maths:    "border-sky-400",
+  Maths: "border-sky-400",
   Français: "border-violet-500",
   Sciences: "border-emerald-500",
   Histoire: "border-amber-400",
@@ -165,41 +166,41 @@ const courses: Course[] = [
   },
 ];
 
-const RECENT_KEY    = "courses_recent";
+const RECENT_KEY = "courses_recent";
 const COMPLETED_KEY = "courses_completed";
-const MAX_RECENT    = 3;
+const MAX_RECENT = 3;
 
 // ─── Icônes SVG ─────────────────────────────────────────────────────────────
 
 const IconBook = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
   </svg>
 );
 
 const IconFile = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-    <polyline points="14 2 14 8 20 8"/>
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
   </svg>
 );
 
 const IconCheck = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="20 6 9 17 4 12"/>
+    <polyline points="20 6 9 17 4 12" />
   </svg>
 );
 
 const IconPlay = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-    <polygon points="5 3 19 12 5 21 5 3"/>
+    <polygon points="5 3 19 12 5 21 5 3" />
   </svg>
 );
 
 const IconSearch = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
   </svg>
 );
 
@@ -270,7 +271,7 @@ const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCard
       {isCompleted && (
         <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center shadow">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="20 6 9 17 4 12"/>
+            <polyline points="20 6 9 17 4 12" />
           </svg>
         </div>
       )}
@@ -319,17 +320,17 @@ const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCard
 // ─── Page principale ──────────────────────────────────────────────────────────
 
 export default function CoursPage() {
-  const [search, setSearch]                         = useState("");
-  const [category, setCategory]                     = useState<Category>("Tout");
-  const [videoOpen, setVideoOpen]                   = useState(false);
-  const [selectedVideo, setSelectedVideo]           = useState<string | null>(null);
-  const [selectedTitle, setSelectedTitle]           = useState("");
-  const [selectedVideoId, setSelectedVideoId]       = useState("");
-  const [selectedPdfCours, setSelectedPdfCours]     = useState<string | undefined>();
-  const [selectedPdfFiche, setSelectedPdfFiche]     = useState<string | undefined>();
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState<Category>("Tout");
+  const [videoOpen, setVideoOpen] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+  const [selectedTitle, setSelectedTitle] = useState("");
+  const [selectedVideoId, setSelectedVideoId] = useState("");
+  const [selectedPdfCours, setSelectedPdfCours] = useState<string | undefined>();
+  const [selectedPdfFiche, setSelectedPdfFiche] = useState<string | undefined>();
   const [selectedPdfCorrige, setSelectedPdfCorrige] = useState<string | undefined>();
-  const [recentIds, setRecentIds]                   = useState<string[]>([]);
-  const [completedIds, setCompletedIds]             = useState<string[]>([]);
+  const [recentIds, setRecentIds] = useState<string[]>([]);
+  const [completedIds, setCompletedIds] = useState<string[]>([]);
 
   useEffect(() => {
     try {
@@ -337,12 +338,12 @@ export default function CoursPage() {
       const c = localStorage.getItem(COMPLETED_KEY);
       if (r) setRecentIds(JSON.parse(r));
       if (c) setCompletedIds(JSON.parse(c));
-    } catch {}
+    } catch { }
   }, []);
 
   const filteredCourses = useMemo(() =>
     courses.filter((c) => {
-      const matchSearch   = c.title.toLowerCase().includes(search.toLowerCase());
+      const matchSearch = c.title.toLowerCase().includes(search.toLowerCase());
       const matchCategory = category === "Tout" || c.category === category;
       return matchSearch && matchCategory;
     }),
@@ -396,9 +397,12 @@ export default function CoursPage() {
           <div className="flex items-center gap-4 mb-4">
             <Image src="/mascot.svg" alt="Mascotte" width={52} height={52} />
             <div>
-              <h1 className="text-3xl font-bold text-blue-400" style={fredoka}>
-                Cours
-              </h1>
+
+              <Link href="/learn" className="flex items-center">
+                <h1 className="text-3xl font-bold text-blue-400" style={fredoka}>
+                  Cours
+                </h1>
+              </Link>
               <p className="text-gray-400 text-sm" style={fredoka}>
                 Choisis un cours pour commencer à apprendre
               </p>
@@ -408,7 +412,7 @@ export default function CoursPage() {
               <div className="ml-auto flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2">
                 <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
                   <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12"/>
+                    <polyline points="20 6 9 17 4 12" />
                   </svg>
                 </div>
                 <span className="text-emerald-700 font-semibold text-sm" style={fredoka}>
@@ -536,7 +540,7 @@ export default function CoursPage() {
       </div>
 
       {/* ── Modal vidéo ── */}
-      <Dialog open={videoOpen} onClose={() => {}} className="relative z-50">
+      <Dialog open={videoOpen} onClose={() => { }} className="relative z-50">
         <DialogBackdrop className="fixed inset-0 bg-black/70 backdrop-blur-sm" />
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <DialogPanel

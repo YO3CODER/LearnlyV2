@@ -284,6 +284,8 @@ export const Sidebar = ({ className }: Props) => {
           <SidebarItem href="/leaderboard" iconSrc="/leaderboard.svg" />
           <SidebarItem href="/quests"      iconSrc="/quest.svg" />
           <SidebarItem href="/shop"        iconSrc="/shop.svg" />
+          <SidebarItem href="/cours"        iconSrc="/study1.svg" />
+          
           <button
             onClick={() => { setOpen(true); setSearch(""); setCategory("Tout"); }}
             className="flex items-center justify-center h-12 w-12 rounded-xl transition-all duration-200 text-gray-400 hover:text-gray-200 hover:bg-card"

@@ -198,6 +198,7 @@ const routes = [
   { label: "Quests",      href: "/quests",      iconSrc: "/quest.svg" },
   { label: "Shop",        href: "/shop",        iconSrc: "/shop.svg" },
   { label: "study",       href: "#",            iconSrc: "/study.svg", isModal: true },
+  { label: "study",       href: "/cours",            iconSrc: "/study1.svg"},
 ];
 
 const RECENT_KEY    = "courses_recent";
