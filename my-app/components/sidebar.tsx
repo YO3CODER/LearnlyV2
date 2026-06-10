@@ -73,8 +73,8 @@ const courses: Course[] = [
   { title: "La Révolution française",        href: "https://youtu.be/dQw4w9WgXcQ", videoId: "dQw4w9WgXcQ", isPreview: true, category: "Histoire" },
 ];
 
-const RECENT_KEY    = "maitre_lucas_recent";
-const COMPLETED_KEY = "maitre_lucas_completed"; // ← manuel uniquement
+const RECENT_KEY    = "courses_recent";
+const COMPLETED_KEY = "courses_completed"; // ← manuel uniquement
 const MAX_RECENT    = 3;
 
 // ─── Composant ──────────────────────────────────────────────────────────────
@@ -170,9 +170,9 @@ export const Sidebar = ({ className }: Props) => {
           <button
             onClick={() => { setOpen(true); setSearch(""); setCategory("Tout"); }}
             className="flex items-center justify-center h-12 w-12 rounded-xl transition-all duration-200 text-gray-400 hover:text-gray-200 hover:bg-card"
-            title="Maitre Lucas"
+            title="Study"
           >
-            <Image src="/study.svg" height={24} width={24} alt="Maitre Lucas" />
+            <Image src="/study.svg" height={24} width={24} alt="Study" />
           </button>
         </div>
 
@@ -208,7 +208,7 @@ export const Sidebar = ({ className }: Props) => {
             <div className="px-6 py-5 flex flex-col items-center border-b border-gray-200 flex-shrink-0">
               <Image src="/mascot.svg" alt="Mascotte" height={56} width={56} className="mb-3" />
               <DialogTitle as="h2" className="text-center font-bold text-2xl text-blue-400 mb-0.5" style={fredoka}>
-                Cours – Maître Lucas
+                Cours
               </DialogTitle>
               <p className="text-center text-gray-400 text-sm" style={fredoka}>
                 Choisis un cours pour commencer

@@ -66,11 +66,11 @@ const routes = [
   { label: "Leaderboard",  href: "/leaderboard",  iconSrc: "/leaderboard.svg" },
   { label: "Quests",       href: "/quests",       iconSrc: "/quest.svg" },
   { label: "Shop",         href: "/shop",         iconSrc: "/shop.svg" },
-  { label: "maitre lucas", href: "#",             iconSrc: "/study.svg", isModal: true },
+  { label: "study", href: "#",             iconSrc: "/study.svg", isModal: true },
 ];
 
-const RECENT_KEY    = "maitre_lucas_recent";
-const COMPLETED_KEY = "maitre_lucas_completed"; // ← manuel uniquement
+const RECENT_KEY    = "courses_recent";
+const COMPLETED_KEY = "courses_completed"; // ← manuel uniquement
 const MAX_RECENT    = 3;
 
 // ─── Composant ──────────────────────────────────────────────────────────────
@@ -195,7 +195,7 @@ export const MobileNavbar = () => {
             <div className="px-6 py-5 flex flex-col items-center border-b border-gray-200 flex-shrink-0">
               <Image src="/mascot.svg" alt="Mascotte" height={56} width={56} className="mb-3" />
               <DialogTitle as="h2" className="text-center font-bold text-2xl text-blue-400 mb-0.5" style={fredoka}>
-                Cours – Maître Lucas
+                Cours 
               </DialogTitle>
               <p className="text-center text-gray-400 text-sm" style={fredoka}>
                 Choisis un cours pour commencer
