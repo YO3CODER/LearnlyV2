@@ -5,6 +5,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { Cours } from "@/lib/cours-utils";
 
 const fredoka = { fontFamily: "'Fredoka', sans-serif" } as const;
 
@@ -54,118 +55,6 @@ const cardAccentColor: Record<string, string> = {
   Histoire: "border-amber-400",
 };
 
-type Course = {
-  title: string;
-  href: string;
-  videoId: string;
-  isPreview: boolean;
-  category: keyof typeof courseButtonColor;
-  pdfCours?: string;
-  pdfFiche?: string;
-  pdfCorrige?: string;
-};
-
-const courses: Course[] = [
-  {
-    title: "Écriture du A en cursive (a)",
-    href: "https://youtu.be/UhdIYcwkEsI",
-    videoId: "UhdIYcwkEsI",
-    isPreview: true,
-    category: "Français",
-  },
-  {
-    title: "Atome",
-    href: "https://youtu.be/TV-leAqi8ps",
-    videoId: "TV-leAqi8ps",
-    isPreview: true,
-    category: "Sciences",
-  },
-  {
-    title: "Résoudre une équation",
-    href: "https://youtu.be/ezGlju-nR6s",
-    videoId: "ezGlju-nR6s",
-    isPreview: true,
-    category: "Maths",
-  },
-  {
-    title: "Résoudre une équation 4ème (1)",
-    href: "https://youtu.be/uV_EmbYu9_E",
-    videoId: "uV_EmbYu9_E",
-    isPreview: true,
-    category: "Maths",
-  },
-  {
-    title: "La photosynthèse",
-    href: "https://youtu.be/dQw4w9WgXcQ",
-    videoId: "dQw4w9WgXcQ",
-    isPreview: true,
-    category: "Sciences",
-  },
-  {
-    title: "Conjugaison : le passé composé",
-    href: "https://youtu.be/dQw4w9WgXcQ",
-    videoId: "dQw4w9WgXcQ2",
-    isPreview: true,
-    category: "Français",
-  },
-  {
-    title: "La respiration cellulaire",
-    href: "https://youtu.be/dQw4w9WgXcQ",
-    videoId: "dQw4w9WgXcQ3",
-    isPreview: true,
-    category: "Sciences",
-  },
-  {
-    title: "La règle de trois",
-    href: "https://youtu.be/dQw4w9WgXcQ",
-    videoId: "dQw4w9WgXcQ4",
-    isPreview: true,
-    category: "Maths",
-  },
-  {
-    title: "Les figures géométriques",
-    href: "https://youtu.be/dQw4w9WgXcQ",
-    videoId: "dQw4w9WgXcQ5",
-    isPreview: true,
-    category: "Maths",
-  },
-  {
-    title: "La chaîne alimentaire",
-    href: "https://youtu.be/dQw4w9WgXcQ",
-    videoId: "dQw4w9WgXcQ6",
-    isPreview: true,
-    category: "Sciences",
-  },
-  {
-    title: "Les nombres décimaux",
-    href: "https://youtu.be/dQw4w9WgXcQ",
-    videoId: "dQw4w9WgXcQ7",
-    isPreview: true,
-    category: "Maths",
-  },
-  {
-    title: "La Révolution française",
-    href: "https://youtu.be/dQw4w9WgXcQ",
-    videoId: "dQw4w9WgXcQ8",
-    isPreview: true,
-    category: "Histoire",
-  },
-  {
-    title: "La conjugaison des verbes en -er au présent CE1 - CE2 - Cycle 2 - Français",
-    href: "https://youtu.be/luyObngrtJg",
-    videoId: "luyObngrtJg",
-    isPreview: true,
-    category: "Français",
-  },
-  {
-    title: "Apprendre TOUTE la CONJUGAISON du CE1 !",
-    href: "https://youtu.be/GFJmHJEqt0w",
-    videoId: "GFJmHJEqt0w",
-    isPreview: true,
-    category: "Français",
-  },
-];
-
 const RECENT_KEY = "courses_recent";
 const COMPLETED_KEY = "courses_completed";
 const MAX_RECENT = 3;
@@ -207,7 +96,7 @@ const IconSearch = () => (
 // ─── Bouton PDF réutilisable ────────────────────────────────────────────────
 
 type PdfButtonProps = {
-  href?: string;
+  href?: string | null;
   label: string;
   icon: React.ReactNode;
   activeClass: string;
@@ -245,10 +134,10 @@ const PdfButton = ({ href, label, icon, activeClass }: PdfButtonProps) => {
 // ─── Carte de cours ──────────────────────────────────────────────────────────
 
 type CourseCardProps = {
-  course: Course;
+  course: Cours;
   isCompleted: boolean;
   isRecent: boolean;
-  onPlay: (course: Course) => void;
+  onPlay: (course: Cours) => void;
   index: number;
 };
 
@@ -257,14 +146,14 @@ const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCard
     style={{ animationDelay: `${index * 40}ms` }}
     className={cn(
       "bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col overflow-hidden opacity-0 animate-[fadeSlideIn_0.4s_cubic-bezier(0.34,1.56,0.64,1)_forwards] border-l-4",
-      cardAccentColor[course.category]
+      cardAccentColor[course.categorie]
     )}
   >
     {/* Miniature YouTube */}
     <div className="relative w-full bg-gray-100" style={{ paddingBottom: "56.25%" }}>
       <img
         src={`https://img.youtube.com/vi/${course.videoId}/mqdefault.jpg`}
-        alt={course.title}
+        alt={course.titre}
         className="absolute inset-0 w-full h-full object-cover"
       />
       {/* Badge complété */}
@@ -290,15 +179,15 @@ const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCard
         style={fredoka}
         className={cn(
           "self-start text-xs font-semibold px-2 py-0.5 rounded-full",
-          categoryBadgeColors[course.category]
+          categoryBadgeColors[course.categorie]
         )}
       >
-        {course.category}
+        {course.categorie}
       </span>
 
       {/* Titre */}
       <p className="text-sm font-semibold text-gray-800 leading-snug line-clamp-2 flex-grow" style={fredoka}>
-        {course.title}
+        {course.titre}
       </p>
 
       {/* Bouton commencer */}
@@ -307,7 +196,7 @@ const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCard
         style={fredoka}
         className={cn(
           "w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg font-semibold text-sm transition-all duration-200 transform active:scale-95",
-          courseButtonColor[course.category]
+          courseButtonColor[course.categorie]
         )}
       >
         <IconPlay />
@@ -326,11 +215,22 @@ export default function CoursPage() {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [selectedTitle, setSelectedTitle] = useState("");
   const [selectedVideoId, setSelectedVideoId] = useState("");
-  const [selectedPdfCours, setSelectedPdfCours] = useState<string | undefined>();
-  const [selectedPdfFiche, setSelectedPdfFiche] = useState<string | undefined>();
-  const [selectedPdfCorrige, setSelectedPdfCorrige] = useState<string | undefined>();
+  const [selectedPdfCours, setSelectedPdfCours] = useState<string | null | undefined>();
+  const [selectedPdfFiche, setSelectedPdfFiche] = useState<string | null | undefined>();
+  const [selectedPdfCorrige, setSelectedPdfCorrige] = useState<string | null | undefined>();
   const [recentIds, setRecentIds] = useState<string[]>([]);
   const [completedIds, setCompletedIds] = useState<string[]>([]);
+
+  const [courses, setCourses] = useState<Cours[]>([]);
+  const [coursesLoading, setCoursesLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/cours")
+      .then((res) => res.json())
+      .then(setCourses)
+      .catch(() => setCourses([]))
+      .finally(() => setCoursesLoading(false));
+  }, []);
 
   useEffect(() => {
     try {
@@ -343,18 +243,18 @@ export default function CoursPage() {
 
   const filteredCourses = useMemo(() =>
     courses.filter((c) => {
-      const matchSearch = c.title.toLowerCase().includes(search.toLowerCase());
-      const matchCategory = category === "Tout" || c.category === category;
+      const matchSearch = c.titre.toLowerCase().includes(search.toLowerCase());
+      const matchCategory = category === "Tout" || c.categorie === category;
       return matchSearch && matchCategory;
     }),
-    [search, category]
+    [search, category, courses]
   );
 
   const recentCourses = useMemo(() =>
     recentIds
       .map((id) => courses.find((c) => c.videoId === id))
-      .filter(Boolean) as Course[],
-    [recentIds]
+      .filter(Boolean) as Cours[],
+    [recentIds, courses]
   );
 
   // Statistiques
@@ -362,7 +262,7 @@ export default function CoursPage() {
     courses.some((c) => c.videoId === id)
   ).length;
 
-  const playVideo = (course: Course) => {
+  const playVideo = (course: Cours) => {
     const nextRecent = [
       course.videoId,
       ...recentIds.filter((id) => id !== course.videoId),
@@ -372,7 +272,7 @@ export default function CoursPage() {
 
     setSelectedVideo(course.videoId);
     setSelectedVideoId(course.videoId);
-    setSelectedTitle(course.title);
+    setSelectedTitle(course.titre);
     setSelectedPdfCours(course.pdfCours);
     setSelectedPdfFiche(course.pdfFiche);
     setSelectedPdfCorrige(course.pdfCorrige);
@@ -485,7 +385,7 @@ export default function CoursPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {recentCourses.map((course, index) => (
                 <CourseCard
-                  key={"recent-" + course.videoId}
+                  key={"recent-" + course.id}
                   course={course}
                   isCompleted={completedIds.includes(course.videoId)}
                   isRecent={true}
@@ -499,7 +399,11 @@ export default function CoursPage() {
         )}
 
         {/* Grille principale */}
-        {filteredCourses.length === 0 ? (
+        {coursesLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <p className="text-gray-400 text-sm" style={fredoka}>Chargement des cours…</p>
+          </div>
+        ) : filteredCourses.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="text-5xl mb-4">🔍</div>
             <p className="text-gray-500 font-semibold text-lg" style={fredoka}>
@@ -526,7 +430,7 @@ export default function CoursPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {filteredCourses.map((course, index) => (
                 <CourseCard
-                  key={course.videoId}
+                  key={course.id}
                   course={course}
                   isCompleted={completedIds.includes(course.videoId)}
                   isRecent={recentIds.includes(course.videoId)}
