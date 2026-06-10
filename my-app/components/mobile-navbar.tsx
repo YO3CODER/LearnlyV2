@@ -27,12 +27,14 @@ const routes = [
 
 const courses = [
   {
-    title: "Je trace la lettre x",
-    href: "https://maitrelucas.fr/lecons/je-trace-la-lettre-x/",
-    description: "Description du cours 1"
+    title: "Ecriture du A en cursive (a)",
+    href: "https://youtu.be/UhdIYcwkEsI?si=sqZUPJ1Z4VpG5F8_",
+    videoId: "UhdIYcwkEsI",
+    description: "Description du cours 1",
+    isPreview: true
   },
   {
-    title: "Cours 2",
+    title: "Atome",
     href: "https://youtu.be/TV-leAqi8ps?si=8BvCnHwH-W1K2WJv",
     videoId: "TV-leAqi8ps",
     description: "Description du cours 2",
