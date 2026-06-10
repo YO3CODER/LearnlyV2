@@ -266,14 +266,6 @@ const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCard
         alt={course.title}
         className="absolute inset-0 w-full h-full object-cover"
       />
-      {/* Overlay play */}
-      <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
-        <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#374151">
-            <polygon points="5 3 19 12 5 21 5 3"/>
-          </svg>
-        </div>
-      </div>
       {/* Badge complété */}
       {isCompleted && (
         <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center shadow">
