@@ -27,25 +27,17 @@ const routes = [
 
 const courses = [
   {
-    title: "Ecriture du A en cursive (a)",
+    title: "Ecriture du A en cursiv",
     href: "https://youtu.be/UhdIYcwkEsI?si=sqZUPJ1Z4VpG5F8_",
     videoId: "UhdIYcwkEsI",
     description: "Description du cours 1",
     isPreview: true
   },
   {
-    title: "Atome",
+    title: "Cours 2",
     href: "https://youtu.be/TV-leAqi8ps?si=8BvCnHwH-W1K2WJv",
     videoId: "TV-leAqi8ps",
     description: "Description du cours 2",
-    isPreview: true
-  } , 
-
-   {
-    title: "Résoudre une équation",
-    href: "https://youtu.be/ezGlju-nR6s?si=fcSSX7JfG-W1N9sL",
-    videoId: "TV-leAqi8ps",
-    description: "résoudre une équation",
     isPreview: true
   }
   // Ajoute d'autres cours ici
