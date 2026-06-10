@@ -295,11 +295,13 @@ export const MobileNavbar = () => {
       </Dialog>
 
       {/* Modal vidéo YouTube */}
-      <Dialog open={videoOpen} onClose={setVideoOpen} className="relative z-50">
-        <DialogBackdrop
-          transition
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
-        />
+      {/* Modal vidéo YouTube */}
+      <Dialog
+        open={videoOpen}
+        onClose={() => { }}
+        className="relative z-50"
+      >
+        <DialogBackdrop className="fixed inset-0 bg-black/70 backdrop-blur-sm" />
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <DialogPanel
             transition
@@ -320,13 +322,16 @@ export const MobileNavbar = () => {
             <div className="border-t border-gray-200 px-6 py-4 flex-shrink-0">
               <button
                 type="button"
-                onClick={() => setVideoOpen(false)}
+                onClick={() => {
+                  setVideoOpen(false); // ← Ferme la vidéo
+                  setOpen(true);       // ← Rouvre la liste des cours
+                }}
                 className={cn(
                   "w-full px-6 py-2 rounded-lg font-semibold transition-all duration-200 transform active:scale-95 text-sm",
                   buttonStyles.danger
                 )}
               >
-                Fermer
+                 Retour aux cours
               </button>
             </div>
           </DialogPanel>
