@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
+const fredoka = { fontFamily: "'Fredoka', sans-serif" } as const;
 
 const buttonStyles = {
   primary: "bg-sky-400 text-white hover:bg-sky-400/90 border-sky-500 border-b-4 active:border-b-0",
@@ -204,12 +205,13 @@ export const MobileNavbar = () => {
               <div className="mb-4">
                 <Image src="/mascot.svg" alt="Mascotte" height={64} width={64} className="w-16 h-16" />
               </div>
-              <DialogTitle as="h2" className="text-center font-bold text-2xl text-gray-900 mb-1">
-                Cours – Maître Lucas
+              <DialogTitle as="h2" className="text-center font-bold text-2xl text-blue-400 mb-1" style={fredoka}>
+                Cours
               </DialogTitle>
-              <p className="text-center text-gray-500 text-sm">
+              <p className="text-center text-gray-500 text-sm" style={fredoka}>
                 Choisis un cours pour commencer
               </p>
+
             </div>
 
             {/* Barre de recherche — sticky */}
