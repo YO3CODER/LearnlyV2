@@ -69,9 +69,9 @@ const routes = [
   { label: "maitre lucas", href: "#",             iconSrc: "/study.svg", isModal: true },
 ];
 
-const RECENT_KEY  = "maitre_lucas_recent";
-const WATCHED_KEY = "maitre_lucas_watched";
-const MAX_RECENT  = 3;
+const RECENT_KEY    = "maitre_lucas_recent";
+const COMPLETED_KEY = "maitre_lucas_completed"; // ← manuel uniquement
+const MAX_RECENT    = 3;
 
 // ─── Composant ──────────────────────────────────────────────────────────────
 
@@ -82,17 +82,18 @@ export const MobileNavbar = () => {
   const [videoOpen, setVideoOpen]         = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [selectedTitle, setSelectedTitle] = useState("");
+  const [selectedVideoId, setSelectedVideoId] = useState("");
   const [search, setSearch]               = useState("");
   const [category, setCategory]           = useState<Category>("Tout");
   const [recentIds, setRecentIds]         = useState<string[]>([]);
-  const [watchedIds, setWatchedIds]       = useState<string[]>([]);
+  const [completedIds, setCompletedIds]   = useState<string[]>([]);
 
   useEffect(() => {
     try {
       const r = localStorage.getItem(RECENT_KEY);
-      const w = localStorage.getItem(WATCHED_KEY);
+      const c = localStorage.getItem(COMPLETED_KEY);
       if (r) setRecentIds(JSON.parse(r));
-      if (w) setWatchedIds(JSON.parse(w));
+      if (c) setCompletedIds(JSON.parse(c));
     } catch {}
   }, []);
 
@@ -120,17 +121,23 @@ export const MobileNavbar = () => {
     setRecentIds(nextRecent);
     localStorage.setItem(RECENT_KEY, JSON.stringify(nextRecent));
 
-    if (!watchedIds.includes(course.videoId)) {
-      const nextWatched = [...watchedIds, course.videoId];
-      setWatchedIds(nextWatched);
-      localStorage.setItem(WATCHED_KEY, JSON.stringify(nextWatched));
-    }
-
     setSelectedVideo(course.videoId);
+    setSelectedVideoId(course.videoId);
     setSelectedTitle(course.title);
     setVideoOpen(true);
     setOpen(false);
   };
+
+  const toggleCompleted = (videoId: string) => {
+    const isCompleted = completedIds.includes(videoId);
+    const next = isCompleted
+      ? completedIds.filter((id) => id !== videoId)
+      : [...completedIds, videoId];
+    setCompletedIds(next);
+    localStorage.setItem(COMPLETED_KEY, JSON.stringify(next));
+  };
+
+  const isCurrentCompleted = completedIds.includes(selectedVideoId);
 
   return (
     <>
@@ -197,7 +204,6 @@ export const MobileNavbar = () => {
 
             {/* Recherche + filtres */}
             <div className="px-4 pt-3 pb-2 border-b border-gray-100 flex-shrink-0 bg-white space-y-2">
-              {/* Barre de recherche */}
               <div className="relative">
                 <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
@@ -255,20 +261,30 @@ export const MobileNavbar = () => {
                     Récemment regardés
                   </p>
                   <div className="space-y-2">
-                    {recentCourses.map((course, index) => (
-                      <button
-                        key={"recent-" + index}
-                        onClick={() => playVideo(course)}
-                        style={{ ...fredoka, animationDelay: `${index * 60}ms` }}
-                        className={cn(
-                          "w-full px-4 py-2.5 rounded-lg font-semibold text-sm text-left flex items-center justify-between gap-2 transition-all duration-200 transform active:scale-95 opacity-0 animate-[fadeSlideIn_0.3s_ease_forwards]",
-                          courseButtonColor[course.category]
-                        )}
-                      >
-                        <span>{course.title}</span>
-                        <span className="text-xs opacity-70 flex-shrink-0">Récent</span>
-                      </button>
-                    ))}
+                    {recentCourses.map((course, index) => {
+                      const isCompleted = completedIds.includes(course.videoId);
+                      return (
+                        <button
+                          key={"recent-" + index}
+                          onClick={() => playVideo(course)}
+                          style={{ ...fredoka, animationDelay: `${index * 60}ms` }}
+                          className={cn(
+                            "w-full px-4 py-2.5 rounded-lg font-semibold text-sm text-left flex items-center justify-between gap-2 transition-all duration-200 transform active:scale-95 opacity-0 animate-[fadeSlideIn_0.4s_cubic-bezier(0.34,1.56,0.64,1)_forwards]",
+                            courseButtonColor[course.category]
+                          )}
+                        >
+                          <span>{course.title}</span>
+                          <span className={cn(
+                            "text-xs flex-shrink-0 px-2 py-0.5 rounded-full font-semibold",
+                            isCompleted
+                              ? "bg-white/30 text-white"
+                              : "bg-white/20 text-white/70"
+                          )}>
+                            {isCompleted ? "Terminé" : "Récent"}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                   <div className="mt-3 mb-1 border-t border-gray-100" />
                 </div>
@@ -282,19 +298,19 @@ export const MobileNavbar = () => {
               ) : (
                 <div className="space-y-2.5">
                   {filteredCourses.map((course, index) => {
-                    const isWatched = watchedIds.includes(course.videoId);
+                    const isCompleted = completedIds.includes(course.videoId);
                     return (
                       <button
                         key={index}
                         onClick={() => playVideo(course)}
                         style={{ ...fredoka, animationDelay: `${index * 40}ms` }}
                         className={cn(
-                          "w-full px-4 py-3 rounded-lg font-semibold text-sm text-left flex items-center justify-between gap-2 transition-all duration-200 transform active:scale-95 opacity-0 animate-[fadeSlideIn_0.3s_ease_forwards]",
+                          "w-full px-4 py-3 rounded-lg font-semibold text-sm text-left flex items-center justify-between gap-2 transition-all duration-200 transform active:scale-95 opacity-0 animate-[fadeSlideIn_0.4s_cubic-bezier(0.34,1.56,0.64,1)_forwards]",
                           courseButtonColor[course.category]
                         )}
                       >
                         <span>{course.title}</span>
-                        {isWatched && (
+                        {isCompleted && (
                           <span className="flex-shrink-0 w-5 h-5 rounded-full bg-white/30 flex items-center justify-center text-xs font-bold">
                             ✓
                           </span>
@@ -350,13 +366,29 @@ export const MobileNavbar = () => {
               )}
             </div>
 
-            {/* Footer */}
-            <div className="border-t border-gray-200 px-5 py-3 flex-shrink-0">
+            {/* Footer vidéo — deux boutons */}
+            <div className="border-t border-gray-200 px-5 py-3 flex-shrink-0 flex gap-2">
+              {/* Bouton terminer / décocher */}
+              <button
+                type="button"
+                style={fredoka}
+                onClick={() => toggleCompleted(selectedVideoId)}
+                className={cn(
+                  "flex-1 px-4 py-2 rounded-lg font-semibold transition-all duration-200 transform active:scale-95 text-sm border-b-4 active:border-b-0",
+                  isCurrentCompleted
+                    ? "bg-gray-200 text-gray-600 border-gray-300 hover:bg-gray-200/90"
+                    : "bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-500/90"
+                )}
+              >
+                {isCurrentCompleted ? "Marquer non terminé" : "Marquer comme terminé"}
+              </button>
+
+              {/* Retour */}
               <button
                 type="button"
                 style={fredoka}
                 onClick={() => { setVideoOpen(false); setOpen(true); }}
-                className="w-full px-6 py-2 rounded-lg font-semibold transition-all duration-200 transform active:scale-95 text-sm bg-rose-500 text-white hover:bg-rose-500/90 border-rose-600 border-b-4 active:border-b-0"
+                className="flex-1 px-4 py-2 rounded-lg font-semibold transition-all duration-200 transform active:scale-95 text-sm bg-rose-500 text-white hover:bg-rose-500/90 border-rose-600 border-b-4 active:border-b-0"
               >
                 Retour aux cours
               </button>
