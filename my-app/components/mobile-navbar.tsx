@@ -64,10 +64,10 @@ const courses = [
     isPreview: true,
   },
   {
-    title: "Les fractions",
-    href: "https://youtu.be/dQw4w9WgXcQ",
-    videoId: "dQw4w9WgXcQ",
-    description: "Comprendre et manipuler les fractions",
+    title: "Résoudre une équation 4ème(1)",
+    href: "https://youtu.be/uV_EmbYu9_E?si=vIzRzw8YLFFVkWEK",
+    videoId: "uV_EmbYu9_E",
+    description: "Résoudre une équation 4ème",
     isPreview: true,
   },
   {
