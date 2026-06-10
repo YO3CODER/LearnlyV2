@@ -27,8 +27,8 @@ const routes = [
 
 const courses = [
   {
-    title: "Cours 1",
-    href: "https://maitrelucas.fr/cours1",
+    title: "Je trace la lettre x",
+    href: "https://maitrelucas.fr/lecons/je-trace-la-lettre-x/",
     description: "Description du cours 1"
   },
   {
