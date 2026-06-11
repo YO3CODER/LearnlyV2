@@ -78,7 +78,6 @@ const TransitionScreen = ({ color, onNavigate, practiceContent }: TransitionScre
   const [duration] = useState(() => DURATIONS[Math.floor(Math.random() * DURATIONS.length)]);
   const [mounted,  setMounted]  = useState(false);
   const [progress, setProgress] = useState(0);
-  const [done,     setDone]     = useState(false);
   const navigatedRef = useRef(false);
 
   useEffect(() => {
@@ -101,7 +100,6 @@ const TransitionScreen = ({ color, onNavigate, practiceContent }: TransitionScre
       } else {
         if (!navigatedRef.current) {
           navigatedRef.current = true;
-          setDone(true);
           setTimeout(onNavigate, 80);
         }
       }
@@ -237,17 +235,16 @@ export const LessonButton = ({
   }, []);
 
   const playBouton = () => {
-  const a = audioBoutonRef.current;
-  if (a) { a.currentTime = 0; a.play().catch(() => {}); }
-  // Double tap léger style Duolingo
-  if ("vibrate" in navigator) navigator.vibrate([8, 50, 8]);
-};
-const playCommencer = () => {
-  const a = audioCommencerRef.current;
-  if (a) { a.currentTime = 0; a.play().catch(() => {}); }
-  // Pattern satisfaisant : tap + confirmation
-  if ("vibrate" in navigator) navigator.vibrate([10, 40, 20, 40, 40]);
-};
+    const a = audioBoutonRef.current;
+    if (a) { a.currentTime = 0; a.play().catch(() => {}); }
+    if ("vibrate" in navigator) navigator.vibrate([8, 50, 8]);
+  };
+
+  const playCommencer = () => {
+    const a = audioCommencerRef.current;
+    if (a) { a.currentTime = 0; a.play().catch(() => {}); }
+    if ("vibrate" in navigator) navigator.vibrate([10, 40, 20, 40, 40]);
+  };
 
   // ─── Layout sinusoidal ───────────────────────────────────────────────────
   const cycleLength = 8;
@@ -383,12 +380,28 @@ const playCommencer = () => {
       50%       { transform: translateY(-8px); }
     }
     .bounce-infinite { animation: bounceInfinite 1s ease-in-out infinite; }
+
+    @keyframes chestBounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      25% { transform: translateY(-4px) scale(1.02); }
+      50% { transform: translateY(-8px) scale(1.05); }
+      75% { transform: translateY(-4px) scale(1.02); }
+    }
+    .chest-bounce { animation: chestBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; }
+
+    @keyframes chestOpen {
+      0% { opacity: 0; transform: scale(0.8) rotateZ(-5deg); }
+      50% { transform: scale(1.05) rotateZ(2deg); }
+      100% { opacity: 1; transform: scale(1) rotateZ(0deg); }
+    }
+    .chest-open { animation: chestOpen 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
   `;
 
   // ─── Contenu practice affiché dans la transition ──────────────────────────
   const practiceButtons = showPracticeInTransition ? (
     <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", marginTop: 8 }}>
-      <Button variant="primary"
+      <Button
+        variant="primary"
         onClick={handlePracticeConfirm}
         style={{
           width: "100%",
@@ -457,64 +470,142 @@ const playCommencer = () => {
         >
           {/* ── Popup ── */}
           {showPopup && !locked && (
-            <div
-              ref={popupRef}
-              className={cn(
-                "absolute w-[220px] rounded-2xl p-4 shadow-xl border-b-4",
-                colors.popup,
-                colors.popupBorder,
-                "top-[85px] left-1/2 -translate-x-1/2",
-                "transition-all duration-200 ease-out",
-              )}
-              style={{
-                zIndex: 999,
-                opacity: popupVisible ? 1 : 0,
-                transform: popupVisible
-                  ? "translateX(-50%) translateY(0) scale(1)"
-                  : "translateX(-50%) translateY(-8px) scale(0.95)",
-              }}
-            >
+            isLastLesson ? (
+              // ── Coffre : badge XP uniquement ──────────────────────────────
               <div
-                className="absolute -top-[10px] left-1/2 -translate-x-1/2 w-0 h-0"
-                style={{
-                  borderLeft: "10px solid transparent",
-                  borderRight: "10px solid transparent",
-                  borderBottom: `10px solid ${colors.popupArrow}`,
-                }}
-              />
-              <button
-                onClick={(e) => { e.stopPropagation(); closePopup(); }}
-                className="absolute top-2 right-2 text-white/70 hover:text-white transition-colors"
-              >
-                <X className="h-4 w-4" />
-              </button>
-              <p className="text-white font-extrabold text-sm mb-1 pr-6">{title}</p>
-              <p className="text-white/80 text-xs mb-4">
-                Leçon {index + 1} sur {totalCount}
-              </p>
-              <button
-                onMouseDown={handleButtonPress}
-                onClick={handleStart}
+                ref={popupRef}
                 className={cn(
-                  "w-full py-2.5 rounded-xl font-extrabold text-sm uppercase tracking-wide",
-                  "transition-all duration-100",
-                  colors.popupButton,
-                  colors.popupButtonText,
+                  "absolute rounded-2xl px-5 py-3 shadow-xl border-b-4",
+                  colors.popup,
+                  colors.popupBorder,
+                  "top-[85px] left-1/2 -translate-x-1/2",
+                  "transition-all duration-200 ease-out",
                 )}
                 style={{
-                  borderBottom: pressing
-                    ? `1px solid ${colors.popupButtonBorder}`
-                    : `4px solid ${colors.popupButtonBorder}`,
-                  transform: pressing ? "translateY(3px)" : "translateY(0px)",
+                  zIndex: 999,
+                  whiteSpace: "nowrap",
+                  opacity: popupVisible ? 1 : 0,
+                  transform: popupVisible
+                    ? "translateX(-50%) translateY(0) scale(1)"
+                    : "translateX(-50%) translateY(-8px) scale(0.95)",
                 }}
               >
-                {isCompleted ? "Pratiquer" : `Commencer +${totalXP} XP`}
-              </button>
-            </div>
+                {/* flèche */}
+                <div
+                  className="absolute -top-[10px] left-1/2 -translate-x-1/2 w-0 h-0"
+                  style={{
+                    borderLeft: "10px solid transparent",
+                    borderRight: "10px solid transparent",
+                    borderBottom: `10px solid ${colors.popupArrow}`,
+                  }}
+                />
+                <p className="text-white font-extrabold text-base text-center m-0 leading-none">
+                  ⭐ {totalXP} XP {isCompleted ? "obtenus" : "à obtenir"}
+                </p>
+              </div>
+            ) : (
+              // ── Leçon normale : popup complet ─────────────────────────────
+              <div
+                ref={popupRef}
+                className={cn(
+                  "absolute w-[220px] rounded-2xl p-4 shadow-xl border-b-4",
+                  colors.popup,
+                  colors.popupBorder,
+                  "top-[85px] left-1/2 -translate-x-1/2",
+                  "transition-all duration-200 ease-out",
+                )}
+                style={{
+                  zIndex: 999,
+                  opacity: popupVisible ? 1 : 0,
+                  transform: popupVisible
+                    ? "translateX(-50%) translateY(0) scale(1)"
+                    : "translateX(-50%) translateY(-8px) scale(0.95)",
+                }}
+              >
+                <div
+                  className="absolute -top-[10px] left-1/2 -translate-x-1/2 w-0 h-0"
+                  style={{
+                    borderLeft: "10px solid transparent",
+                    borderRight: "10px solid transparent",
+                    borderBottom: `10px solid ${colors.popupArrow}`,
+                  }}
+                />
+                <button
+                  onClick={(e) => { e.stopPropagation(); closePopup(); }}
+                  className="absolute top-2 right-2 text-white/70 hover:text-white transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+                <p className="text-white font-extrabold text-sm mb-1 pr-6">{title}</p>
+                <p className="text-white/80 text-xs mb-4">
+                  Leçon {index + 1} sur {totalCount}
+                </p>
+                <button
+                  onMouseDown={handleButtonPress}
+                  onClick={handleStart}
+                  className={cn(
+                    "w-full py-2.5 rounded-xl font-extrabold text-sm uppercase tracking-wide",
+                    "transition-all duration-100",
+                    colors.popupButton,
+                    colors.popupButtonText,
+                  )}
+                  style={{
+                    borderBottom: pressing
+                      ? `1px solid ${colors.popupButtonBorder}`
+                      : `4px solid ${colors.popupButtonBorder}`,
+                    transform: pressing ? "translateY(3px)" : "translateY(0px)",
+                  }}
+                >
+                  {isCompleted ? "Pratiquer" : `Commencer +${totalXP} XP`}
+                </button>
+              </div>
+            )
           )}
 
-          {/* ── Bouton lecon courante ── */}
-          {current ? (
+          {/* ── Boîte au trésor (dernière leçon) ── */}
+          {isLastLesson && isCompleted ? (
+            // Unité TERMINÉE → image1.svg (boîte ouverte) avec animation d'ouverture
+            <div
+              className="relative"
+              onClick={() => { handleClick(); handleButtonPress(); }}
+            >
+              <div className="chest-open">
+                <img
+                  src="/image1.svg"
+                  alt="Coffre ouvert"
+                  width={70}
+                  height={70}
+                  draggable={false}
+                  style={{
+                    display: "block",
+                    cursor: "pointer",
+                    filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.2))",
+                  }}
+                />
+              </div>
+            </div>
+          ) : isLastLesson ? (
+            // Unité NON TERMINÉE → image2.svg (boîte fermée) avec animation de rebond
+            <div
+              className="relative"
+              onClick={() => { handleClick(); handleButtonPress(); }}
+            >
+              <div className="chest-bounce">
+                <img
+                  src="/image2.svg"
+                  alt="Coffre fermé"
+                  width={70}
+                  height={70}
+                  draggable={false}
+                  style={{
+                    display: "block",
+                    cursor: "pointer",
+                    filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.2))",
+                  }}
+                />
+              </div>
+            </div>
+          ) : current ? (
             <div
               className="h-[102px] w-[102px] relative"
               onClick={() => { handleClick(); handleButtonPress(); }}
