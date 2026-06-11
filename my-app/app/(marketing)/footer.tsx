@@ -16,7 +16,7 @@ export const Footer = () => {
         <Button
           size="lg"
           variant="ghost"
-          className="w-full text-gray-200 hover:bg-card"
+          className="w-full text-black-200 hover:bg-card"
         >
           <Image
             src="/hr.svg"
@@ -31,7 +31,7 @@ export const Footer = () => {
         <Button
           size="lg"
           variant="ghost"
-          className="w-full text-gray-200 hover:bg-card"
+          className="w-full text-black-200 hover:bg-card"
         >
           <Image
             src="/es.svg"
@@ -46,7 +46,7 @@ export const Footer = () => {
         <Button
           size="lg"
           variant="ghost"
-          className="w-full text-gray-200 hover:bg-card"
+          className="w-full text-black-200 hover:bg-card"
         >
           <Image
             src="/fr.svg"
@@ -61,7 +61,7 @@ export const Footer = () => {
         <Button
           size="lg"
           variant="ghost"
-          className="w-full text-gray-200 hover:bg-card"
+          className="w-full text-black-200 hover:bg-card"
         >
           <Image
             src="/it.svg"
@@ -76,7 +76,7 @@ export const Footer = () => {
         <Button
           size="lg"
           variant="ghost"
-          className="w-full text-gray-200 hover:bg-card"
+          className="w-full text-black-200 hover:bg-card"
         >
           <Image
             src="/jp.svg"
