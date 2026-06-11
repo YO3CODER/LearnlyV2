@@ -91,6 +91,20 @@ const IconSearch = () => (
   </svg>
 );
 
+const IconExternalLink = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    <polyline points="15 3 21 3 21 9" />
+    <line x1="10" y1="14" x2="21" y2="3" />
+  </svg>
+);
+
+const IconStar = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+  </svg>
+);
+
 // ─── Composant Loading ──────────────────────────────────────────────────────
 
 const Loading = () => {
@@ -108,9 +122,10 @@ type PdfButtonProps = {
   label: string;
   icon: React.ReactNode;
   activeClass: string;
+  description?: string;
 };
 
-const PdfButton = ({ href, label, icon, activeClass }: PdfButtonProps) => {
+const PdfButton = ({ href, label, icon, activeClass, description }: PdfButtonProps) => {
   if (href) {
     return (
       <a
@@ -119,22 +134,35 @@ const PdfButton = ({ href, label, icon, activeClass }: PdfButtonProps) => {
         rel="noopener noreferrer"
         style={fredoka}
         className={cn(
-          "flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg font-semibold text-sm border-b-4 hover:opacity-90 active:border-b-0 transition-all duration-200 active:scale-95 transform",
+          "flex-1 flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl font-semibold text-sm border-b-4 hover:opacity-90 active:border-b-0 transition-all duration-200 active:scale-95 transform group",
           activeClass
         )}
       >
-        {icon}
-        {label}
+        <span className="flex items-center gap-1.5">
+          {icon}
+          {label}
+          <span className="opacity-60 group-hover:opacity-100 transition-opacity">
+            <IconExternalLink />
+          </span>
+        </span>
+        {description && (
+          <span className="text-xs font-normal opacity-75">{description}</span>
+        )}
       </a>
     );
   }
   return (
     <span
       style={fredoka}
-      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg font-semibold text-sm bg-gray-100 text-gray-400 border-gray-200 border-b-4 cursor-not-allowed select-none"
+      className="flex-1 flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl font-semibold text-sm bg-gray-100 text-gray-400 border-gray-200 border-b-4 cursor-not-allowed select-none"
     >
-      {icon}
-      {label}
+      <span className="flex items-center gap-1.5">
+        {icon}
+        {label}
+      </span>
+      {description && (
+        <span className="text-xs font-normal">Non disponible</span>
+      )}
     </span>
   );
 };
@@ -164,7 +192,6 @@ const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCard
         alt={course.titre}
         className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
       />
-      {/* Badge complété */}
       {isCompleted && (
         <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center shadow">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -172,7 +199,6 @@ const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCard
           </svg>
         </div>
       )}
-      {/* Badge récent */}
       {isRecent && !isCompleted && (
         <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-orange-400 text-white text-xs font-semibold shadow-md" style={fredoka}>
           Récent
@@ -182,7 +208,6 @@ const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCard
 
     {/* Contenu */}
     <div className="p-3 flex flex-col flex-grow gap-2">
-      {/* Catégorie */}
       <span
         style={fredoka}
         className={cn(
@@ -192,13 +217,9 @@ const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCard
       >
         {course.categorie}
       </span>
-
-      {/* Titre */}
       <p className="text-sm font-semibold text-gray-800 leading-snug line-clamp-2 flex-grow" style={fredoka}>
         {course.titre}
       </p>
-
-      {/* Bouton commencer */}
       <button
         onClick={() => onPlay(course)}
         style={fredoka}
@@ -223,6 +244,7 @@ export default function CoursPage() {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [selectedTitle, setSelectedTitle] = useState("");
   const [selectedVideoId, setSelectedVideoId] = useState("");
+  const [selectedCategorie, setSelectedCategorie] = useState("");
   const [selectedPdfCours, setSelectedPdfCours] = useState<string | null | undefined>();
   const [selectedPdfFiche, setSelectedPdfFiche] = useState<string | null | undefined>();
   const [selectedPdfCorrige, setSelectedPdfCorrige] = useState<string | null | undefined>();
@@ -280,6 +302,7 @@ export default function CoursPage() {
     setSelectedVideo(course.videoId);
     setSelectedVideoId(course.videoId);
     setSelectedTitle(course.titre);
+    setSelectedCategorie(course.categorie);
     setSelectedPdfCours(course.pdfCours);
     setSelectedPdfFiche(course.pdfFiche);
     setSelectedPdfCorrige(course.pdfCorrige);
@@ -296,6 +319,13 @@ export default function CoursPage() {
 
   const isCurrentCompleted = completedIds.includes(selectedVideoId);
 
+  const modalAccentBar: Record<string, string> = {
+    Maths: "from-sky-400 to-cyan-400",
+    Français: "from-violet-500 to-purple-400",
+    Sciences: "from-emerald-500 to-teal-400",
+    Histoire: "from-amber-400 to-orange-400",
+  };
+
   if (coursesLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -305,287 +335,375 @@ export default function CoursPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* ── HERO BANNER ── */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-400 text-white">
-        {/* Décoration de fond */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute bottom-10 left-20 w-72 h-72 bg-white rounded-full -translate-x-1/2 translate-y-1/2 opacity-10"></div>
-        </div>
+    <>
+      {/* ── Styles animations ── */}
+      <style>{`
+        @keyframes fadeSlideIn {
+          from { opacity: 0; transform: translateY(16px) scale(0.97); }
+          to   { opacity: 1; transform: translateY(0)    scale(1);    }
+        }
+        @keyframes heroFloat {
+          0%, 100% { transform: translateY(0px); }
+          50%       { transform: translateY(-10px); }
+        }
+        @keyframes heroFadeIn {
+          from { opacity: 0; transform: translateX(-20px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes statPop {
+          0%   { opacity: 0; transform: scale(0.8) translateY(8px); }
+          70%  { transform: scale(1.05) translateY(-2px); }
+          100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes shimmer {
+          0%   { background-position: -200% center; }
+          100% { background-position: 200% center; }
+        }
+        .hero-float {
+          animation: heroFloat 4s ease-in-out infinite;
+        }
+        .hero-text-in {
+          animation: heroFadeIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        .stat-pop {
+          animation: statPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        .stat-pop-delay {
+          animation: statPop 0.5s 0.15s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+        .shimmer-text {
+          background: linear-gradient(90deg, #fff 0%, #bfdbfe 40%, #fff 60%, #bfdbfe 100%);
+          background-size: 200% auto;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          animation: shimmer 3s linear infinite;
+        }
+      `}</style>
 
-        <div className="relative px-4 sm:px-6 py-20 sm:py-24">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-              {/* Contenu texte */}
-              <div className="z-10">
-                <div className="mb-8">
-                  <h1 className="text-5xl sm:text-6xl font-bold leading-tight" style={fredoka}>
-                    Apprendre
+      <div className="min-h-screen bg-white">
+
+        {/* ── HERO BANNER ── */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-400 text-white">
+          {/* Cercles déco */}
+          <div className="absolute inset-0 pointer-events-none select-none">
+            <div className="absolute -top-16 -left-16 w-64 h-64 bg-white/10 rounded-full" />
+            <div className="absolute -bottom-10 left-10 w-48 h-48 bg-white/5 rounded-full" />
+            <div className="absolute top-4 right-1/3 w-6 h-6 bg-white/20 rounded-full" />
+            <div className="absolute bottom-8 right-16 w-3 h-3 bg-cyan-200/40 rounded-full" />
+          </div>
+
+          <div className="relative px-4 sm:px-6 py-8 sm:py-10">
+            <div className="max-w-6xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+
+                {/* Contenu texte */}
+                <div className="z-10 hero-text-in">
+                  <p className="text-blue-200 text-xs font-semibold uppercase tracking-widest mb-1" style={fredoka}>
+                    Prêt à tout déchirer ?
+                  </p>
+                  <h1 className="text-4xl sm:text-5xl font-bold leading-tight mb-2" style={fredoka}>
+                    <span className="shimmer-text">Apprendre</span>
+                    <br />
+                    <span className="text-white">sans se noyer</span>
                   </h1>
-                </div>
-                <p className="text-blue-50 text-lg mb-8 leading-relaxed" style={fredoka}>
-                  Découvre nos cours complets et progressifs conçus pour te faire réussir
-                </p>
-                <div className="flex gap-4 flex-wrap">
-                  <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg px-5 py-3 border border-white border-opacity-30" style={fredoka}>
-                    <div className="text-3xl font-bold">{courses.length}</div>
-                    <div className="text-sm text-blue-100">Cours disponibles</div>
-                  </div>
-                  {totalCompleted > 0 && (
-                    <div className="bg-emerald-500 bg-opacity-80 backdrop-blur-sm rounded-lg px-5 py-3 border border-emerald-600 border-opacity-30" style={fredoka}>
-                      <div className="text-3xl font-bold">{totalCompleted}</div>
-                      <div className="text-sm text-emerald-100">Terminés</div>
+                  <p className="text-blue-100 text-sm mb-4 leading-relaxed max-w-sm" style={fredoka}>
+                    Des cours clairs, des vidéos qui vont droit au but — et si tu bloques, la réponse est à deux clics.
+                  </p>
+                  <div className="flex gap-3 flex-wrap">
+                    <div className="stat-pop bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/30" style={fredoka}>
+                      <div className="text-2xl font-bold">{courses.length}</div>
+                      <div className="text-xs text-blue-100">Cours disponibles</div>
                     </div>
-                  )}
+                    {totalCompleted > 0 && (
+                      <div className="stat-pop-delay bg-emerald-500/80 backdrop-blur-sm rounded-lg px-4 py-2 border border-emerald-600/30 flex items-center gap-2" style={fredoka}>
+                        <span className="text-yellow-300"><IconStar /></span>
+                        <div>
+                          <div className="text-2xl font-bold leading-none">{totalCompleted}</div>
+                          <div className="text-xs text-emerald-100">Terminés</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {/* Image Hero */}
-              <div className="relative h-96 md:h-full flex items-center justify-center">
-                <Image
-                  src="/hero.svg"
-                  alt="Apprendre"
-                  width={400}
-                  height={400}
-                  className="drop-shadow-2xl"
-                />
+                {/* Image Hero — réduite et flottante */}
+                <div className="flex items-center justify-center md:justify-end">
+                  <div className="hero-float">
+                    <Image
+                      src="/hero.svg"
+                      alt="Apprendre"
+                      width={220}
+                      height={220}
+                      className="drop-shadow-2xl"
+                      priority
+                    />
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* ── RECHERCHE ET FILTRES ── */}
-      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-6 sticky top-0 z-40 shadow-sm">
-        <div className="max-w-6xl mx-auto">
-          {/* Barre de recherche */}
-          <div className="relative max-w-lg mb-4">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-              <IconSearch />
-            </span>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher un cours…"
-              style={fredoka}
-              className="w-full pl-10 pr-8 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition-all shadow-sm"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs transition-colors"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-
-          {/* Filtres catégories */}
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {ALL_CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setCategory(cat)}
+        {/* ── RECHERCHE ET FILTRES ── */}
+        <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-5 sticky top-0 z-40 shadow-sm">
+          <div className="max-w-6xl mx-auto">
+            <div className="relative max-w-lg mb-3">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                <IconSearch />
+              </span>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Rechercher un cours…"
                 style={fredoka}
-                className={cn(
-                  "flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold border-2 transition-all duration-150 hover:shadow-md",
-                  category === cat ? categoryActiveColors[cat] : categoryColors[cat]
-                )}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          {/* Compteur résultats */}
-          {(search || category !== "Tout") && (
-            <p className="text-xs text-gray-400 mt-3" style={fredoka}>
-              {filteredCourses.length} cours trouvé{filteredCourses.length !== 1 ? "s" : ""}
-              {category !== "Tout" && ` en ${category}`}
-              {search && ` pour « ${search} »`}
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* ── CONTENU PRINCIPAL ── */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-12">
-
-        {/* Section Récents */}
-        {recentCourses.length > 0 && !search && category === "Tout" && (
-          <section>
-            <h2 className="text-base font-semibold text-gray-600 uppercase tracking-wider mb-6" style={fredoka}>
-              Récemment regardés
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {recentCourses.map((course, index) => (
-                <CourseCard
-                  key={"recent-" + course.id}
-                  course={course}
-                  isCompleted={completedIds.includes(course.videoId)}
-                  isRecent={true}
-                  onPlay={playVideo}
-                  index={index}
-                />
-              ))}
-            </div>
-            <div className="mt-10 border-t border-gray-200" />
-          </section>
-        )}
-
-        {/* Section Ligue */}
-        {filteredCourses.length > 0 && (
-          <section className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-100">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-3" style={fredoka}>
-                  Rejoins la Ligue
-                </h2>
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  Complète tes cours, déverrouille des badges et grimpe les classements avec tes camarades
-                </p>
+                className="w-full pl-10 pr-8 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition-all shadow-sm"
+              />
+              {search && (
                 <button
-                  onClick={() => { setSearch(""); setCategory("Tout"); }}
-                  style={fredoka}
-                  className="px-6 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold border-b-4 border-purple-700 hover:shadow-lg active:border-b-0 transition-all"
+                  onClick={() => setSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs transition-colors"
                 >
-                  Découvrir
+                  ✕
                 </button>
-              </div>
-              <div className="flex justify-center">
-                <Image
-                  src="/ligue.svg"
-                  alt="Ligue"
-                  width={300}
-                  height={300}
-                  className="drop-shadow-xl"
-                />
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Grille principale */}
-        {filteredCourses.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="text-6xl mb-4">🔍</div>
-            <p className="text-gray-500 font-semibold text-lg" style={fredoka}>
-              Aucun cours trouvé
-            </p>
-            <p className="text-gray-400 text-sm mt-2 mb-6" style={fredoka}>
-              Essaie un autre mot-clé ou une autre catégorie
-            </p>
-            <button
-              onClick={() => { setSearch(""); setCategory("Tout"); }}
-              style={fredoka}
-              className="px-6 py-3 rounded-lg bg-blue-500 text-white font-semibold border-b-4 border-blue-600 hover:bg-blue-500/90 active:border-b-0 transition-all hover:shadow-lg"
-            >
-              Afficher tous les cours
-            </button>
-          </div>
-        ) : (
-          <section>
-            {(!search && category === "Tout") && (
-              <h2 className="text-base font-semibold text-gray-600 uppercase tracking-wider mb-6" style={fredoka}>
-                Tous les cours
-              </h2>
-            )}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {filteredCourses.map((course, index) => (
-                <CourseCard
-                  key={course.id}
-                  course={course}
-                  isCompleted={completedIds.includes(course.videoId)}
-                  isRecent={recentIds.includes(course.videoId)}
-                  onPlay={playVideo}
-                  index={index}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-      </div>
-
-      {/* ── Modal vidéo ── */}
-      <Dialog open={videoOpen} onClose={() => { }} className="relative z-50">
-        <DialogBackdrop className="fixed inset-0 bg-black/70 backdrop-blur-sm" />
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <DialogPanel
-            transition
-            className="relative transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all duration-500 data-closed:scale-95 data-closed:opacity-0 data-enter:duration-500 data-enter:ease-out data-leave:duration-300 data-leave:ease-in w-full max-w-2xl border border-gray-200 flex flex-col"
-          >
-            {/* Titre */}
-            <div className="px-5 py-3 border-b border-gray-100 flex-shrink-0 bg-gradient-to-r from-gray-50 to-white">
-              <p className="text-sm font-semibold text-gray-700 truncate" style={fredoka}>
-                {selectedTitle}
-              </p>
-            </div>
-
-            {/* iFrame YouTube */}
-            <div className="relative w-full bg-black" style={{ paddingBottom: "56.25%" }}>
-              {selectedVideo && (
-                <iframe
-                  className="absolute top-0 left-0 w-full h-full"
-                  src={`https://www.youtube.com/embed/${selectedVideo}`}
-                  title={selectedTitle}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
               )}
             </div>
 
-            {/* Boutons PDF */}
-            <div className="px-5 py-2.5 flex gap-2 border-b border-gray-100 flex-shrink-0 bg-gray-50">
-              <PdfButton
-                href={selectedPdfCours}
-                label="Cours PDF"
-                icon={<IconBook />}
-                activeClass="bg-amber-400 text-gray-900 border-amber-500 hover:shadow-md"
-              />
-              <PdfButton
-                href={selectedPdfFiche}
-                label="Fiche PDF"
-                icon={<IconFile />}
-                activeClass="bg-sky-500 text-white border-sky-600 hover:shadow-md"
-              />
-              <PdfButton
-                href={selectedPdfCorrige}
-                label="Corrigé PDF"
-                icon={<IconCheck />}
-                activeClass="bg-violet-500 text-white border-violet-600 hover:shadow-md"
-              />
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {ALL_CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setCategory(cat)}
+                  style={fredoka}
+                  className={cn(
+                    "flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-semibold border-2 transition-all duration-150 hover:shadow-md",
+                    category === cat ? categoryActiveColors[cat] : categoryColors[cat]
+                  )}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
 
-            {/* Footer modal */}
-            <div className="border-t border-gray-200 px-5 py-3 flex-shrink-0 flex gap-2">
+            {(search || category !== "Tout") && (
+              <p className="text-xs text-gray-400 mt-2" style={fredoka}>
+                {filteredCourses.length} cours trouvé{filteredCourses.length !== 1 ? "s" : ""}
+                {category !== "Tout" && ` en ${category}`}
+                {search && ` pour « ${search} »`}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* ── CONTENU PRINCIPAL ── */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-12">
+
+          {recentCourses.length > 0 && !search && category === "Tout" && (
+            <section>
+              <h2 className="text-base font-semibold text-gray-600 uppercase tracking-wider mb-6" style={fredoka}>
+                Récemment regardés
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {recentCourses.map((course, index) => (
+                  <CourseCard
+                    key={"recent-" + course.id}
+                    course={course}
+                    isCompleted={completedIds.includes(course.videoId)}
+                    isRecent={true}
+                    onPlay={playVideo}
+                    index={index}
+                  />
+                ))}
+              </div>
+              <div className="mt-10 border-t border-gray-200" />
+            </section>
+          )}
+
+          {filteredCourses.length > 0 && (
+            <section className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-100">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-3" style={fredoka}>
+                    Rejoins la Ligue
+                  </h2>
+                  <p className="text-gray-600 mb-6 leading-relaxed">
+                    Complète tes cours, déverrouille des badges et grimpe les classements avec tes camarades
+                  </p>
+                  <button
+                    onClick={() => { setSearch(""); setCategory("Tout"); }}
+                    style={fredoka}
+                    className="px-6 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold border-b-4 border-purple-700 hover:shadow-lg active:border-b-0 transition-all"
+                  >
+                    Découvrir
+                  </button>
+                </div>
+                <div className="flex justify-center">
+                  <Image
+                    src="/ligue.svg"
+                    alt="Ligue"
+                    width={300}
+                    height={300}
+                    className="drop-shadow-xl"
+                  />
+                </div>
+              </div>
+            </section>
+          )}
+
+          {filteredCourses.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <p className="text-gray-500 font-semibold text-lg" style={fredoka}>
+                Aucun cours trouvé
+              </p>
+              <p className="text-gray-400 text-sm mt-2 mb-6" style={fredoka}>
+                Essaie un autre mot-clé ou une autre catégorie
+              </p>
               <button
-                type="button"
+                onClick={() => { setSearch(""); setCategory("Tout"); }}
                 style={fredoka}
-                onClick={() => toggleCompleted(selectedVideoId)}
-                className={cn(
-                  "flex-1 px-4 py-2 rounded-lg font-semibold transition-all duration-200 transform active:scale-95 text-sm border-b-4 active:border-b-0 hover:shadow-md",
-                  isCurrentCompleted
-                    ? "bg-gray-200 text-gray-600 border-gray-300 hover:bg-gray-200/90"
-                    : "bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-500/90"
-                )}
+                className="px-6 py-3 rounded-lg bg-blue-500 text-white font-semibold border-b-4 border-blue-600 hover:bg-blue-500/90 active:border-b-0 transition-all hover:shadow-lg"
               >
-                {isCurrentCompleted ? "Marquer non terminé" : "Marquer comme terminé"}
-              </button>
-              <button
-                type="button"
-                style={fredoka}
-                onClick={() => setVideoOpen(false)}
-                className="flex-1 px-4 py-2 rounded-lg font-semibold transition-all duration-200 transform active:scale-95 text-sm bg-rose-500 text-white hover:bg-rose-500/90 border-rose-600 border-b-4 active:border-b-0 hover:shadow-md"
-              >
-                Fermer
+                Afficher tous les cours
               </button>
             </div>
-          </DialogPanel>
+          ) : (
+            <section>
+              {(!search && category === "Tout") && (
+                <h2 className="text-base font-semibold text-gray-600 uppercase tracking-wider mb-6" style={fredoka}>
+                  Tous les cours
+                </h2>
+              )}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {filteredCourses.map((course, index) => (
+                  <CourseCard
+                    key={course.id}
+                    course={course}
+                    isCompleted={completedIds.includes(course.videoId)}
+                    isRecent={recentIds.includes(course.videoId)}
+                    onPlay={playVideo}
+                    index={index}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
-      </Dialog>
-    </div>
+
+        {/* ── Modal vidéo ── */}
+        <Dialog open={videoOpen} onClose={() => { }} className="relative z-50">
+          <DialogBackdrop className="fixed inset-0 bg-black/75 backdrop-blur-md" />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <DialogPanel
+              transition
+              className="relative transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all duration-500 data-closed:scale-95 data-closed:opacity-0 data-enter:duration-500 data-enter:ease-out data-leave:duration-300 data-leave:ease-in w-full max-w-2xl border border-gray-200 flex flex-col"
+            >
+              {/* Barre de couleur catégorie */}
+              <div className={cn("h-1 w-full bg-gradient-to-r flex-shrink-0", modalAccentBar[selectedCategorie] ?? "from-blue-400 to-cyan-400")} />
+
+              {/* En-tête modal */}
+              <div className="px-5 py-3 border-b border-gray-100 flex-shrink-0 flex items-center justify-between gap-3 bg-white">
+                <div className="min-w-0">
+                  <span
+                    style={fredoka}
+                    className={cn(
+                      "inline-block text-xs font-semibold px-2 py-0.5 rounded-full mb-1",
+                      categoryBadgeColors[selectedCategorie] ?? "bg-gray-100 text-gray-600"
+                    )}
+                  >
+                    {selectedCategorie}
+                  </span>
+                  <p className="text-sm font-semibold text-gray-800 truncate leading-snug" style={fredoka}>
+                    {selectedTitle}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  style={fredoka}
+                  onClick={() => setVideoOpen(false)}
+                  className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors text-sm font-bold"
+                  aria-label="Fermer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* iFrame YouTube */}
+              <div className="relative w-full bg-black" style={{ paddingBottom: "56.25%" }}>
+                {selectedVideo && (
+                  <iframe
+                    className="absolute top-0 left-0 w-full h-full"
+                    src={`https://www.youtube.com/embed/${selectedVideo}?autoplay=1&rel=0`}
+                    title={selectedTitle}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                )}
+              </div>
+
+              {/* Ressources PDF */}
+              <div className="px-5 pt-4 pb-2 flex-shrink-0 bg-white">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2.5" style={fredoka}>
+                  Ressources du cours
+                </p>
+                <div className="flex gap-2">
+                  <PdfButton
+                    href={selectedPdfCours}
+                    label="Cours"
+                    icon={<IconBook />}
+                    activeClass="bg-amber-400 text-gray-900 border-amber-500 hover:shadow-md"
+                    description="Leçon complète"
+                  />
+                  <PdfButton
+                    href={selectedPdfFiche}
+                    label="Fiche"
+                    icon={<IconFile />}
+                    activeClass="bg-sky-500 text-white border-sky-600 hover:shadow-md"
+                    description="Résumé rapide"
+                  />
+                  <PdfButton
+                    href={selectedPdfCorrige}
+                    label="Corrigé"
+                    icon={<IconCheck />}
+                    activeClass="bg-violet-500 text-white border-violet-600 hover:shadow-md"
+                    description="Exercices résolus"
+                  />
+                </div>
+              </div>
+
+              {/* Footer modal */}
+              <div className="border-t border-gray-100 px-5 py-3 flex-shrink-0 flex gap-2 bg-gray-50">
+                <button
+                  type="button"
+                  style={fredoka}
+                  onClick={() => toggleCompleted(selectedVideoId)}
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold transition-all duration-200 transform active:scale-95 text-sm border-b-4 active:border-b-0 hover:shadow-md",
+                    isCurrentCompleted
+                      ? "bg-gray-200 text-gray-600 border-gray-300 hover:bg-gray-200/90"
+                      : "bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-500/90"
+                  )}
+                >
+                  {isCurrentCompleted ? (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      Marquer non terminé
+                    </>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      Cours terminé
+                    </>
+                  )}
+                </button>
+              </div>
+            </DialogPanel>
+          </div>
+        </Dialog>
+
+      </div>
+    </>
   );
 }
