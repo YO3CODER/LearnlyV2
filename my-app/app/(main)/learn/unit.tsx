@@ -11,7 +11,7 @@ type Props = {
   isLast?: boolean;
   lessons: (typeof lessons.$inferSelect & {
     completed: boolean;
-    challengeCount?: number; // 👈
+    challengeCount?: number;
   })[];
   activeLesson: typeof lessons.$inferSelect & {
     unit: typeof units.$inferSelect;
@@ -28,6 +28,7 @@ const getUnitColor = (order: number) => {
 };
 
 const GIFS = ["/1.gif", "/2.gif", "/3.gif", "/4.gif"];
+const XP_PER_CHALLENGE = 10;
 
 export const Unit = ({
   id,
@@ -42,6 +43,15 @@ export const Unit = ({
 }: Props) => {
   const unitColor = getUnitColor(order);
   const unitGif = GIFS[(id - 1) % GIFS.length];
+
+  // Calcul du XP total de l'unité (toutes les leçons)
+  const unitTotalXP = lessons.reduce(
+    (sum, lesson) => sum + (lesson.challengeCount ?? 5) * XP_PER_CHALLENGE,
+    0
+  );
+
+  // Vérifier si toutes les leçons sont complétées
+  const allLessonsCompleted = lessons.every(lesson => lesson.completed);
 
   return (
     <div id={`unit-${index}`} style={{ position: "relative", overflow: "visible" }}>
@@ -67,28 +77,50 @@ export const Unit = ({
         className="flex items-center flex-col relative"
         style={{ overflow: "visible", zIndex: 0 }}
       >
-        {lessons.map((lesson, index) => {
+        {/* Afficher toutes les leçons */}
+        {lessons.map((lesson, lessonIndex) => {
           const isCurrent = lesson.id === activeLesson?.id;
           const isLocked = !lesson.completed && !isCurrent;
-          const isLastLesson = index === lessons.length - 1;
+          // La dernière leçon a une couronne, mais n'est PAS remplacée par le coffre
+          const isLastLesson = lessonIndex === lessons.length - 1;
 
           return (
             <LessonButton
               key={lesson.id}
               id={lesson.id}
-              index={index}
+              index={lessonIndex}
               totalCount={lessons.length}
               current={isCurrent}
               locked={isLocked}
               percentage={activeLessonPercentage}
               unitColor={unitColor}
               isLastLesson={isLastLesson}
+              isChest={false}  // ← Ce n'est PAS le coffre
               unitId={id}
               title={lesson.title}
-              lessonChallengeCount={lesson.challengeCount ?? 5} // 👈
+              lessonChallengeCount={lesson.challengeCount ?? 5}
+              unitTotalXP={unitTotalXP}
             />
           );
         })}
+
+        {/* ── COFFRE : affiché APRÈS la dernière leçon ── */}
+        <LessonButton
+          key={`chest-${id}`}
+          id={id * 1000} // ID unique pour le coffre
+          index={lessons.length} // Position après la dernière leçon
+          totalCount={lessons.length}
+          current={false}
+          locked={!allLessonsCompleted}
+          percentage={0}
+          unitColor={unitColor}
+          isLastLesson={false}
+          isChest={true}  // ← NOUVEAU : c'est le coffre !
+          unitId={id}
+          title="Coffre au trésor"
+          lessonChallengeCount={0}
+          unitTotalXP={unitTotalXP}
+        />
       </div>
     </div>
   );
