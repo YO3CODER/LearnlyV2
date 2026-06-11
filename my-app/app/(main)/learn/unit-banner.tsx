@@ -33,6 +33,20 @@ export const UnitBanner = ({
     return colors[color] || colors.blue;
   };
 
+  const getBorderColor = () => {
+    const colors: Record<string, string> = {
+      blue: "border-blue-700",
+      purple: "border-purple-700",
+      green: "border-green-700",
+      red: "border-red-700",
+      orange: "border-orange-700",
+      pink: "border-pink-700",
+      indigo: "border-indigo-700",
+      teal: "border-teal-700",
+    };
+    return colors[color] || colors.blue;
+  };
+
   const getButtonColor = () => {
     const colors: Record<string, string> = {
       blue: "bg-blue-600 hover:bg-blue-700 border-blue-800",
@@ -48,7 +62,7 @@ export const UnitBanner = ({
   };
 
   return (
-    <div className={`w-full rounded-2xl px-6 py-6 lg:py-8 flex items-center justify-between ${getBgColor()} relative overflow-hidden`}>
+    <div className={`w-full rounded-2xl px-6 py-6 lg:py-8 flex items-center justify-between ${getBgColor()} ${getBorderColor()} border-2 border-b-4 relative overflow-hidden`}>
 
       {/* Gauche : flèche + label + titre */}
       <div className="relative z-10 flex flex-col gap-2 flex-1">
