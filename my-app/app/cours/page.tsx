@@ -96,7 +96,7 @@ const IconSearch = () => (
 const Loading = () => {
   return (
     <div className="h-full w-full flex items-center justify-center">
-      <Loader className="h-6 w-6 text-gray-400 animate-spin" />
+      <Loader className="h-6 w-6 text-blue-400 animate-spin" />
     </div>
   );
 };
@@ -166,7 +166,7 @@ const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCard
       />
       {/* Badge complété */}
       {isCompleted && (
-        <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center shadow animate-bounce">
+        <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center shadow">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="20 6 9 17 4 12" />
           </svg>
@@ -174,7 +174,7 @@ const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCard
       )}
       {/* Badge récent */}
       {isRecent && !isCompleted && (
-        <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 text-white text-xs font-semibold shadow-md" style={fredoka}>
+        <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-orange-400 text-white text-xs font-semibold shadow-md" style={fredoka}>
           Récent
         </div>
       )}
@@ -298,47 +298,44 @@ export default function CoursPage() {
 
   if (coursesLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <Loading />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-gray-50">
+    <div className="min-h-screen bg-white">
       {/* ── HERO BANNER ── */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-blue-500 via-blue-400 to-sky-400 text-white">
+      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-400 text-white">
         {/* Décoration de fond */}
-        <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 opacity-20">
           <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full translate-x-1/2 translate-y-1/2"></div>
+          <div className="absolute bottom-10 left-20 w-72 h-72 bg-white rounded-full -translate-x-1/2 translate-y-1/2 opacity-10"></div>
         </div>
 
-        <div className="relative px-4 sm:px-6 py-12 sm:py-16">
-          <div className="max-w-5xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div className="relative px-4 sm:px-6 py-20 sm:py-24">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               {/* Contenu texte */}
               <div className="z-10">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white border-opacity-30">
-                    <span className="text-2xl">📚</span>
-                  </div>
-                  <h1 className="text-4xl sm:text-5xl font-bold" style={fredoka}>
+                <div className="mb-8">
+                  <h1 className="text-5xl sm:text-6xl font-bold leading-tight" style={fredoka}>
                     Apprendre
                   </h1>
                 </div>
-                <p className="text-blue-50 text-lg mb-6 leading-relaxed" style={fredoka}>
+                <p className="text-blue-50 text-lg mb-8 leading-relaxed" style={fredoka}>
                   Découvre nos cours complets et progressifs conçus pour te faire réussir
                 </p>
                 <div className="flex gap-4 flex-wrap">
-                  <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg px-4 py-2 border border-white border-opacity-30" style={fredoka}>
-                    <div className="text-2xl font-bold">{courses.length}</div>
+                  <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg px-5 py-3 border border-white border-opacity-30" style={fredoka}>
+                    <div className="text-3xl font-bold">{courses.length}</div>
                     <div className="text-sm text-blue-100">Cours disponibles</div>
                   </div>
                   {totalCompleted > 0 && (
-                    <div className="bg-emerald-500 bg-opacity-80 backdrop-blur-sm rounded-lg px-4 py-2 border border-emerald-600 border-opacity-30" style={fredoka}>
-                      <div className="text-2xl font-bold">{totalCompleted}</div>
-                      <div className="text-sm text-emerald-100">Cours terminés</div>
+                    <div className="bg-emerald-500 bg-opacity-80 backdrop-blur-sm rounded-lg px-5 py-3 border border-emerald-600 border-opacity-30" style={fredoka}>
+                      <div className="text-3xl font-bold">{totalCompleted}</div>
+                      <div className="text-sm text-emerald-100">Terminés</div>
                     </div>
                   )}
                 </div>
@@ -346,14 +343,12 @@ export default function CoursPage() {
 
               {/* Image Hero */}
               <div className="relative h-96 md:h-full flex items-center justify-center">
-                <div className="absolute inset-0 bg-white bg-opacity-5 rounded-2xl blur-2xl"></div>
                 <Image
                   src="/hero.svg"
                   alt="Apprendre"
                   width={400}
                   height={400}
-                  className="relative z-10 drop-shadow-2xl animate-bounce"
-                  style={{ animationDuration: "3s" }}
+                  className="drop-shadow-2xl"
                 />
               </div>
             </div>
@@ -361,9 +356,9 @@ export default function CoursPage() {
         </div>
       </div>
 
-      {/* ── En-tête de page (Recherche et filtres) ── */}
-      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-8 sticky top-0 z-40 shadow-sm">
-        <div className="max-w-5xl mx-auto">
+      {/* ── RECHERCHE ET FILTRES ── */}
+      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-6 sticky top-0 z-40 shadow-sm">
+        <div className="max-w-6xl mx-auto">
           {/* Barre de recherche */}
           <div className="relative max-w-lg mb-4">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
@@ -404,7 +399,7 @@ export default function CoursPage() {
             ))}
           </div>
 
-          {/* Compteur résultats filtrés */}
+          {/* Compteur résultats */}
           {(search || category !== "Tout") && (
             <p className="text-xs text-gray-400 mt-3" style={fredoka}>
               {filteredCourses.length} cours trouvé{filteredCourses.length !== 1 ? "s" : ""}
@@ -415,14 +410,14 @@ export default function CoursPage() {
         </div>
       </div>
 
-      {/* ── Contenu principal ── */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+      {/* ── CONTENU PRINCIPAL ── */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-12">
 
         {/* Section Récents */}
         {recentCourses.length > 0 && !search && category === "Tout" && (
-          <section className="animate-fadeIn">
-            <h2 className="text-base font-semibold text-gray-600 uppercase tracking-wide mb-4 flex items-center gap-2" style={fredoka}>
-              <span className="text-lg">⚡</span> Récemment regardés
+          <section>
+            <h2 className="text-base font-semibold text-gray-600 uppercase tracking-wider mb-6" style={fredoka}>
+              Récemment regardés
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {recentCourses.map((course, index) => (
@@ -436,30 +431,28 @@ export default function CoursPage() {
                 />
               ))}
             </div>
-            <div className="mt-8 border-t border-gray-200" />
+            <div className="mt-10 border-t border-gray-200" />
           </section>
         )}
 
         {/* Section Ligue */}
         {filteredCourses.length > 0 && (
-          <section className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 sm:p-8 border border-purple-100">
+          <section className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-100">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-3" style={fredoka}>
-                  Rejoins la Ligue! 🏆
+                  Rejoins la Ligue
                 </h2>
-                <p className="text-gray-600 mb-4 leading-relaxed">
-                  Complète tes cours, déverrouille des badges et grimpe les classements avec tes camarades!
+                <p className="text-gray-600 mb-6 leading-relaxed">
+                  Complète tes cours, déverrouille des badges et grimpe les classements avec tes camarades
                 </p>
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => { setSearch(""); setCategory("Tout"); }}
-                    style={fredoka}
-                    className="px-6 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold border-b-4 border-purple-700 hover:shadow-lg active:border-b-0 transition-all"
-                  >
-                    Découvrir
-                  </button>
-                </div>
+                <button
+                  onClick={() => { setSearch(""); setCategory("Tout"); }}
+                  style={fredoka}
+                  className="px-6 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold border-b-4 border-purple-700 hover:shadow-lg active:border-b-0 transition-all"
+                >
+                  Découvrir
+                </button>
               </div>
               <div className="flex justify-center">
                 <Image
@@ -467,8 +460,7 @@ export default function CoursPage() {
                   alt="Ligue"
                   width={300}
                   height={300}
-                  className="drop-shadow-xl animate-pulse"
-                  style={{ animationDuration: "2s" }}
+                  className="drop-shadow-xl"
                 />
               </div>
             </div>
@@ -482,7 +474,7 @@ export default function CoursPage() {
             <p className="text-gray-500 font-semibold text-lg" style={fredoka}>
               Aucun cours trouvé
             </p>
-            <p className="text-gray-400 text-sm mt-1 mb-6" style={fredoka}>
+            <p className="text-gray-400 text-sm mt-2 mb-6" style={fredoka}>
               Essaie un autre mot-clé ou une autre catégorie
             </p>
             <button
@@ -496,8 +488,8 @@ export default function CoursPage() {
         ) : (
           <section>
             {(!search && category === "Tout") && (
-              <h2 className="text-base font-semibold text-gray-600 uppercase tracking-wide mb-4 flex items-center gap-2" style={fredoka}>
-                <span className="text-lg">📖</span> Tous les cours
+              <h2 className="text-base font-semibold text-gray-600 uppercase tracking-wider mb-6" style={fredoka}>
+                Tous les cours
               </h2>
             )}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -580,7 +572,7 @@ export default function CoursPage() {
                     : "bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-500/90"
                 )}
               >
-                {isCurrentCompleted ? "Marquer non terminé" : "Marquer comme terminé ✓"}
+                {isCurrentCompleted ? "Marquer non terminé" : "Marquer comme terminé"}
               </button>
               <button
                 type="button"
