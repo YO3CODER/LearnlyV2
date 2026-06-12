@@ -7,28 +7,36 @@ import { revalidatePath } from "next/cache";
 import db from "@/db/drizzle";
 import { getUserProgress, getUserSubscription } from "@/db/queries";
 import { challengeProgress, challenges, userProgress } from "@/db/schema";
+import { getCurrentMondayISO } from "@/utils/week";
+
+// Helper : calcule les nouveaux weeklyPoints avec reset automatique
+const computeWeeklyPoints = (
+  currentWeeklyPoints: number,
+  currentResetDate: string,
+  pointsToAdd: number
+) => {
+  const currentMonday = getCurrentMondayISO();
+  if (currentResetDate === currentMonday) {
+    return { weeklyPoints: currentWeeklyPoints + pointsToAdd, weeklyResetDate: currentMonday };
+  }
+  // Nouvelle semaine → reset
+  return { weeklyPoints: pointsToAdd, weeklyResetDate: currentMonday };
+};
 
 export const upsertChallengeProgress = async (challengeId: number) => {
   const { userId } = await auth();
-
-  if (!userId) {
-    throw new Error("Unauthorized"); 
-  }
+  if (!userId) throw new Error("Unauthorized");
 
   const currentUserProgress = await getUserProgress();
   const userSubscription = await getUserSubscription();
 
-  if (!currentUserProgress) {
-    throw new Error("User progress not found");
-  }
+  if (!currentUserProgress) throw new Error("User progress not found");
 
   const challenge = await db.query.challenges.findFirst({
-    where: eq(challenges.id, challengeId)
+    where: eq(challenges.id, challengeId),
   });
 
-  if (!challenge) {
-    throw new Error("Challenge not found");
-  }
+  if (!challenge) throw new Error("Challenge not found");
 
   const lessonId = challenge.lessonId;
 
@@ -41,25 +49,25 @@ export const upsertChallengeProgress = async (challengeId: number) => {
 
   const isPractice = !!existingChallengeProgress;
 
-  if (
-    currentUserProgress.hearts === 0 && 
-    !isPractice && 
-    !userSubscription?.isActive
-  ) {
+  if (currentUserProgress.hearts === 0 && !isPractice && !userSubscription?.isActive) {
     return { error: "hearts" };
   }
 
   if (isPractice) {
-    await db.update(challengeProgress).set({
-      completed: true,
-    })
-    .where(
-      eq(challengeProgress.id, existingChallengeProgress.id)
+    await db.update(challengeProgress).set({ completed: true })
+      .where(eq(challengeProgress.id, existingChallengeProgress.id));
+
+    const { weeklyPoints, weeklyResetDate } = computeWeeklyPoints(
+      currentUserProgress.weeklyPoints,
+      currentUserProgress.weeklyResetDate,
+      10
     );
 
     await db.update(userProgress).set({
       hearts: Math.min(currentUserProgress.hearts + 1, 5),
       points: currentUserProgress.points + 10,
+      weeklyPoints,      // 👈
+      weeklyResetDate,   // 👈
     }).where(eq(userProgress.userId, userId));
 
     revalidatePath("/learn");
@@ -70,14 +78,18 @@ export const upsertChallengeProgress = async (challengeId: number) => {
     return;
   }
 
-  await db.insert(challengeProgress).values({
-    challengeId,
-    userId,
-    completed: true,
-  });
+  await db.insert(challengeProgress).values({ challengeId, userId, completed: true });
+
+  const { weeklyPoints, weeklyResetDate } = computeWeeklyPoints(
+    currentUserProgress.weeklyPoints,
+    currentUserProgress.weeklyResetDate,
+    10
+  );
 
   await db.update(userProgress).set({
     points: currentUserProgress.points + 10,
+    weeklyPoints,      // 👈
+    weeklyResetDate,   // 👈
   }).where(eq(userProgress.userId, userId));
 
   revalidatePath("/learn");

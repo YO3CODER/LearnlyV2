@@ -229,7 +229,6 @@ export const getUserSubscription = async () => {
     isActive: !!isActive,
   };
 };
-
 export const getTopTenUsers = async () => {
   noStore();
 
@@ -248,13 +247,17 @@ export const getTopTenUsers = async () => {
       userName: true,
       userImageSrc: true,
       points: true,
+      weeklyPoints: true,    // 👈
+      weeklyResetDate: true, // 👈
     },
   });
 
   return data.map((entry) => ({
-    userId: entry.userId,
-    userName: entry.userName ?? "Anonymous",
-    userImageSrc: entry.userImageSrc ?? "/default-avatar.png",
-    points: entry.points ?? 0,
+    userId:          entry.userId,
+    userName:        entry.userName ?? "Anonymous",
+    userImageSrc:    entry.userImageSrc ?? "/default-avatar.png",
+    points:          entry.points ?? 0,
+    weeklyPoints:    entry.weeklyPoints ?? 0,    // 👈
+    weeklyResetDate: entry.weeklyResetDate ?? "", // 👈
   }));
 };

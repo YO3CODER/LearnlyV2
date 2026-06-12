@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { getCurrentMondayISO } from "@/utils/week";
 
 // ─── getDivision ──────────────────────────────────────────────────────────────
 
@@ -52,33 +53,38 @@ const getDivision = (points: number): Division => {
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type LeaderboardEntry = {
-  userId: string | null;
-  userName: string;
-  userImageSrc: string;
-  points: number;
+  userId:          string | null;
+  userName:        string;
+  userImageSrc:    string;
+  points:          number;
+  weeklyPoints:    number;
+  weeklyResetDate: string;
 };
 
 type Props = {
-  leaderboard: LeaderboardEntry[];
+  leaderboard:   LeaderboardEntry[];
   currentUserId: string | null;
 };
 
 const medalImages = ["/first.svg", "/seconds.svg", "/troisieme.svg"];
+
+type Tab = "alltime" | "weekly";
 
 // ─── Weekly countdown ─────────────────────────────────────────────────────────
 
 const useWeeklyCountdown = () => {
   const getTimeLeft = () => {
     const now    = new Date();
-    const sunday = new Date(now);
-    const daysUntilSunday = (7 - now.getDay()) % 7 || 7;
-    sunday.setDate(now.getDate() + daysUntilSunday);
-    sunday.setHours(0, 0, 0, 0);
-    const diff = sunday.getTime() - now.getTime();
+    const monday = new Date(now);
+    const day    = now.getDay();
+    const diff   = day === 0 ? 1 : 8 - day;
+    monday.setDate(now.getDate() + diff);
+    monday.setHours(0, 0, 0, 0);
+    const ms = monday.getTime() - now.getTime();
     return {
-      days:    Math.floor(diff / (1000 * 60 * 60 * 24)),
-      hours:   Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-      minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+      days:    Math.floor(ms / (1000 * 60 * 60 * 24)),
+      hours:   Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+      minutes: Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60)),
     };
   };
 
@@ -124,8 +130,8 @@ const RankSpotlight = ({
   rank: number;
   onDone: () => void;
 }) => {
-  const [visible,  setVisible]  = useState(false);
-  const [leaving,  setLeaving]  = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [leaving, setLeaving] = useState(false);
   const division = getDivision(entry.points);
 
   useEffect(() => {
@@ -146,15 +152,10 @@ const RankSpotlight = ({
   const content = (
     <div
       style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 99999,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "rgba(0,0,0,0.55)",
-        backdropFilter: "blur(6px)",
-        opacity:   leaving ? 0 : visible ? 1 : 0,
+        position: "fixed", inset: 0, zIndex: 99999,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        backgroundColor: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)",
+        opacity: leaving ? 0 : visible ? 1 : 0,
         transition: leaving ? "opacity 0.4s ease" : "opacity 0.35s ease",
         pointerEvents: leaving ? "none" : "all",
       }}
@@ -162,10 +163,7 @@ const RankSpotlight = ({
     >
       <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 20,
+          display: "flex", flexDirection: "column", alignItems: "center", gap: 20,
           transform: leaving ? "scale(0.92) translateY(12px)" : visible ? "scale(1) translateY(0)" : "scale(0.88) translateY(20px)",
           transition: leaving
             ? "transform 0.4s cubic-bezier(0.4,0,0.2,1)"
@@ -211,14 +209,17 @@ const AnimatedRow = ({
   entry,
   index,
   isCurrentUser,
+  tab,
 }: {
   entry: LeaderboardEntry;
   index: number;
   isCurrentUser: boolean;
+  tab: Tab;
 }) => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    setVisible(false);
     let timeoutId: ReturnType<typeof setTimeout>;
     const rafId = requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -226,16 +227,18 @@ const AnimatedRow = ({
       });
     });
     return () => { cancelAnimationFrame(rafId); clearTimeout(timeoutId); };
-  }, [index]);
+  }, [index, tab]);
 
-  const isTop3 = index < 3;
-  const rankColors = ["text-yellow-500", "text-slate-400", "text-amber-600"];
+  const isTop3   = index < 3;
+  const xp       = tab === "weekly" ? entry.weeklyPoints : entry.points;
+  const currentMonday = getCurrentMondayISO();
+  const hasWeeklyData = entry.weeklyResetDate === currentMonday || entry.weeklyPoints > 0;
 
   return (
     <div
       style={{
-        opacity:   visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(16px)",
+        opacity:    visible ? 1 : 0,
+        transform:  visible ? "translateY(0)" : "translateY(16px)",
         transition: "opacity 0.4s ease, transform 0.4s ease",
       }}
       className={`flex items-center w-full px-4 py-3 rounded-2xl transition-colors
@@ -245,12 +248,7 @@ const AnimatedRow = ({
       {/* Rang */}
       <div className="w-8 shrink-0 flex items-center justify-center">
         {isTop3 ? (
-          <Image
-            src={medalImages[index]}
-            alt={`#${index + 1}`}
-            width={28}
-            height={28}
-          />
+          <Image src={medalImages[index]} alt={`#${index + 1}`} width={28} height={28} />
         ) : (
           <span className={`font-extrabold text-sm ${isCurrentUser ? "text-foreground" : "text-muted-foreground"}`}>
             {index + 1}
@@ -265,14 +263,17 @@ const AnimatedRow = ({
 
       {/* Nom */}
       <div className="flex-1 min-w-0">
-        <p className={`font-bold text-sm truncate ${isCurrentUser ? "text-foreground" : "text-foreground"}`}>
+        <p className="font-bold text-sm truncate text-foreground">
           {entry.userName}
         </p>
+        {tab === "weekly" && !hasWeeklyData && (
+          <p className="text-[10px] text-muted-foreground">Pas encore actif cette semaine</p>
+        )}
       </div>
 
       {/* XP */}
       <span className="text-sm font-bold text-muted-foreground tabular-nums shrink-0">
-        {entry.points} XP
+        {xp} XP
       </span>
     </div>
   );
@@ -283,6 +284,7 @@ const AnimatedRow = ({
 export const LeaderboardClient = ({ leaderboard, currentUserId }: Props) => {
   const [mounted,       setMounted]       = useState(false);
   const [showSpotlight, setShowSpotlight] = useState(false);
+  const [tab,           setTab]           = useState<Tab>("alltime");
 
   useEffect(() => {
     setMounted(true);
@@ -290,9 +292,15 @@ export const LeaderboardClient = ({ leaderboard, currentUserId }: Props) => {
     return () => clearTimeout(timer);
   }, []);
 
-  const currentUserEntry = leaderboard.find(e => e.userId === currentUserId);
+  // Trier selon l'onglet actif
+  const sorted = [...leaderboard].sort((a, b) => {
+    if (tab === "weekly") return b.weeklyPoints - a.weeklyPoints;
+    return b.points - a.points;
+  });
+
+  const currentUserEntry = sorted.find(e => e.userId === currentUserId);
   const currentUserRank  = currentUserEntry
-    ? leaderboard.findIndex(e => e.userId === currentUserId) + 1
+    ? sorted.findIndex(e => e.userId === currentUserId) + 1
     : null;
 
   if (!mounted) return (
@@ -315,12 +323,37 @@ export const LeaderboardClient = ({ leaderboard, currentUserId }: Props) => {
         />
       )}
 
-      <div className="w-full flex justify-end mb-3">
-        <CountdownBadge />
+      {/* Onglets */}
+      <div className="w-full flex items-center justify-between mb-4 gap-3">
+        <div className="flex gap-2 p-1 rounded-xl bg-muted border border-border">
+          <button
+            onClick={() => setTab("alltime")}
+            className={`px-4 py-1.5 rounded-lg text-xs font-extrabold transition-all duration-200 ${
+              tab === "alltime"
+                ? "bg-white dark:bg-slate-800 text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Tout le temps
+          </button>
+          <button
+            onClick={() => setTab("weekly")}
+            className={`px-4 py-1.5 rounded-lg text-xs font-extrabold transition-all duration-200 ${
+              tab === "weekly"
+                ? "bg-white dark:bg-slate-800 text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Cette semaine
+          </button>
+        </div>
+
+        {tab === "weekly" && <CountdownBadge />}
       </div>
 
+      {/* Liste */}
       <div className="w-full space-y-2">
-        {leaderboard.map((entry, index) => {
+        {sorted.map((entry, index) => {
           if (!entry.userId) return null;
           return (
             <AnimatedRow
@@ -328,6 +361,7 @@ export const LeaderboardClient = ({ leaderboard, currentUserId }: Props) => {
               entry={entry}
               index={index}
               isCurrentUser={entry.userId === currentUserId}
+              tab={tab}
             />
           );
         })}
