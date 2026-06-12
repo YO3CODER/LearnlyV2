@@ -471,7 +471,7 @@ export const Quiz = ({
 
   const title =
     challenge.type === "ASSIST"
-      ? "Sélectionne la bonne signification"
+      ? "Sélectionne la bonne réponse"
       : challenge.type === "FILL_BLANK"
         ? "Complète les espaces vides"
         : challenge.type === "TRANSLATE"

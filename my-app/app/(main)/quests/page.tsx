@@ -30,11 +30,6 @@ const questIcon: Record<string, string> = {
 };
 
 // ─── Sélection quotidienne des quêtes ─────────────────────────────────────────
-//
-// Principe : on génère une graine (seed) à partir de la date du jour.
-// Cette graine sert à piocher 4 quêtes DIFFÉRENTES parmi toutes celles
-// que l'utilisateur n'a pas encore terminées — ou quasi-terminées.
-// Le résultat change chaque jour mais reste stable toute la journée.
 
 const getDailyQuests = (
   points: number,
@@ -43,49 +38,37 @@ const getDailyQuests = (
   challengesCompleted: number,
   count = 4
 ) => {
-  // Graine du jour : YYYYMMDD → entier
   const today = new Date();
   const seed  = parseInt(
     `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, "0")}${String(today.getDate()).padStart(2, "0")}`
   );
 
-  // LCG (Linear Congruential Generator) déterministe basé sur le seed
   let rng = seed;
   const rand = () => {
     rng = (rng * 1664525 + 1013904223) & 0xffffffff;
     return (rng >>> 0) / 0xffffffff;
   };
 
-  // Séparer quêtes complétées et actives
   const active: typeof quests = [];
   const done:   typeof quests = [];
 
   for (const q of quests) {
     const val = getUserValue(q.type, points, streak, lessonsCompleted, challengesCompleted);
-    if (val >= q.value) {
-      done.push(q);
-    } else {
-      active.push(q);
-    }
+    if (val >= q.value) done.push(q);
+    else active.push(q);
   }
 
-  // Pool principal = quêtes actives ; si pas assez, compléter avec les terminées
-  const pool = active.length >= count
-    ? active
-    : [...active, ...done];
+  const pool = active.length >= count ? active : [...active, ...done];
 
-  // Fisher-Yates shuffle avec notre RNG déterministe
   const shuffled = [...pool];
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(rand() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
 
-  // On prend les N premières en garantissant la diversité des types
   const selected: typeof quests = [];
   const usedTypes = new Set<string>();
 
-  // 1er passage : 1 quête par type différent
   for (const q of shuffled) {
     if (selected.length >= count) break;
     if (!usedTypes.has(q.type)) {
@@ -94,7 +77,6 @@ const getDailyQuests = (
     }
   }
 
-  // 2ème passage : compléter si besoin avec des types déjà utilisés
   for (const q of shuffled) {
     if (selected.length >= count) break;
     if (!selected.includes(q)) selected.push(q);
@@ -103,7 +85,7 @@ const getDailyQuests = (
   return selected;
 };
 
-// ─── Calcul du temps restant jusqu'à minuit ───────────────────────────────────
+// ─── Temps restant jusqu'à minuit ─────────────────────────────────────────────
 
 const getTimeUntilMidnight = () => {
   const now      = new Date();
@@ -151,7 +133,7 @@ const QuestsPage = async () => {
   const lessonsCompleted    = userProgress.lessonsCompleted    ?? 0;
   const challengesCompleted = userProgress.challengesCompleted ?? 0;
 
-  const dailyQuests  = getDailyQuests(
+  const dailyQuests = getDailyQuests(
     userProgress.points,
     streak,
     lessonsCompleted,
@@ -190,7 +172,6 @@ const QuestsPage = async () => {
             style={{ animationDelay: "0.06s" }}
           >
             <Clock className="w-4 h-4" />
-            {/* ✅ Vrai temps restant jusqu'à minuit */}
             <span>Se renouvelle dans {timeLeft}</span>
           </div>
 
@@ -222,16 +203,9 @@ const QuestsPage = async () => {
 
                   {/* Contenu */}
                   <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="font-bold text-foreground text-sm leading-tight">
-                        {quest.title}
-                      </p>
-                      {done && (
-                        <span className="shrink-0 text-[10px] font-extrabold text-green-500 bg-green-50 dark:bg-green-950/30 px-2 py-0.5 rounded-full">
-                          ✓ Terminé
-                        </span>
-                      )}
-                    </div>
+                    <p className="font-bold text-foreground text-sm leading-tight">
+                      {quest.title}
+                    </p>
 
                     {/* Description */}
                     <p className="text-[11px] text-muted-foreground leading-tight">
@@ -245,7 +219,7 @@ const QuestsPage = async () => {
                           className="progress-bar h-full rounded-full"
                           style={{
                             width: `${progress}%`,
-                            backgroundColor: done ? "#22c55e" : "#fbbf24",
+                            backgroundColor: "#fbbf24",
                             animationDelay: `${0.15 + idx * 0.07}s`,
                           }}
                         />
