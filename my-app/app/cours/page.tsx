@@ -185,21 +185,13 @@ const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCard
       cardAccentColor[course.categorie]
     )}
   >
-    {/* Miniature */}
+    {/* Miniature YouTube */}
     <div className="relative w-full bg-gray-100 overflow-hidden group" style={{ paddingBottom: "56.25%" }}>
       <img
         src={`https://img.youtube.com/vi/${course.videoId}/mqdefault.jpg`}
         alt={course.titre}
         className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
       />
-      {/* Overlay play générique pour masquer le branding YouTube */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center group-hover:bg-black/55 group-hover:scale-110 transition-all duration-200">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white">
-            <polygon points="5 3 19 12 5 21 5 3" />
-          </svg>
-        </div>
-      </div>
       {isCompleted && (
         <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center shadow">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -637,12 +629,12 @@ export default function CoursPage() {
                 </button>
               </div>
 
-              {/* Player vidéo */}
+              {/* iFrame YouTube */}
               <div className="relative w-full bg-black" style={{ paddingBottom: "56.25%" }}>
                 {selectedVideo && (
                   <iframe
                     className="absolute top-0 left-0 w-full h-full"
-                    src={`https://www.youtube-nocookie.com/embed/${selectedVideo}?autoplay=1&rel=0&modestbranding=1&controls=1&iv_load_policy=3`}
+                    src={`https://www.youtube.com/embed/${selectedVideo}?autoplay=1&rel=0`}
                     title={selectedTitle}
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
