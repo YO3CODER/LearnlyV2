@@ -9,6 +9,8 @@ import { getUserProgress, getUserSubscription } from "@/db/queries";
 import { Promo } from "@/components/promo";
 import { quests } from "@/constants";
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
 const getUserValue = (
   type: string, points: number, streak: number,
   lessonsCompleted: number, challengesCompleted: number
@@ -27,7 +29,94 @@ const questIcon: Record<string, string> = {
   challenges: "/challenge.svg",
 };
 
-const categories = ["xp", "streak", "lessons", "challenges"] as const;
+// ─── Sélection quotidienne des quêtes ─────────────────────────────────────────
+//
+// Principe : on génère une graine (seed) à partir de la date du jour.
+// Cette graine sert à piocher 4 quêtes DIFFÉRENTES parmi toutes celles
+// que l'utilisateur n'a pas encore terminées — ou quasi-terminées.
+// Le résultat change chaque jour mais reste stable toute la journée.
+
+const getDailyQuests = (
+  points: number,
+  streak: number,
+  lessonsCompleted: number,
+  challengesCompleted: number,
+  count = 4
+) => {
+  // Graine du jour : YYYYMMDD → entier
+  const today = new Date();
+  const seed  = parseInt(
+    `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, "0")}${String(today.getDate()).padStart(2, "0")}`
+  );
+
+  // LCG (Linear Congruential Generator) déterministe basé sur le seed
+  let rng = seed;
+  const rand = () => {
+    rng = (rng * 1664525 + 1013904223) & 0xffffffff;
+    return (rng >>> 0) / 0xffffffff;
+  };
+
+  // Séparer quêtes complétées et actives
+  const active: typeof quests = [];
+  const done:   typeof quests = [];
+
+  for (const q of quests) {
+    const val = getUserValue(q.type, points, streak, lessonsCompleted, challengesCompleted);
+    if (val >= q.value) {
+      done.push(q);
+    } else {
+      active.push(q);
+    }
+  }
+
+  // Pool principal = quêtes actives ; si pas assez, compléter avec les terminées
+  const pool = active.length >= count
+    ? active
+    : [...active, ...done];
+
+  // Fisher-Yates shuffle avec notre RNG déterministe
+  const shuffled = [...pool];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  // On prend les N premières en garantissant la diversité des types
+  const selected: typeof quests = [];
+  const usedTypes = new Set<string>();
+
+  // 1er passage : 1 quête par type différent
+  for (const q of shuffled) {
+    if (selected.length >= count) break;
+    if (!usedTypes.has(q.type)) {
+      selected.push(q);
+      usedTypes.add(q.type);
+    }
+  }
+
+  // 2ème passage : compléter si besoin avec des types déjà utilisés
+  for (const q of shuffled) {
+    if (selected.length >= count) break;
+    if (!selected.includes(q)) selected.push(q);
+  }
+
+  return selected;
+};
+
+// ─── Calcul du temps restant jusqu'à minuit ───────────────────────────────────
+
+const getTimeUntilMidnight = () => {
+  const now      = new Date();
+  const midnight = new Date(now);
+  midnight.setHours(24, 0, 0, 0);
+  const ms      = midnight.getTime() - now.getTime();
+  const hours   = Math.floor(ms / (1000 * 60 * 60));
+  const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+  if (hours > 0) return `${hours}h ${minutes}min`;
+  return `${minutes} min`;
+};
+
+// ─── Animations ───────────────────────────────────────────────────────────────
 
 const animStyles = `
   @keyframes fillBar {
@@ -42,17 +131,12 @@ const animStyles = `
     70%  { transform: scale(1.03);            }
     100% { opacity:1; transform: scale(1);    }
   }
-
-  .quest-item {
-    animation: popIn 0.35s cubic-bezier(0.34,1.28,0.64,1) both;
-  }
-  .progress-bar {
-    animation: fillBar 1s cubic-bezier(0.4,0,0.2,1) both;
-  }
-  .fade-up {
-    animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1) both;
-  }
+  .quest-item   { animation: popIn   0.35s cubic-bezier(0.34,1.28,0.64,1) both; }
+  .progress-bar { animation: fillBar 1s   cubic-bezier(0.4,0,0.2,1)       both; }
+  .fade-up      { animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1)       both; }
 `;
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 const QuestsPage = async () => {
   const [userProgress, userSubscription] = await Promise.all([
@@ -63,19 +147,18 @@ const QuestsPage = async () => {
   if (!userProgress || !userProgress.activeCourse) redirect("/courses");
 
   const isPro               = !!userSubscription?.isActive;
-  const streak              = userProgress.streak             ?? 0;
-  const lessonsCompleted    = userProgress.lessonsCompleted   ?? 0;
+  const streak              = userProgress.streak              ?? 0;
+  const lessonsCompleted    = userProgress.lessonsCompleted    ?? 0;
   const challengesCompleted = userProgress.challengesCompleted ?? 0;
 
-  // 1 quête par catégorie : la première non complétée, sinon la dernière de la catégorie
-  const dailyQuests = categories.map((cat) => {
-    const catQuests = quests.filter((q) => q.type === cat);
-    const active = catQuests.find((q) => {
-      const val = getUserValue(q.type, userProgress.points, streak, lessonsCompleted, challengesCompleted);
-      return val < q.value;
-    }) ?? catQuests[catQuests.length - 1];
-    return active;
-  }).filter(Boolean);
+  const dailyQuests  = getDailyQuests(
+    userProgress.points,
+    streak,
+    lessonsCompleted,
+    challengesCompleted
+  );
+
+  const timeLeft = getTimeUntilMidnight();
 
   return (
     <div className="flex flex-row-reverse gap-[48px] px-6">
@@ -107,13 +190,17 @@ const QuestsPage = async () => {
             style={{ animationDelay: "0.06s" }}
           >
             <Clock className="w-4 h-4" />
-            <span>3 HEURES</span>
+            {/* ✅ Vrai temps restant jusqu'à minuit */}
+            <span>Se renouvelle dans {timeLeft}</span>
           </div>
 
           {/* ── Liste des quêtes ──────────────────────────────────────── */}
           <ul className="flex flex-col gap-3">
             {dailyQuests.map((quest, idx) => {
-              const userVal  = getUserValue(quest.type, userProgress.points, streak, lessonsCompleted, challengesCompleted);
+              const userVal  = getUserValue(
+                quest.type, userProgress.points, streak,
+                lessonsCompleted, challengesCompleted
+              );
               const progress = Math.min((userVal / quest.value) * 100, 100);
               const done     = userVal >= quest.value;
 
@@ -135,8 +222,20 @@ const QuestsPage = async () => {
 
                   {/* Contenu */}
                   <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-                    <p className="font-bold text-foreground text-sm leading-tight">
-                      {quest.title}
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-bold text-foreground text-sm leading-tight">
+                        {quest.title}
+                      </p>
+                      {done && (
+                        <span className="shrink-0 text-[10px] font-extrabold text-green-500 bg-green-50 dark:bg-green-950/30 px-2 py-0.5 rounded-full">
+                          ✓ Terminé
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-[11px] text-muted-foreground leading-tight">
+                      {quest.description}
                     </p>
 
                     {/* Barre + coffre */}
@@ -146,7 +245,7 @@ const QuestsPage = async () => {
                           className="progress-bar h-full rounded-full"
                           style={{
                             width: `${progress}%`,
-                            backgroundColor: "#fbbf24",
+                            backgroundColor: done ? "#22c55e" : "#fbbf24",
                             animationDelay: `${0.15 + idx * 0.07}s`,
                           }}
                         />
@@ -155,7 +254,7 @@ const QuestsPage = async () => {
                         </span>
                       </div>
 
-                      {/* Coffre : quete6 si terminé, quete7 sinon */}
+                      {/* Coffre ouvert si terminé */}
                       <div className="shrink-0">
                         <Image
                           src={done ? "/quete6.svg" : "/quete7.svg"}
@@ -170,6 +269,14 @@ const QuestsPage = async () => {
               );
             })}
           </ul>
+
+          {/* ── Note de renouvellement ────────────────────────────────── */}
+          <p
+            className="text-center text-xs text-muted-foreground mt-6 fade-up"
+            style={{ animationDelay: "0.4s" }}
+          >
+            Les quêtes se renouvellent chaque jour à minuit
+          </p>
 
         </div>
       </FeedWrapper>
