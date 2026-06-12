@@ -14,15 +14,15 @@ export const dynamic = "force-dynamic";
 
 const divisionImages = {
   Legendary: "/legendary.svg",
-  Diamond:   "/diamond.svg",
-  Platinum:  "/platinum.svg",
-  Gold:      "/gold.svg",
+  Diamond: "/diamond.svg",
+  Platinum: "/platinum.svg",
+  Gold: "/gold.svg",
 };
 
 const legendImages = {
-  Gold:      "/gold.svg",
-  Platinum:  "/platinum.svg",
-  Diamond:   "/diamond.svg",
+  Gold: "/gold.svg",
+  Platinum: "/platinum.svg",
+  Diamond: "/diamond.svg",
   Legendary: "/legendary.svg",
 };
 
@@ -55,8 +55,8 @@ const getDivision = (points: number) => {
 const getNextThreshold = (points: number) => {
   if (points >= 5000) return null;
   if (points >= 3000) return { name: "Légendaire", required: 5000 };
-  if (points >= 2000) return { name: "Diamant",    required: 3000 };
-  return                     { name: "Platine",    required: 2000 };
+  if (points >= 2000) return { name: "Diamant", required: 3000 };
+  return { name: "Platine", required: 2000 };
 };
 
 const getPrevThreshold = (points: number) => {
@@ -79,14 +79,14 @@ const LeaderboardPage = async () => {
     redirect("/courses");
   }
 
-  const isPro           = !!userSubscription?.isActive;
-  const division        = getDivision(userProgress.points);
-  const nextDiv         = getNextThreshold(userProgress.points);
-  const prevThreshold   = getPrevThreshold(userProgress.points);
+  const isPro = !!userSubscription?.isActive;
+  const division = getDivision(userProgress.points);
+  const nextDiv = getNextThreshold(userProgress.points);
+  const prevThreshold = getPrevThreshold(userProgress.points);
   const progressPercent = nextDiv
     ? Math.min(100, Math.round(
-        ((userProgress.points - prevThreshold) / (nextDiv.required - prevThreshold)) * 100
-      ))
+      ((userProgress.points - prevThreshold) / (nextDiv.required - prevThreshold)) * 100
+    ))
     : 100;
 
   return (
@@ -100,7 +100,11 @@ const LeaderboardPage = async () => {
           streak={userProgress.streak ?? 0}
         />
         {!isPro && <Promo />}
-        <Quests points={userProgress.points} />
+        <Quests
+          points={userProgress.points}
+          streak={userProgress.streak ?? 0}
+          lessonsCompleted={userProgress.lessonsCompleted ?? 0}
+        />
       </StickyWrapper>
 
       <FeedWrapper>
@@ -179,9 +183,9 @@ const LeaderboardPage = async () => {
             </p>
             <div className="grid grid-cols-4 gap-2">
               {[
-                { name: "Or",         image: legendImages.Gold,      req: "0 XP"    },
-                { name: "Platine",    image: legendImages.Platinum,  req: "2000 XP" },
-                { name: "Diamant",    image: legendImages.Diamond,   req: "3000 XP" },
+                { name: "Or", image: legendImages.Gold, req: "0 XP" },
+                { name: "Platine", image: legendImages.Platinum, req: "2000 XP" },
+                { name: "Diamant", image: legendImages.Diamond, req: "3000 XP" },
                 { name: "Légendaire", image: legendImages.Legendary, req: "5000 XP" },
               ].map(({ name, image, req }) => {
                 const isCurrentDivision = division.name === name;
