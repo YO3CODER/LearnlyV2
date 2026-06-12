@@ -29,8 +29,8 @@ type Props = {
     challengeOptions: typeof challengeOptions.$inferSelect[];
   })[];
   userSubscription:
-  | (typeof userSubscription.$inferSelect & { isActive: boolean })
-  | null;
+    | (typeof userSubscription.$inferSelect & { isActive: boolean })
+    | null;
 };
 
 const STREAK_TEXTS = [
@@ -63,53 +63,53 @@ export const Quiz = ({
   const { width, height } = useWindowSize();
   const router = useRouter();
 
-  const [finishAudio, , finishControls] = useAudio({ src: "/finish.mp3", autoPlay: false });
-  const [correctAudio, _c, correctControls] = useAudio({ src: "/correct.wav" });
+  const [finishAudio, , finishControls]         = useAudio({ src: "/finish.mp3",    autoPlay: false });
+  const [correctAudio, _c, correctControls]     = useAudio({ src: "/correct.wav" });
   const [incorrectAudio, _i, incorrectControls] = useAudio({ src: "/incorrect.wav" });
-  const [streakAudio, , streakControls] = useAudio({ src: "/affile.mp3", autoPlay: false });
+  const [streakAudio, , streakControls]         = useAudio({ src: "/affile.mp3",    autoPlay: false });
   const [pending, startTransition] = useTransition();
 
-  const [lessonId] = useState(initialLessonId);
-  const [hearts, setHearts] = useState(initialHearts);
+  const [lessonId]      = useState(initialLessonId);
+  const [hearts, setHearts]       = useState(initialHearts);
   const [percentage, setPercentage] = useState(() =>
     initialPercentage === 100 ? 0 : initialPercentage,
   );
 
   const totalChallenges = initialLessonChallenges.length;
 
-  const [challenges, setChallenges] = useState(initialLessonChallenges);
+  const [challenges, setChallenges]             = useState(initialLessonChallenges);
   const [failedChallenges, setFailedChallenges] = useState<typeof initialLessonChallenges>([]);
-  const [isRetryRound, setIsRetryRound] = useState(false);
+  const [isRetryRound, setIsRetryRound]         = useState(false);
 
   const [activeIndex, setActiveIndex] = useState(() => {
     const i = challenges.findIndex((c) => !c.completed);
     return i === -1 ? 0 : i;
   });
 
-  const [selectedOption, setSelectedOption] = useState<number>();
-  const [wordBankSelectedIds, setWordBankSelectedIds] = useState<number[]>([]);
+  const [selectedOption, setSelectedOption]                   = useState<number>();
+  const [wordBankSelectedIds, setWordBankSelectedIds]         = useState<number[]>([]);
   const [fillBlankSelectedBlanks, setFillBlankSelectedBlanks] = useState<(number | null)[]>([]);
-  const [translateValue, setTranslateValue] = useState("");
-  const [matchPairs, setMatchPairs] = useState<[number, number][]>([]);
-  const [listenValue, setListenValue] = useState("");
+  const [translateValue, setTranslateValue]                   = useState("");
+  const [matchPairs, setMatchPairs]                           = useState<[number, number][]>([]);
+  const [listenValue, setListenValue]                         = useState("");
   const [status, setStatus] = useState<"correct" | "wrong" | "none">("none");
 
-  const [countdown, setCountdown] = useState<number | null>(null);
-  const countdownRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [countdown, setCountdown]   = useState<number | null>(null);
+  const countdownRef                = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const [streak, setStreak] = useState(0);
+  const [streak, setStreak]         = useState(0);
   const [showStreak, setShowStreak] = useState(false);
-  const [streakGif, setStreakGif] = useState("/1.gif");
+  const [streakGif, setStreakGif]   = useState("/1.gif");
   const [streakText, setStreakText] = useState("d'affilée !!");
-  const streakTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  
+  const streakTimeoutRef            = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const STREAK_GIFS = ["/1.gif", "/2.gif", "/3.gif"];
 
   const [slideState, setSlideState] = useState<"idle" | "exit" | "enter">("idle");
-  const slideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const slideTimeoutRef             = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const challenge = challenges[activeIndex];
-  const options = challenge?.challengeOptions ?? [];
+  const options   = challenge?.challengeOptions ?? [];
 
   const isFinished = !challenges[activeIndex] && failedChallenges.length === 0;
 
@@ -143,40 +143,20 @@ export const Quiz = ({
 
   useEffect(() => {
     return () => {
-      if (slideTimeoutRef.current) clearTimeout(slideTimeoutRef.current);
+      if (slideTimeoutRef.current)  clearTimeout(slideTimeoutRef.current);
       if (streakTimeoutRef.current) clearTimeout(streakTimeoutRef.current);
-      if (countdownRef.current) clearTimeout(countdownRef.current);
+      if (countdownRef.current)     clearTimeout(countdownRef.current);
     };
   }, []);
 
-  const onSelect = (id: number) => {
-    if (status !== "none") return;
-    setSelectedOption(id);
-  };
-
-  const onWordBankSelect = (id: number) => {
-    if (status !== "none") return;
-    setWordBankSelectedIds((prev) => [...prev, id]);
-  };
-
-  const onWordBankRemove = (id: number) => {
-    if (status !== "none") return;
-    setWordBankSelectedIds((prev) => prev.filter((i) => i !== id));
-  };
-
+  const onSelect          = (id: number) => { if (status !== "none") return; setSelectedOption(id); };
+  const onWordBankSelect  = (id: number) => { if (status !== "none") return; setWordBankSelectedIds((prev) => [...prev, id]); };
+  const onWordBankRemove  = (id: number) => { if (status !== "none") return; setWordBankSelectedIds((prev) => prev.filter((i) => i !== id)); };
   const onFillBlankSelect = (blankIndex: number, optionId: number | null) => {
     if (status !== "none") return;
-    setFillBlankSelectedBlanks((prev) => {
-      const next = [...prev];
-      next[blankIndex] = optionId;
-      return next;
-    });
+    setFillBlankSelectedBlanks((prev) => { const next = [...prev]; next[blankIndex] = optionId; return next; });
   };
-
-  const onMatch = (pairs: [number, number][]) => {
-    if (status !== "none") return;
-    setMatchPairs(pairs);
-  };
+  const onMatch = (pairs: [number, number][]) => { if (status !== "none") return; setMatchPairs(pairs); };
 
   const startWrongCountdown = () => setCountdown(3);
 
@@ -193,17 +173,13 @@ export const Quiz = ({
       setCountdown(null);
       return;
     }
-    countdownRef.current = setTimeout(() => {
-      setCountdown((prev) => (prev !== null ? prev - 1 : null));
-    }, 1000);
-    return () => {
-      if (countdownRef.current) clearTimeout(countdownRef.current);
-    };
+    countdownRef.current = setTimeout(() => setCountdown((prev) => (prev !== null ? prev - 1 : null)), 1000);
+    return () => { if (countdownRef.current) clearTimeout(countdownRef.current); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countdown]);
 
   const triggerStreakToast = () => {
-    const randomGif = STREAK_GIFS[Math.floor(Math.random() * STREAK_GIFS.length)];
+    const randomGif  = STREAK_GIFS[Math.floor(Math.random() * STREAK_GIFS.length)];
     const randomText = STREAK_TEXTS[Math.floor(Math.random() * STREAK_TEXTS.length)];
     setStreakGif(randomGif);
     setStreakText(randomText);
@@ -248,63 +224,38 @@ export const Quiz = ({
     });
   };
 
-  const isWordBankCorrect = () => {
-    const correctIds = [...options]
-      .filter((o) => o.correct)
-      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-      .map((o) => o.id);
-    return (
-      wordBankSelectedIds.length === correctIds.length &&
-      wordBankSelectedIds.every((id, i) => id === correctIds[i])
-    );
-  };
+  const normalize = (str: string) =>
+    str.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
+  const isWordBankCorrect = () => {
+    const correctIds = [...options].filter((o) => o.correct).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)).map((o) => o.id);
+    return wordBankSelectedIds.length === correctIds.length && wordBankSelectedIds.every((id, i) => id === correctIds[i]);
+  };
   const isFillBlankCorrect = () => {
     const blankCount = (challenge.question.match(/___/g) ?? []).length;
-    if (fillBlankSelectedBlanks.length !== blankCount) return false;
-    if (fillBlankSelectedBlanks.some((b) => b === null)) return false;
+    if (fillBlankSelectedBlanks.length !== blankCount || fillBlankSelectedBlanks.some((b) => b === null)) return false;
     return fillBlankSelectedBlanks.every((selectedId, blankIndex) => {
       const option = options.find((o) => o.id === selectedId);
       return option?.correct && option?.blank === blankIndex;
     });
   };
-
-  const normalize = (str: string) =>
-    str.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
   const isTranslateCorrect = () => {
     const correctOption = options.find((o) => o.correct);
     if (!correctOption) return false;
-    const variants = correctOption.text.split("|").map(normalize);
-    return variants.includes(normalize(translateValue));
+    return correctOption.text.split("|").map(normalize).includes(normalize(translateValue));
   };
-
   const isListenCorrect = () => {
     const correctOption = options.find((o) => o.correct);
     if (!correctOption) return false;
-    const variants = correctOption.text.split("|").map(normalize);
-    return variants.includes(normalize(listenValue));
+    return correctOption.text.split("|").map(normalize).includes(normalize(listenValue));
   };
-
-  const isMatchCorrect = () => {
-    const leftItems = options.filter((o) => !o.correct);
-    if (matchPairs.length !== leftItems.length) return false;
-    return matchPairs.every(([leftId, rightId]) => {
-      const left = options.find((o) => o.id === leftId);
-      const right = options.find((o) => o.id === rightId);
-      if (!left || !right) return false;
-      return left.audioSrc === right.audioSrc || left.text === right.audioSrc;
-    });
-  };
-
   const isMatchCorrectByOrder = () => {
     const leftItems = options.filter((o) => !o.correct);
     if (matchPairs.length !== leftItems.length) return false;
     return matchPairs.every(([leftId, rightId]) => {
-      const left = options.find((o) => o.id === leftId);
+      const left  = options.find((o) => o.id === leftId);
       const right = options.find((o) => o.id === rightId);
-      if (!left || !right) return false;
-      return left.order === right.order;
+      return left && right && left.order === right.order;
     });
   };
 
@@ -317,38 +268,31 @@ export const Quiz = ({
       isWordBankCorrect() ? handleCorrect() : handleWrong();
       return;
     }
-
     if (challenge.type === "FILL_BLANK") {
       const blankCount = (challenge.question.match(/___/g) ?? []).length;
-      const allFilled = fillBlankSelectedBlanks.filter((b) => b !== null).length === blankCount;
-      if (!allFilled) return;
+      if (fillBlankSelectedBlanks.filter((b) => b !== null).length !== blankCount) return;
       if (status === "correct") { onNext(); setStatus("none"); resetAnswerState(); return; }
       isFillBlankCorrect() ? handleCorrect() : handleWrong();
       return;
     }
-
     if (challenge.type === "TRANSLATE") {
       if (!translateValue.trim()) return;
       if (status === "correct") { onNext(); setStatus("none"); resetAnswerState(); return; }
       isTranslateCorrect() ? handleCorrect() : handleWrong();
       return;
     }
-
     if (challenge.type === "LISTEN") {
       if (!listenValue.trim()) return;
       if (status === "correct") { onNext(); setStatus("none"); resetAnswerState(); return; }
       isListenCorrect() ? handleCorrect() : handleWrong();
       return;
     }
-
     if (challenge.type === "MATCH") {
-      const leftItems = options.filter((o) => !o.correct);
-      if (matchPairs.length !== leftItems.length) return;
+      if (matchPairs.length !== options.filter((o) => !o.correct).length) return;
       if (status === "correct") { onNext(); setStatus("none"); resetAnswerState(); return; }
       isMatchCorrectByOrder() ? handleCorrect() : handleWrong();
       return;
     }
-
     if (!selectedOption) return;
     if (status === "correct") { onNext(); setStatus("none"); setSelectedOption(undefined); return; }
     const correctOption = options.find((o) => o.correct);
@@ -364,58 +308,33 @@ export const Quiz = ({
     return null;
   }
 
+  // ── Écran de fin ──────────────────────────────────────────────────────────
   if (!challenge) {
     return (
       <>
-        {finishAudio}
-        {correctAudio}
-        {incorrectAudio}
+        {finishAudio}{correctAudio}{incorrectAudio}
         <Confetti width={width} height={height} recycle={false} numberOfPieces={500} tweenDuration={10000} />
         <div className="flex flex-col gap-y-6 lg:gap-y-10 max-w-lg mx-auto text-center items-center justify-center h-full px-6">
           <motion.div
             className="relative"
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ type: "spring", stiffness: 200, damping: 12, duration: 0.6 }}
+            transition={{ type: "spring", stiffness: 200, damping: 12 }}
           >
             <div className="absolute inset-0 bg-blue-200/40 dark:bg-blue-800/20 rounded-full blur-2xl scale-150" />
             <Image src="/finish.svg" alt="Finish" className="hidden lg:block relative drop-shadow-lg" height={110} width={110} />
             <Image src="/finish.svg" alt="Finish" className="block lg:hidden relative drop-shadow-lg" height={60} width={60} />
           </motion.div>
-          
-          <motion.div 
-            className="space-y-2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-          >
-            <motion.p 
-              className="text-xs font-semibold tracking-widest uppercase text-blue-400"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.4 }}
-            >
+          <motion.div className="space-y-2" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            <motion.p className="text-xs font-semibold tracking-widest uppercase text-blue-400" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
               Leçon terminée
             </motion.p>
-            <motion.h1 
+            <motion.h1
               className="text-2xl lg:text-4xl font-extrabold tracking-tight leading-tight"
               style={{ fontFamily: "'Fredoka', sans-serif" }}
               initial={{ opacity: 0, scale: 0 }}
-              animate={{ 
-                opacity: 1, 
-                scale: [0, 1.15, 0.95, 1.08, 1]
-              }}
-              transition={{
-                delay: 0.4,
-                duration: 0.8,
-                ease: "easeOut",
-                scale: {
-                  type: "spring",
-                  stiffness: 150,
-                  damping: 12,
-                  duration: 0.9
-                }
-              }}
+              animate={{ opacity: 1, scale: [0, 1.15, 0.95, 1.08, 1] }}
+              transition={{ delay: 0.4, duration: 0.8, scale: { type: "spring", stiffness: 150, damping: 12 } }}
             >
               Bravo !<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-500">
@@ -423,43 +342,11 @@ export const Quiz = ({
               </span>
             </motion.h1>
           </motion.div>
-
-          <motion.div 
-            className="flex items-center gap-x-4 w-full"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, x: -20 }}
-              animate={{ opacity: 1, scale: [0.8, 1.05, 0.95, 1.02, 1], x: 0 }}
-              transition={{
-                delay: 0.7,
-                duration: 0.7,
-                ease: "easeOut",
-                scale: {
-                  type: "spring",
-                  stiffness: 150,
-                  damping: 12,
-                }
-              }}
-            >
+          <motion.div className="flex items-center gap-x-4 w-full" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+            <motion.div initial={{ opacity: 0, scale: 0.8, x: -20 }} animate={{ opacity: 1, scale: [0.8, 1.05, 0.95, 1.02, 1], x: 0 }} transition={{ delay: 0.7, duration: 0.7, scale: { type: "spring", stiffness: 150, damping: 12 } }}>
               <ResultCard variant="points" value={totalChallenges * 10} />
             </motion.div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, x: 20 }}
-              animate={{ opacity: 1, scale: [0.8, 1.05, 0.95, 1.02, 1], x: 0 }}
-              transition={{
-                delay: 0.8,
-                duration: 0.7,
-                ease: "easeOut",
-                scale: {
-                  type: "spring",
-                  stiffness: 150,
-                  damping: 12,
-                }
-              }}
-            >
+            <motion.div initial={{ opacity: 0, scale: 0.8, x: 20 }} animate={{ opacity: 1, scale: [0.8, 1.05, 0.95, 1.02, 1], x: 0 }} transition={{ delay: 0.8, duration: 0.7, scale: { type: "spring", stiffness: 150, damping: 12 } }}>
               <ResultCard variant="hearts" value={hearts} />
             </motion.div>
           </motion.div>
@@ -469,100 +356,71 @@ export const Quiz = ({
     );
   }
 
+  // ── Titre selon le type ───────────────────────────────────────────────────
   const title =
-    challenge.type === "ASSIST"
-      ? "Sélectionne la bonne réponse"
-      : challenge.type === "FILL_BLANK"
-        ? "Complète les espaces vides"
-        : challenge.type === "TRANSLATE"
-          ? "Traduis cette phrase"
-          : challenge.type === "LISTEN"
-            ? "Écris ce que tu entends"
-            : challenge.type === "MATCH"
-              ? "Associe les paires"
-              : challenge.question;
+    challenge.type === "ASSIST"     ? "Sélectionne la bonne réponse" :
+    challenge.type === "FILL_BLANK" ? "Complète les espaces vides"   :
+    challenge.type === "TRANSLATE"  ? "Traduis cette phrase"          :
+    challenge.type === "LISTEN"     ? "Écris ce que tu entends"       :
+    challenge.type === "MATCH"      ? "Associe les paires"            :
+    challenge.question;
 
   const isFillBlankDone = () => {
     const blankCount = (challenge.question.match(/___/g) ?? []).length;
     return fillBlankSelectedBlanks.filter((b) => b !== null).length === blankCount;
   };
 
-  const isMatchDone = () => {
-    const leftItems = options.filter((o) => !o.correct);
-    return matchPairs.length === leftItems.length;
-  };
-
   const isFooterDisabled =
-    pending ||
-    countdown !== null ||
-    (challenge.type === "WORD_BANK"
-      ? wordBankSelectedIds.length === 0
-      : challenge.type === "FILL_BLANK"
-        ? !isFillBlankDone()
-        : challenge.type === "TRANSLATE"
-          ? !translateValue.trim()
-          : challenge.type === "LISTEN"
-            ? !listenValue.trim()
-            : challenge.type === "MATCH"
-              ? !isMatchDone()
-              : !selectedOption);
+    pending || countdown !== null || (
+      challenge.type === "WORD_BANK"  ? wordBankSelectedIds.length === 0 :
+      challenge.type === "FILL_BLANK" ? !isFillBlankDone() :
+      challenge.type === "TRANSLATE"  ? !translateValue.trim() :
+      challenge.type === "LISTEN"     ? !listenValue.trim() :
+      challenge.type === "MATCH"      ? matchPairs.length !== options.filter((o) => !o.correct).length :
+      !selectedOption
+    );
 
   const listenAudioSrc = options.find((o) => o.audioSrc)?.audioSrc ?? "";
-
-  const footerLabel = countdown !== null ? `Prochain dans ${countdown}s…` : undefined;
+  const footerLabel    = countdown !== null ? `Prochain dans ${countdown}s…` : undefined;
 
   const slideClasses = [
     "transition-all duration-300 ease-in-out",
-    slideState === "exit" && "opacity-0 -translate-x-8",
+    slideState === "exit"  && "opacity-0 -translate-x-8",
     slideState === "enter" && "opacity-0 translate-x-8",
-    slideState === "idle" && "opacity-100 translate-x-0",
+    slideState === "idle"  && "opacity-100 translate-x-0",
   ].filter(Boolean).join(" ");
+
+  // ✅ Fix compteur : activeIndex est la source de vérité
+  const questionNumber = Math.min(activeIndex + 1, totalChallenges);
 
   return (
     <>
-      {incorrectAudio}
-      {correctAudio}
-      {finishAudio}
-      {streakAudio}
-      <Header hearts={hearts} percentage={percentage} hasActiveSubscription={!!userSubscription?.isActive} />
+      {incorrectAudio}{correctAudio}{finishAudio}{streakAudio}
 
-      {/* Streak animation - GIF avec fond blanc */}
+      <Header
+        hearts={hearts}
+        percentage={percentage}
+        hasActiveSubscription={!!userSubscription?.isActive}
+        current={questionNumber}
+        total={totalChallenges}
+      />
+
+      {/* Streak overlay */}
       {showStreak && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/95 backdrop-blur-sm transition-opacity duration-500" style={{ opacity: showStreak ? 1 : 0 }}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-white/95 backdrop-blur-sm"
+          style={{ opacity: showStreak ? 1 : 0, transition: "opacity 0.3s ease" }}
+        >
           <div className="flex flex-col items-center gap-6">
-            <motion.div
-              initial={{ scale: 0, rotate: -20 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ type: "spring", stiffness: 200, damping: 12, duration: 0.6 }}
-            >
-              <Image 
-                src={streakGif}
-                alt="Streak" 
-                width={200}
-                height={200}
-                className="drop-shadow-lg"
-                unoptimized
-              />
+            <motion.div initial={{ scale: 0, rotate: -20 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 200, damping: 12 }}>
+              <Image src={streakGif} alt="Streak" width={200} height={200} className="drop-shadow-lg" unoptimized />
             </motion.div>
-            <motion.p 
+            <motion.p
               className="text-3xl lg:text-4xl font-extrabold text-gray-800 text-center"
               style={{ fontFamily: "'Fredoka', sans-serif" }}
               initial={{ opacity: 0, scale: 0 }}
-              animate={{ 
-                opacity: 1, 
-                scale: [0, 1.15, 0.95, 1.08, 1]
-              }}
-              transition={{
-                duration: 0.8,
-                delay: 0.3,
-                ease: "easeOut",
-                scale: {
-                  type: "spring",
-                  stiffness: 150,
-                  damping: 12,
-                  duration: 0.9
-                }
-              }}
+              animate={{ opacity: 1, scale: [0, 1.15, 0.95, 1.08, 1] }}
+              transition={{ duration: 0.8, delay: 0.3, scale: { type: "spring", stiffness: 150, damping: 12 } }}
             >
               {streak} {streakText}
             </motion.p>
@@ -571,13 +429,14 @@ export const Quiz = ({
       )}
 
       <div className="flex-1 overflow-y-auto">
-        <div className="min-h-full flex items-center justify-center py-8">
-          <div className="lg:w-[600px] w-full px-6 lg:px-0 overflow-hidden">
+        <div className="min-h-full flex items-center justify-center py-6">
+          <div className="w-full max-w-[560px] px-6 lg:px-0 overflow-hidden">
             <div className={slideClasses}>
-              <div className="flex flex-col gap-y-8">
+              <div className="flex flex-col gap-y-6">
 
+                {/* Bannière tour de révision */}
                 {isRetryRound && (
-                  <div className="relative overflow-hidden rounded-2xl border border-amber-200 dark:border-amber-800 bg-gradient-to-r from-amber-50 dark:from-amber-950/30 via-orange-50 dark:via-orange-950/20 to-amber-50 dark:to-amber-950/30 px-5 py-3.5">
+                  <div className="relative overflow-hidden rounded-2xl border border-amber-200 dark:border-amber-800 bg-gradient-to-r from-amber-50 dark:from-amber-950/30 via-orange-50 dark:via-orange-950/20 to-amber-50 dark:to-amber-950/30 px-5 py-3">
                     <div className="absolute left-0 top-0 h-full w-1 rounded-l-2xl bg-gradient-to-b from-amber-400 to-orange-400" />
                     <div className="flex flex-col gap-y-0.5 pl-2">
                       <p className="text-[11px] font-bold uppercase tracking-widest text-amber-400">Tour de révision</p>
@@ -588,16 +447,18 @@ export const Quiz = ({
                   </div>
                 )}
 
-                <h1 className="text-lg lg:text-3xl text-center lg:text-start font-extrabold tracking-tight">
+                {/* Titre */}
+                <h1 className="text-lg lg:text-2xl font-extrabold tracking-tight text-center lg:text-start">
                   {title}
                 </h1>
 
-                <div>
+                {/* Question + Challenge */}
+                <div className="flex flex-col gap-y-4">
                   {(challenge.type === "ASSIST" ||
                     challenge.type === "TRANSLATE" ||
                     challenge.type === "LISTEN") && (
-                      <QuestionBubble question={challenge.question} />
-                    )}
+                    <QuestionBubble question={challenge.question} />
+                  )}
                   <Challenge
                     options={options}
                     onSelect={onSelect}
