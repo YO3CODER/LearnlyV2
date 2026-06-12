@@ -531,13 +531,13 @@ export default function CoursPage() {
                   <p className="text-gray-600 mb-6 leading-relaxed">
                     Complète tes cours, déverrouille des badges et grimpe les classements avec tes camarades
                   </p>
-                  <button
-                    onClick={() => { setSearch(""); setCategory("Tout"); }}
+                  <Link
+                    href="/leaderboard"
                     style={fredoka}
-                    className="px-6 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold border-b-4 border-purple-700 hover:shadow-lg active:border-b-0 transition-all"
+                    className="inline-block px-6 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold border-b-4 border-purple-700 hover:shadow-lg active:border-b-0 transition-all"
                   >
                     Découvrir
-                  </button>
+                  </Link>
                 </div>
                 <div className="flex justify-center">
                   <Image
@@ -688,12 +688,12 @@ export default function CoursPage() {
                 >
                   {isCurrentCompleted ? (
                     <>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                       Marquer non terminé
                     </>
                   ) : (
                     <>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                       Cours terminé
                     </>
                   )}
