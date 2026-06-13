@@ -355,7 +355,7 @@ export const LessonButton = ({
         backgroundColor: isGoldenBtn ? "#f59e0b" : isLocked ? "#d1d5db" : bgHex,
         borderBottom: pressing
           ? `3px solid ${isGoldenBtn ? "#b45309" : isLocked ? "#9ca3af" : borderHex}`
-          : `8px solid ${isGoldenBtn ? "#b45309" : isLocked ? "#9ca3af" : borderHex}`,
+          : `5px solid ${isGoldenBtn ? "#b45309" : isLocked ? "#9ca3af" : borderHex}`,
         cursor: isLocked ? "default" : "pointer",
         position: "relative",
         overflow: "hidden",
