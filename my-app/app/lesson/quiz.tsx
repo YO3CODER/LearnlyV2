@@ -63,53 +63,53 @@ export const Quiz = ({
   const { width, height } = useWindowSize();
   const router = useRouter();
 
-  const [finishAudio, , finishControls] = useAudio({ src: "/finish.mp3", autoPlay: false });
-  const [correctAudio, _c, correctControls] = useAudio({ src: "/correct.wav" });
+  const [finishAudio, , finishControls]         = useAudio({ src: "/finish.mp3",    autoPlay: false });
+  const [correctAudio, _c, correctControls]     = useAudio({ src: "/correct.wav" });
   const [incorrectAudio, _i, incorrectControls] = useAudio({ src: "/incorrect.wav" });
-  const [streakAudio, , streakControls] = useAudio({ src: "/affile.mp3", autoPlay: false });
+  const [streakAudio, , streakControls]         = useAudio({ src: "/affile.mp3",    autoPlay: false });
   const [pending, startTransition] = useTransition();
 
-  const [lessonId] = useState(initialLessonId);
-  const [hearts, setHearts] = useState(initialHearts);
+  const [lessonId]      = useState(initialLessonId);
+  const [hearts, setHearts]       = useState(initialHearts);
   const [percentage, setPercentage] = useState(() =>
     initialPercentage === 100 ? 0 : initialPercentage,
   );
 
   const totalChallenges = initialLessonChallenges.length;
 
-  const [challenges, setChallenges] = useState(initialLessonChallenges);
+  const [challenges, setChallenges]             = useState(initialLessonChallenges);
   const [failedChallenges, setFailedChallenges] = useState<typeof initialLessonChallenges>([]);
-  const [isRetryRound, setIsRetryRound] = useState(false);
+  const [isRetryRound, setIsRetryRound]         = useState(false);
 
   const [activeIndex, setActiveIndex] = useState(() => {
     const i = challenges.findIndex((c) => !c.completed);
     return i === -1 ? 0 : i;
   });
 
-  const [selectedOption, setSelectedOption] = useState<number>();
-  const [wordBankSelectedIds, setWordBankSelectedIds] = useState<number[]>([]);
+  const [selectedOption, setSelectedOption]                   = useState<number>();
+  const [wordBankSelectedIds, setWordBankSelectedIds]         = useState<number[]>([]);
   const [fillBlankSelectedBlanks, setFillBlankSelectedBlanks] = useState<(number | null)[]>([]);
-  const [translateValue, setTranslateValue] = useState("");
-  const [matchPairs, setMatchPairs] = useState<[number, number][]>([]);
-  const [listenValue, setListenValue] = useState("");
+  const [translateValue, setTranslateValue]                   = useState("");
+  const [matchPairs, setMatchPairs]                           = useState<[number, number][]>([]);
+  const [listenValue, setListenValue]                         = useState("");
   const [status, setStatus] = useState<"correct" | "wrong" | "none">("none");
 
-  const [countdown, setCountdown] = useState<number | null>(null);
-  const countdownRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [countdown, setCountdown]   = useState<number | null>(null);
+  const countdownRef                = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const [streak, setStreak] = useState(0);
+  const [streak, setStreak]         = useState(0);
   const [showStreak, setShowStreak] = useState(false);
-  const [streakGif, setStreakGif] = useState("/1.gif");
+  const [streakGif, setStreakGif]   = useState("/1.gif");
   const [streakText, setStreakText] = useState("d'affilée !!");
-  const streakTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const streakTimeoutRef            = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const STREAK_GIFS = ["/1.gif", "/2.gif", "/3.gif"];
 
   const [slideState, setSlideState] = useState<"idle" | "exit" | "enter">("idle");
-  const slideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const slideTimeoutRef             = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const challenge = challenges[activeIndex];
-  const options = challenge?.challengeOptions ?? [];
+  const options   = challenge?.challengeOptions ?? [];
 
   const isFinished = !challenges[activeIndex] && failedChallenges.length === 0;
 
@@ -120,7 +120,7 @@ export const Quiz = ({
         completeLesson().catch(() => console.error("Failed to complete lesson"));
       });
     }
-  }, [isFinished, finishControls]);
+  }, [isFinished]);
 
   const resetAnswerState = () => {
     setSelectedOption(undefined);
@@ -143,15 +143,15 @@ export const Quiz = ({
 
   useEffect(() => {
     return () => {
-      if (slideTimeoutRef.current) clearTimeout(slideTimeoutRef.current);
+      if (slideTimeoutRef.current)  clearTimeout(slideTimeoutRef.current);
       if (streakTimeoutRef.current) clearTimeout(streakTimeoutRef.current);
-      if (countdownRef.current) clearTimeout(countdownRef.current);
+      if (countdownRef.current)     clearTimeout(countdownRef.current);
     };
   }, []);
 
-  const onSelect = (id: number) => { if (status !== "none") return; setSelectedOption(id); };
-  const onWordBankSelect = (id: number) => { if (status !== "none") return; setWordBankSelectedIds((prev) => [...prev, id]); };
-  const onWordBankRemove = (id: number) => { if (status !== "none") return; setWordBankSelectedIds((prev) => prev.filter((i) => i !== id)); };
+  const onSelect          = (id: number) => { if (status !== "none") return; setSelectedOption(id); };
+  const onWordBankSelect  = (id: number) => { if (status !== "none") return; setWordBankSelectedIds((prev) => [...prev, id]); };
+  const onWordBankRemove  = (id: number) => { if (status !== "none") return; setWordBankSelectedIds((prev) => prev.filter((i) => i !== id)); };
   const onFillBlankSelect = (blankIndex: number, optionId: number | null) => {
     if (status !== "none") return;
     setFillBlankSelectedBlanks((prev) => { const next = [...prev]; next[blankIndex] = optionId; return next; });
@@ -176,10 +176,10 @@ export const Quiz = ({
     countdownRef.current = setTimeout(() => setCountdown((prev) => (prev !== null ? prev - 1 : null)), 1000);
     return () => { if (countdownRef.current) clearTimeout(countdownRef.current); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [countdown, challenge]);
+  }, [countdown]);
 
   const triggerStreakToast = () => {
-    const randomGif = STREAK_GIFS[Math.floor(Math.random() * STREAK_GIFS.length)];
+    const randomGif  = STREAK_GIFS[Math.floor(Math.random() * STREAK_GIFS.length)];
     const randomText = STREAK_TEXTS[Math.floor(Math.random() * STREAK_TEXTS.length)];
     setStreakGif(randomGif);
     setStreakText(randomText);
@@ -253,7 +253,7 @@ export const Quiz = ({
     const leftItems = options.filter((o) => !o.correct);
     if (matchPairs.length !== leftItems.length) return false;
     return matchPairs.every(([leftId, rightId]) => {
-      const left = options.find((o) => o.id === leftId);
+      const left  = options.find((o) => o.id === leftId);
       const right = options.find((o) => o.id === rightId);
       return left && right && left.order === right.order;
     });
@@ -300,73 +300,59 @@ export const Quiz = ({
     correctOption.id === selectedOption ? handleCorrect() : handleWrong();
   };
 
-  // Correction : utiliser useEffect pour gérer le reset du round de révision
-  useEffect(() => {
-    if (!challenge && failedChallenges.length > 0) {
-      setChallenges(failedChallenges);
-      setFailedChallenges([]);
-      setActiveIndex(0);
-      setIsRetryRound(true);
-    }
-  }, [challenge, failedChallenges]);
+  if (!challenge && failedChallenges.length > 0) {
+    setChallenges(failedChallenges);
+    setFailedChallenges([]);
+    setActiveIndex(0);
+    setIsRetryRound(true);
+    return null;
+  }
 
+  // ── Écran de fin ──────────────────────────────────────────────────────────
   if (!challenge) {
-    // ── Écran de fin ──────────────────────────────────────────────────────────
     return (
-      <div className="flex flex-col h-full">
+      <>
         {finishAudio}{correctAudio}{incorrectAudio}
         <Confetti width={width} height={height} recycle={false} numberOfPieces={500} tweenDuration={10000} />
-        
-        <Header
-          hearts={hearts}
-          percentage={percentage}
-          hasActiveSubscription={!!userSubscription?.isActive}
-          current={1}
-          total={totalChallenges}
-        />
-
-        <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto px-6">
-          <div className="flex flex-col gap-y-6 lg:gap-y-10 max-w-lg text-center items-center py-6">
-            <motion.div
-              className="relative"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: "spring", stiffness: 200, damping: 12 }}
+        <div className="flex flex-col gap-y-6 lg:gap-y-10 max-w-lg mx-auto text-center items-center justify-center h-full px-6">
+          <motion.div
+            className="relative"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 12 }}
+          >
+            <div className="absolute inset-0 bg-blue-200/40 dark:bg-blue-800/20 rounded-full blur-2xl scale-150" />
+            <Image src="/finish.svg" alt="Finish" className="hidden lg:block relative drop-shadow-lg" height={110} width={110} />
+            <Image src="/finish.svg" alt="Finish" className="block lg:hidden relative drop-shadow-lg" height={60} width={60} />
+          </motion.div>
+          <motion.div className="space-y-2" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            <motion.p className="text-xs font-semibold tracking-widest uppercase text-blue-400" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+              Leçon terminée
+            </motion.p>
+            <motion.h1
+              className="text-2xl lg:text-4xl font-extrabold tracking-tight leading-tight"
+              style={{ fontFamily: "'Fredoka', sans-serif" }}
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: [0, 1.15, 0.95, 1.08, 1] }}
+              transition={{ delay: 0.4, duration: 0.8, scale: { type: "spring", stiffness: 150, damping: 12 } }}
             >
-              <div className="absolute inset-0 bg-blue-200/40 dark:bg-blue-800/20 rounded-full blur-2xl scale-150" />
-              <Image src="/finish.svg" alt="Finish" className="hidden lg:block relative drop-shadow-lg" height={110} width={110} />
-              <Image src="/finish.svg" alt="Finish" className="block lg:hidden relative drop-shadow-lg" height={60} width={60} />
+              Bravo !<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-500">
+                Tu as terminé la leçon.
+              </span>
+            </motion.h1>
+          </motion.div>
+          <motion.div className="flex items-center gap-x-4 w-full" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+            <motion.div initial={{ opacity: 0, scale: 0.8, x: -20 }} animate={{ opacity: 1, scale: [0.8, 1.05, 0.95, 1.02, 1], x: 0 }} transition={{ delay: 0.7, duration: 0.7, scale: { type: "spring", stiffness: 150, damping: 12 } }}>
+              <ResultCard variant="points" value={totalChallenges * 10} />
             </motion.div>
-            <motion.div className="space-y-2" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-              <motion.p className="text-xs font-semibold tracking-widest uppercase text-blue-400" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
-                Leçon terminée
-              </motion.p>
-              <motion.h1
-                className="text-2xl lg:text-4xl font-extrabold tracking-tight leading-tight"
-                style={{ fontFamily: "'Fredoka', sans-serif" }}
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: [0, 1.15, 0.95, 1.08, 1] }}
-                transition={{ delay: 0.4, duration: 0.8, scale: { type: "spring", stiffness: 150, damping: 12 } }}
-              >
-                Bravo !<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-500">
-                  Tu as terminé la leçon.
-                </span>
-              </motion.h1>
+            <motion.div initial={{ opacity: 0, scale: 0.8, x: 20 }} animate={{ opacity: 1, scale: [0.8, 1.05, 0.95, 1.02, 1], x: 0 }} transition={{ delay: 0.8, duration: 0.7, scale: { type: "spring", stiffness: 150, damping: 12 } }}>
+              <ResultCard variant="hearts" value={hearts} />
             </motion.div>
-            <motion.div className="flex items-center gap-x-4 w-full" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-              <motion.div initial={{ opacity: 0, scale: 0.8, x: -20 }} animate={{ opacity: 1, scale: [0.8, 1.05, 0.95, 1.02, 1], x: 0 }} transition={{ delay: 0.7, duration: 0.7, scale: { type: "spring", stiffness: 150, damping: 12 } }}>
-                <ResultCard variant="points" value={totalChallenges * 10} />
-              </motion.div>
-              <motion.div initial={{ opacity: 0, scale: 0.8, x: 20 }} animate={{ opacity: 1, scale: [0.8, 1.05, 0.95, 1.02, 1], x: 0 }} transition={{ delay: 0.8, duration: 0.7, scale: { type: "spring", stiffness: 150, damping: 12 } }}>
-                <ResultCard variant="hearts" value={hearts} />
-              </motion.div>
-            </motion.div>
-          </div>
+          </motion.div>
         </div>
-
         <Footer lessonId={lessonId} status="completed" onCheck={() => router.push("/learn")} />
-      </div>
+      </>
     );
   }
 
@@ -404,10 +390,11 @@ export const Quiz = ({
     slideState === "idle"  && "opacity-100 translate-x-0",
   ].filter(Boolean).join(" ");
 
+  // ✅ Fix compteur : activeIndex est la source de vérité
   const questionNumber = Math.min(activeIndex + 1, totalChallenges);
 
   return (
-    <div className="flex flex-col h-full">
+    <>
       {incorrectAudio}{correctAudio}{finishAudio}{streakAudio}
 
       <Header
@@ -441,10 +428,9 @@ export const Quiz = ({
         </div>
       )}
 
-      {/* Contenu scrollable - prend tout l'espace restant */}
-      <div className="flex-1 overflow-y-auto px-6 lg:px-0">
-        <div className="flex items-center justify-center min-h-full py-6">
-          <div className="w-full max-w-[560px]">
+      <div className="flex-1 overflow-y-auto">
+        <div className="min-h-full flex items-center justify-center py-6">
+          <div className="w-full max-w-[560px] px-6 lg:px-0 overflow-hidden">
             <div className={slideClasses}>
               <div className="flex flex-col gap-y-6">
 
@@ -502,8 +488,7 @@ export const Quiz = ({
         </div>
       </div>
 
-      {/* Footer FIXE EN BAS */}
       <Footer disabled={isFooterDisabled} status={status} onCheck={onContinue} label={footerLabel} />
-    </div>
+    </>
   );
 };
