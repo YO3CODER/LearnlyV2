@@ -604,24 +604,26 @@ export const LessonButton = ({
                 Leçon {index + 1} sur {totalCount}
               </p>
               <Button
-                variant="default"
-                onMouseDown={handleButtonPress}
-                onClick={handleStart}
-                className={cn(
-                  "w-full py-2.5 text-sm font-extrabold",
-                  "border-0",
-                  "shadow-[0_6px_0_0_#e8e8e8]",
-                  "active:shadow-[0_1px_0_0_#e8e8e8]",
-                  "active:translate-y-[5px]",
-                  "transition-all duration-100",
-                  colors.popupButtonText,
-                )}
-                style={{
-                  transform: pressing ? "translateY(5px)" : "translateY(0px)",
-                }}
-              >
-                {isCompleted ? "Pratiquer" : `Commencer +${lessonXP} XP`}
-              </Button>
+  variant="default"
+  onMouseDown={handleButtonPress}
+  onClick={handleStart}
+  className={cn(
+    "w-full py-2.5 text-sm font-extrabold",
+    "border-0",
+    "bg-white text-black", // Fond blanc, texte noir
+    "shadow-[0_6px_0_0_#d4d4d4]", // Ombre gris clair pour contraste
+    "active:shadow-[0_1px_0_0_#d4d4d4]",
+    "active:translate-y-[5px]",
+    "transition-all duration-100",
+    "hover:bg-gray-50", // Effet hover subtil
+    colors.popupButtonText,
+  )}
+  style={{
+    transform: pressing ? "translateY(5px)" : "translateY(0px)",
+  }}
+>
+  {isCompleted ? "Pratiquer" : `Commencer +${lessonXP} XP`}
+</Button>
             </div>
           )}
 
