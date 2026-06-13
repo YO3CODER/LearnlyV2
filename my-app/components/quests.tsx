@@ -28,7 +28,14 @@ const questIcon: Record<string, string> = {
   challenges: "/challenge.svg",
 };
 
-const categories = ["xp", "streak", "lessons"] as const;
+const categories = ["xp", "streak", "lessons", "challenges"] as const;
+
+const getDayIndex = () => {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now.getTime() - start.getTime();
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
+};
 
 export const Quests = ({
   points,
@@ -36,23 +43,18 @@ export const Quests = ({
   lessonsCompleted = 0,
   challengesCompleted = 0,
 }: Props) => {
+  const dayIndex = getDayIndex();
 
-  // 1 quête par catégorie : première non complétée, sinon la dernière
   const dailyQuests = categories.map((cat) => {
     const catQuests = quests.filter((q) => q.type === cat);
-    return (
-      catQuests.find((q) => {
-        const val = getUserValue(q.type, points, streak, lessonsCompleted, challengesCompleted);
-        return val < q.value;
-      }) ?? catQuests[catQuests.length - 1]
-    );
+    return catQuests[dayIndex % catQuests.length];
   }).filter(Boolean);
 
   return (
     <div className="rounded-2xl bg-card border-2 border-b-4 border-border shadow-sm p-5">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-extrabold text-lg text-foreground text-gray-600">
+        <h3 className="font-extrabold text-lg text-foreground">
           Quêtes du jour
         </h3>
         <Link
@@ -97,7 +99,7 @@ export const Quests = ({
                     />
                   )}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[10px] font-bold text-gray-500 tabular-nums">
+                    <span className="text-[10px] font-bold text-muted-foreground tabular-nums">
                       {Math.min(userVal, quest.value)} / {quest.value}
                     </span>
                   </div>

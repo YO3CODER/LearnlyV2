@@ -40,7 +40,12 @@ const ShopPage = async () => {
 
         {!isPro && <Promo />}
 
-        <Quests points={userProgress.points} />
+        <Quests
+          points={userProgress.points}
+          streak={userProgress.streak ?? 0}
+          lessonsCompleted={userProgress.lessonsCompleted ?? 0}
+          challengesCompleted={userProgress.challengesCompleted ?? 0}
+        />
       </StickyWrapper>
 
       {/* PRINCIPAL */}

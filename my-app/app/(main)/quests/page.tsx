@@ -9,8 +9,6 @@ import { getUserProgress, getUserSubscription } from "@/db/queries";
 import { Promo } from "@/components/promo";
 import { quests } from "@/constants";
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 const getUserValue = (
   type: string, points: number, streak: number,
   lessonsCompleted: number, challengesCompleted: number
@@ -29,63 +27,21 @@ const questIcon: Record<string, string> = {
   challenges: "/challenge.svg",
 };
 
-// ─── Sélection quotidienne des quêtes ─────────────────────────────────────────
-
-const getDailyQuests = (
-  points: number,
-  streak: number,
-  lessonsCompleted: number,
-  challengesCompleted: number,
-  count = 4
-) => {
-  const today = new Date();
-  const seed  = parseInt(
-    `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, "0")}${String(today.getDate()).padStart(2, "0")}`
-  );
-
-  let rng = seed;
-  const rand = () => {
-    rng = (rng * 1664525 + 1013904223) & 0xffffffff;
-    return (rng >>> 0) / 0xffffffff;
-  };
-
-  const active: typeof quests = [];
-  const done:   typeof quests = [];
-
-  for (const q of quests) {
-    const val = getUserValue(q.type, points, streak, lessonsCompleted, challengesCompleted);
-    if (val >= q.value) done.push(q);
-    else active.push(q);
-  }
-
-  const pool = active.length >= count ? active : [...active, ...done];
-
-  const shuffled = [...pool];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-
-  const selected: typeof quests = [];
-  const usedTypes = new Set<string>();
-
-  for (const q of shuffled) {
-    if (selected.length >= count) break;
-    if (!usedTypes.has(q.type)) {
-      selected.push(q);
-      usedTypes.add(q.type);
-    }
-  }
-
-  for (const q of shuffled) {
-    if (selected.length >= count) break;
-    if (!selected.includes(q)) selected.push(q);
-  }
-
-  return selected;
+const getDayIndex = () => {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now.getTime() - start.getTime();
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
 };
 
-// ─── Temps restant jusqu'à minuit ─────────────────────────────────────────────
+const getDailyQuests = () => {
+  const dayIndex = getDayIndex();
+  const categories = ["xp", "streak", "lessons", "challenges"] as const;
+  return categories.map((cat) => {
+    const catQuests = quests.filter((q) => q.type === cat);
+    return catQuests[dayIndex % catQuests.length];
+  }).filter(Boolean);
+};
 
 const getTimeUntilMidnight = () => {
   const now      = new Date();
@@ -97,8 +53,6 @@ const getTimeUntilMidnight = () => {
   if (hours > 0) return `${hours}h ${minutes}min`;
   return `${minutes} min`;
 };
-
-// ─── Animations ───────────────────────────────────────────────────────────────
 
 const animStyles = `
   @keyframes fillBar {
@@ -118,8 +72,6 @@ const animStyles = `
   .fade-up      { animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1)       both; }
 `;
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
 const QuestsPage = async () => {
   const [userProgress, userSubscription] = await Promise.all([
     getUserProgress(),
@@ -133,14 +85,8 @@ const QuestsPage = async () => {
   const lessonsCompleted    = userProgress.lessonsCompleted    ?? 0;
   const challengesCompleted = userProgress.challengesCompleted ?? 0;
 
-  const dailyQuests = getDailyQuests(
-    userProgress.points,
-    streak,
-    lessonsCompleted,
-    challengesCompleted
-  );
-
-  const timeLeft = getTimeUntilMidnight();
+  const dailyQuests = getDailyQuests();
+  const timeLeft    = getTimeUntilMidnight();
 
   return (
     <div className="flex flex-row-reverse gap-[48px] px-6">
@@ -160,7 +106,6 @@ const QuestsPage = async () => {
       <FeedWrapper>
         <div className="w-full flex flex-col">
 
-          {/* ── En-tête ───────────────────────────────────────────────── */}
           <h1
             className="font-extrabold text-foreground text-2xl mb-1 fade-up"
             style={{ animationDelay: "0s" }}
@@ -172,10 +117,9 @@ const QuestsPage = async () => {
             style={{ animationDelay: "0.06s" }}
           >
             <Clock className="w-4 h-4" />
-            <span>Se renouvelle dans {timeLeft}</span>
+            <span>Prochaine quête dans {timeLeft}</span>
           </div>
 
-          {/* ── Liste des quêtes ──────────────────────────────────────── */}
           <ul className="flex flex-col gap-3">
             {dailyQuests.map((quest, idx) => {
               const userVal  = getUserValue(
@@ -191,7 +135,6 @@ const QuestsPage = async () => {
                   className="quest-item w-full rounded-2xl border-2 border-b-4 border-border bg-background px-3 py-3 flex items-center gap-3"
                   style={{ animationDelay: `${0.08 + idx * 0.07}s` }}
                 >
-                  {/* Icône catégorie */}
                   <div className="shrink-0">
                     <Image
                       src={questIcon[quest.type] ?? "/xp-bolt.svg"}
@@ -201,18 +144,14 @@ const QuestsPage = async () => {
                     />
                   </div>
 
-                  {/* Contenu */}
                   <div className="flex flex-col gap-1.5 flex-1 min-w-0">
                     <p className="font-bold text-foreground text-sm leading-tight">
                       {quest.title}
                     </p>
-
-                    {/* Description */}
                     <p className="text-[11px] text-muted-foreground leading-tight">
                       {quest.description}
                     </p>
 
-                    {/* Barre + coffre */}
                     <div className="flex items-center gap-2">
                       <div className="relative flex-1 h-4 bg-muted rounded-full overflow-hidden border border-border">
                         <div
@@ -228,7 +167,6 @@ const QuestsPage = async () => {
                         </span>
                       </div>
 
-                      {/* Coffre ouvert si terminé */}
                       <div className="shrink-0">
                         <Image
                           src={done ? "/quete6.svg" : "/quete7.svg"}
@@ -244,12 +182,11 @@ const QuestsPage = async () => {
             })}
           </ul>
 
-          {/* ── Note de renouvellement ────────────────────────────────── */}
           <p
             className="text-center text-xs text-muted-foreground mt-6 fade-up"
             style={{ animationDelay: "0.4s" }}
           >
-            Les quêtes se renouvellent chaque jour à minuit
+            Les quêtes changent chaque jour à minuit
           </p>
 
         </div>
