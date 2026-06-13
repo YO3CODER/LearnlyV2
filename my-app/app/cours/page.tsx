@@ -16,11 +16,11 @@ type Category = "Tout" | "Maths" | "Français" | "Sciences" | "Histoire";
 const ALL_CATEGORIES: Category[] = ["Tout", "Maths", "Français", "Sciences", "Histoire"];
 
 const categoryColors: Record<Category, string> = {
-  Tout: "bg-gray-100 text-gray-700 border-gray-300",
-  Maths: "bg-sky-100 text-sky-700 border-sky-300",
-  Français: "bg-violet-100 text-violet-700 border-violet-300",
-  Sciences: "bg-emerald-100 text-emerald-700 border-emerald-300",
-  Histoire: "bg-amber-100 text-amber-700 border-amber-300",
+  Tout: "bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600",
+  Maths: "bg-sky-100 text-sky-700 border-sky-300 dark:bg-sky-900/40 dark:text-sky-300 dark:border-sky-700",
+  Français: "bg-violet-100 text-violet-700 border-violet-300 dark:bg-violet-900/40 dark:text-violet-300 dark:border-violet-700",
+  Sciences: "bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-700",
+  Histoire: "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900/40 dark:text-amber-300 dark:border-amber-700",
 };
 
 const categoryActiveColors: Record<Category, string> = {
@@ -32,10 +32,10 @@ const categoryActiveColors: Record<Category, string> = {
 };
 
 const categoryBadgeColors: Record<string, string> = {
-  Maths: "bg-sky-100 text-sky-700",
-  Français: "bg-violet-100 text-violet-700",
-  Sciences: "bg-emerald-100 text-emerald-700",
-  Histoire: "bg-amber-100 text-amber-700",
+  Maths: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
+  Français: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+  Sciences: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+  Histoire: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
 };
 
 const courseButtonColor: Record<string, string> = {
@@ -130,30 +130,17 @@ const PdfButton = ({ href, label, icon, activeClass, description }: PdfButtonPro
         )}
       >
         <span className="flex items-center gap-1.5">
-          {icon}
-          {label}
-          <span className="opacity-60 group-hover:opacity-100 transition-opacity">
-            <IconExternalLink />
-          </span>
+          {icon}{label}
+          <span className="opacity-60 group-hover:opacity-100 transition-opacity"><IconExternalLink /></span>
         </span>
-        {description && (
-          <span className="text-xs font-normal opacity-75">{description}</span>
-        )}
+        {description && <span className="text-xs font-normal opacity-75">{description}</span>}
       </a>
     );
   }
   return (
-    <span
-      style={fredoka}
-      className="flex-1 flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl font-semibold text-sm bg-gray-100 text-gray-400 border-gray-200 border-b-4 cursor-not-allowed select-none"
-    >
-      <span className="flex items-center gap-1.5">
-        {icon}
-        {label}
-      </span>
-      {description && (
-        <span className="text-xs font-normal">Non disponible</span>
-      )}
+    <span style={fredoka} className="flex-1 flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl font-semibold text-sm bg-muted text-muted-foreground border-border border-b-4 cursor-not-allowed select-none">
+      <span className="flex items-center gap-1.5">{icon}{label}</span>
+      {description && <span className="text-xs font-normal">Non disponible</span>}
     </span>
   );
 };
@@ -170,11 +157,11 @@ const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCard
   <div
     style={{ animationDelay: `${index * 40}ms` }}
     className={cn(
-      "bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col overflow-hidden opacity-0 animate-[fadeSlideIn_0.4s_cubic-bezier(0.34,1.56,0.64,1)_forwards] border-l-4",
+      "bg-card rounded-xl border border-border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col overflow-hidden opacity-0 animate-[fadeSlideIn_0.4s_cubic-bezier(0.34,1.56,0.64,1)_forwards] border-l-4",
       cardAccentColor[course.categorie]
     )}
   >
-    <div className="relative w-full bg-gray-100 overflow-hidden group" style={{ paddingBottom: "56.25%" }}>
+    <div className="relative w-full bg-muted overflow-hidden group" style={{ paddingBottom: "56.25%" }}>
       <img
         src={`https://img.youtube.com/vi/${course.videoId}/mqdefault.jpg`}
         alt={course.titre}
@@ -195,13 +182,10 @@ const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCard
     </div>
 
     <div className="p-3 flex flex-col flex-grow gap-2">
-      <span
-        style={fredoka}
-        className={cn("self-start text-xs font-semibold px-2 py-0.5 rounded-full", categoryBadgeColors[course.categorie])}
-      >
+      <span style={fredoka} className={cn("self-start text-xs font-semibold px-2 py-0.5 rounded-full", categoryBadgeColors[course.categorie])}>
         {course.categorie}
       </span>
-      <p className="text-sm font-semibold text-gray-800 leading-snug line-clamp-2 flex-grow" style={fredoka}>
+      <p className="text-sm font-semibold text-foreground leading-snug line-clamp-2 flex-grow" style={fredoka}>
         {course.titre}
       </p>
       <button
@@ -301,7 +285,7 @@ export default function CoursPage() {
 
   if (coursesLoading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loading />
       </div>
     );
@@ -312,11 +296,11 @@ export default function CoursPage() {
       <style>{`
         @keyframes fadeSlideIn {
           from { opacity: 0; transform: translateY(16px) scale(0.97); }
-          to   { opacity: 1; transform: translateY(0)    scale(1);    }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes heroFloat {
           0%, 100% { transform: translateY(0px); }
-          50%       { transform: translateY(-10px); }
+          50% { transform: translateY(-10px); }
         }
         @keyframes heroFadeIn {
           from { opacity: 0; transform: translateX(-20px); }
@@ -345,15 +329,13 @@ export default function CoursPage() {
         }
       `}</style>
 
-      {/* ── LAYOUT AVEC SIDEBAR ── */}
-      <div className="min-h-screen bg-white flex">
+      <div className="min-h-screen bg-background flex">
 
         {/* Desktop Sidebar */}
         <div className="hidden md:block md:w-[80px] flex-shrink-0">
           <Sidebar />
         </div>
 
-        {/* Contenu principal */}
         <div className="flex-1 pb-20 md:pb-0">
 
           {/* ── HERO BANNER ── */}
@@ -364,7 +346,6 @@ export default function CoursPage() {
               <div className="absolute top-4 right-1/3 w-6 h-6 bg-white/20 rounded-full" />
               <div className="absolute bottom-8 right-16 w-3 h-3 bg-cyan-200/40 rounded-full" />
             </div>
-
             <div className="relative px-4 sm:px-6 py-8 sm:py-10">
               <div className="max-w-6xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
@@ -396,7 +377,6 @@ export default function CoursPage() {
                       )}
                     </div>
                   </div>
-
                   <div className="flex items-center justify-center md:justify-end">
                     <div className="hero-float">
                       <Image src="/hero.svg" alt="Apprendre" width={220} height={220} className="drop-shadow-2xl" priority />
@@ -408,10 +388,10 @@ export default function CoursPage() {
           </div>
 
           {/* ── RECHERCHE ET FILTRES ── */}
-          <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-5 sticky top-0 z-40 shadow-sm">
+          <div className="bg-background border-b border-border px-4 sm:px-6 py-5 sticky top-0 z-40 shadow-sm">
             <div className="max-w-6xl mx-auto">
               <div className="relative max-w-lg mb-3">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
                   <IconSearch />
                 </span>
                 <input
@@ -420,15 +400,14 @@ export default function CoursPage() {
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Rechercher un cours…"
                   style={fredoka}
-                  className="w-full pl-10 pr-8 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition-all shadow-sm"
+                  className="w-full pl-10 pr-8 py-3 rounded-xl border border-border bg-muted text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition-all shadow-sm"
                 />
                 {search && (
-                  <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs transition-colors">
+                  <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-xs transition-colors">
                     ✕
                   </button>
                 )}
               </div>
-
               <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                 {ALL_CATEGORIES.map((cat) => (
                   <button
@@ -444,9 +423,8 @@ export default function CoursPage() {
                   </button>
                 ))}
               </div>
-
               {(search || category !== "Tout") && (
-                <p className="text-xs text-gray-400 mt-2" style={fredoka}>
+                <p className="text-xs text-muted-foreground mt-2" style={fredoka}>
                   {filteredCourses.length} cours trouvé{filteredCourses.length !== 1 ? "s" : ""}
                   {category !== "Tout" && ` en ${category}`}
                   {search && ` pour « ${search} »`}
@@ -460,7 +438,7 @@ export default function CoursPage() {
 
             {recentCourses.length > 0 && !search && category === "Tout" && (
               <section>
-                <h2 className="text-base font-semibold text-gray-600 uppercase tracking-wider mb-6" style={fredoka}>
+                <h2 className="text-base font-semibold text-muted-foreground uppercase tracking-wider mb-6" style={fredoka}>
                   Récemment regardés
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -468,16 +446,16 @@ export default function CoursPage() {
                     <CourseCard key={"recent-" + course.id} course={course} isCompleted={completedIds.includes(course.videoId)} isRecent={true} onPlay={playVideo} index={index} />
                   ))}
                 </div>
-                <div className="mt-10 border-t border-gray-200" />
+                <div className="mt-10 border-t border-border" />
               </section>
             )}
 
             {filteredCourses.length > 0 && (
-              <section className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-100">
+              <section className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl p-8 border border-purple-500/20">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-3" style={fredoka}>Rejoins la Ligue</h2>
-                    <p className="text-gray-600 mb-6 leading-relaxed">
+                    <h2 className="text-2xl font-bold text-foreground mb-3" style={fredoka}>Rejoins la Ligue</h2>
+                    <p className="text-muted-foreground mb-6 leading-relaxed">
                       Complète tes cours, déverrouille des badges et grimpe les classements avec tes camarades
                     </p>
                     <Link href="/leaderboard" style={fredoka} className="inline-block px-6 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold border-b-4 border-purple-700 hover:shadow-lg active:border-b-0 transition-all">
@@ -493,8 +471,8 @@ export default function CoursPage() {
 
             {filteredCourses.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
-                <p className="text-gray-500 font-semibold text-lg" style={fredoka}>Aucun cours trouvé</p>
-                <p className="text-gray-400 text-sm mt-2 mb-6" style={fredoka}>Essaie un autre mot-clé ou une autre catégorie</p>
+                <p className="text-muted-foreground font-semibold text-lg" style={fredoka}>Aucun cours trouvé</p>
+                <p className="text-muted-foreground/70 text-sm mt-2 mb-6" style={fredoka}>Essaie un autre mot-clé ou une autre catégorie</p>
                 <button
                   onClick={() => { setSearch(""); setCategory("Tout"); }}
                   style={fredoka}
@@ -506,7 +484,7 @@ export default function CoursPage() {
             ) : (
               <section>
                 {(!search && category === "Tout") && (
-                  <h2 className="text-base font-semibold text-gray-600 uppercase tracking-wider mb-6" style={fredoka}>
+                  <h2 className="text-base font-semibold text-muted-foreground uppercase tracking-wider mb-6" style={fredoka}>
                     Tous les cours
                   </h2>
                 )}
@@ -520,7 +498,6 @@ export default function CoursPage() {
           </div>
         </div>
 
-        {/* Mobile Bottom Navbar */}
         <MobileNavbar />
       </div>
 
@@ -530,22 +507,22 @@ export default function CoursPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <DialogPanel
             transition
-            className="relative transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all duration-500 data-closed:scale-95 data-closed:opacity-0 data-enter:duration-500 data-enter:ease-out data-leave:duration-300 data-leave:ease-in w-full max-w-2xl border border-gray-200 flex flex-col"
+            className="relative transform overflow-hidden rounded-2xl bg-card shadow-2xl transition-all duration-500 data-closed:scale-95 data-closed:opacity-0 data-enter:duration-500 data-enter:ease-out data-leave:duration-300 data-leave:ease-in w-full max-w-2xl border border-border flex flex-col"
           >
             <div className={cn("h-1 w-full bg-gradient-to-r flex-shrink-0", modalAccentBar[selectedCategorie] ?? "from-blue-400 to-cyan-400")} />
 
-            <div className="px-5 py-3 border-b border-gray-100 flex-shrink-0 flex items-center justify-between gap-3 bg-white">
+            <div className="px-5 py-3 border-b border-border flex-shrink-0 flex items-center justify-between gap-3 bg-card">
               <div className="min-w-0">
-                <span style={fredoka} className={cn("inline-block text-xs font-semibold px-2 py-0.5 rounded-full mb-1", categoryBadgeColors[selectedCategorie] ?? "bg-gray-100 text-gray-600")}>
+                <span style={fredoka} className={cn("inline-block text-xs font-semibold px-2 py-0.5 rounded-full mb-1", categoryBadgeColors[selectedCategorie] ?? "bg-muted text-muted-foreground")}>
                   {selectedCategorie}
                 </span>
-                <p className="text-sm font-semibold text-gray-800 truncate leading-snug" style={fredoka}>{selectedTitle}</p>
+                <p className="text-sm font-semibold text-foreground truncate leading-snug" style={fredoka}>{selectedTitle}</p>
               </div>
               <button
                 type="button"
                 style={fredoka}
                 onClick={() => setVideoOpen(false)}
-                className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors text-sm font-bold"
+                className="flex-shrink-0 w-8 h-8 rounded-full bg-muted hover:bg-border flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors text-sm font-bold"
                 aria-label="Fermer"
               >
                 ✕
@@ -565,8 +542,8 @@ export default function CoursPage() {
               )}
             </div>
 
-            <div className="px-5 pt-4 pb-2 flex-shrink-0 bg-white">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2.5" style={fredoka}>
+            <div className="px-5 pt-4 pb-2 flex-shrink-0 bg-card">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5" style={fredoka}>
                 Ressources du cours
               </p>
               <div className="flex gap-2">
@@ -576,7 +553,7 @@ export default function CoursPage() {
               </div>
             </div>
 
-            <div className="border-t border-gray-100 px-5 py-3 flex-shrink-0 flex gap-2 bg-gray-50">
+            <div className="border-t border-border px-5 py-3 flex-shrink-0 flex gap-2 bg-muted/50">
               <button
                 type="button"
                 style={fredoka}
@@ -584,7 +561,7 @@ export default function CoursPage() {
                 className={cn(
                   "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold transition-all duration-200 transform active:scale-95 text-sm border-b-4 active:border-b-0 hover:shadow-md",
                   isCurrentCompleted
-                    ? "bg-gray-200 text-gray-600 border-gray-300 hover:bg-gray-200/90"
+                    ? "bg-muted text-muted-foreground border-border hover:bg-muted/80"
                     : "bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-500/90"
                 )}
               >
