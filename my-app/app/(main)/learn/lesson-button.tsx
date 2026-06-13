@@ -333,7 +333,7 @@ export const LessonButton = ({
     setTimeout(() => setPressing(false), 150);
   };
 
-  // ─── Bouton rond Duolingo ─────────────────────────────────────────────────
+  // ─── Bouton rond Duolingo amélioré ─────────────────────────────────────────
   const DuoButton = ({
     bgHex,
     borderHex,
@@ -349,13 +349,13 @@ export const LessonButton = ({
   }) => (
     <div
       style={{
-        width: 70,
-        height: 70,
+        width: 80,
+        height: 80,
         borderRadius: "50%",
         backgroundColor: isGoldenBtn ? "#f59e0b" : isLocked ? "#d1d5db" : bgHex,
         borderBottom: pressing
-          ? `2px solid ${isGoldenBtn ? "#b45309" : isLocked ? "#9ca3af" : borderHex}`
-          : `6px solid ${isGoldenBtn ? "#b45309" : isLocked ? "#9ca3af" : borderHex}`,
+          ? `3px solid ${isGoldenBtn ? "#b45309" : isLocked ? "#9ca3af" : borderHex}`
+          : `8px solid ${isGoldenBtn ? "#b45309" : isLocked ? "#9ca3af" : borderHex}`,
         cursor: isLocked ? "default" : "pointer",
         position: "relative",
         overflow: "hidden",
@@ -363,18 +363,20 @@ export const LessonButton = ({
         alignItems: "center",
         justifyContent: "center",
         transition: "transform 0.1s ease, border-bottom 0.1s ease",
-        transform: pressing ? "translateY(4px)" : "translateY(0px)",
-        boxShadow: isLocked ? "none" : pressing ? "none" : `0 4px 12px ${bgHex}55`,
+        transform: pressing ? "translateY(5px)" : "translateY(0px)",
+        boxShadow: isLocked ? "none" : pressing ? "none" : `0 6px 16px ${bgHex}66`,
+        outline: isLocked ? "none" : `3px solid ${borderHex}30`,
+        outlineOffset: "4px",
       }}
       className={cn(
-        !isLocked && !pressing && "hover:translate-y-[2px] hover:border-b-[3px]",
+        !isLocked && !pressing && "hover:translate-y-[2px] hover:border-b-[4px]",
         isLocked && "opacity-60",
       )}
     >
       {!isLocked && (
         <>
-          <div style={{ position: "absolute", top: 15, left: "30%", transform: "translateX(-50%) rotate(-60deg)", width: 50, height: 20, background: "rgba(255,255,255,0.25)", borderRadius: "100% 100% 0% 0%" }} />
-          <div style={{ position: "absolute", top: 39, left: "50%", transform: "translateX(-53%) rotate(-60deg)", width: 93, height: 17, background: "rgba(255,255,255,0.25)", borderRadius: "90% 90% 0% 0%" }} />
+          <div style={{ position: "absolute", top: 14, left: "28%", transform: "translateX(-50%) rotate(-60deg)", width: 60, height: 24, background: "rgba(255,255,255,0.35)", borderRadius: "100% 100% 0% 0%" }} />
+          <div style={{ position: "absolute", top: 42, left: "50%", transform: "translateX(-53%) rotate(-60deg)", width: 110, height: 20, background: "rgba(255,255,255,0.25)", borderRadius: "90% 90% 0% 0%" }} />
         </>
       )}
       {children}
@@ -465,8 +467,8 @@ export const LessonButton = ({
                 <img
                   src="/image1.svg"
                   alt="Coffre ouvert"
-                  width={70}
-                  height={70}
+                  width={80}
+                  height={80}
                   draggable={false}
                   style={{
                     display: "block",
@@ -480,8 +482,8 @@ export const LessonButton = ({
                 <img
                   src="/image2.svg"
                   alt="Coffre fermé"
-                  width={70}
-                  height={70}
+                  width={80}
+                  height={80}
                   draggable={false}
                   style={{
                     display: "block",
@@ -569,10 +571,10 @@ export const LessonButton = ({
             <div
               ref={popupRef}
               className={cn(
-                "absolute w-[220px] rounded-2xl p-4 shadow-xl border-b-4",
+                "absolute w-[240px] rounded-2xl p-4 shadow-xl border-b-4",
                 colors.popup,
                 colors.popupBorder,
-                "top-[85px] left-1/2 -translate-x-1/2",
+                "top-[95px] left-1/2 -translate-x-1/2",
                 "transition-all duration-200 ease-out",
               )}
               style={{
@@ -601,32 +603,32 @@ export const LessonButton = ({
               <p className="text-white/80 text-xs mb-4">
                 Leçon {index + 1} sur {totalCount}
               </p>
-           <Button
-  variant="default"
-  onMouseDown={handleButtonPress}
-  onClick={handleStart}
-  className={cn(
-    "w-full py-2.5 text-sm font-extrabold",
-    "border-0",
-    "shadow-[0_6px_0_0_#e8e8e8]", // Ombre plus épaisse (6px au lieu de 4px)
-    "active:shadow-[0_1px_0_0_#e8e8e8]",
-    "active:translate-y-[5px]", // Enfoncement plus grand
-    "transition-all duration-100",
-    colors.popupButtonText,
-  )}
-  style={{
-    transform: pressing ? "translateY(5px)" : "translateY(0px)",
-  }}
->
-  {isCompleted ? "Pratiquer" : `Commencer +${lessonXP} XP`}
-</Button>
+              <Button
+                variant="default"
+                onMouseDown={handleButtonPress}
+                onClick={handleStart}
+                className={cn(
+                  "w-full py-2.5 text-sm font-extrabold",
+                  "border-0",
+                  "shadow-[0_6px_0_0_#e8e8e8]",
+                  "active:shadow-[0_1px_0_0_#e8e8e8]",
+                  "active:translate-y-[5px]",
+                  "transition-all duration-100",
+                  colors.popupButtonText,
+                )}
+                style={{
+                  transform: pressing ? "translateY(5px)" : "translateY(0px)",
+                }}
+              >
+                {isCompleted ? "Pratiquer" : `Commencer +${lessonXP} XP`}
+              </Button>
             </div>
           )}
 
           {/* ── Bouton leçon courante (avec progression circulaire) ── */}
           {current ? (
             <div
-              className="h-[102px] w-[102px] relative"
+              className="h-[115px] w-[115px] relative"
               onClick={() => { handleClick(); handleButtonPress(); }}
             >
               <div
@@ -647,8 +649,8 @@ export const LessonButton = ({
               <CircularProgressbarWithChildren
                 value={Number.isNaN(percentage) ? 0 : percentage}
                 styles={{
-                  path: { stroke: "url(#progressGradient)", strokeLinecap: "round" },
-                  trail: { stroke: "#e8e8f0" },
+                  path: { stroke: "url(#progressGradient)", strokeLinecap: "round", strokeWidth: 8 },
+                  trail: { stroke: "#e8e8f0", strokeWidth: 8 },
                 }}
               >
                 <svg style={{ height: 0, width: 0, position: "absolute" }}>
@@ -660,7 +662,7 @@ export const LessonButton = ({
                   </defs>
                 </svg>
                 <DuoButton bgHex={colors.bgHex} borderHex={colors.borderHex} isLocked={locked}>
-                  <Icon className={cn("h-9 w-9 relative z-10", locked ? "fill-white text-white stroke-white opacity-60" : "fill-white text-white drop-shadow-sm", isCompleted && !isGolden && "fill-none stroke-white stroke-[4]")} />
+                  <Icon className={cn("h-11 w-11 relative z-10", locked ? "fill-white text-white stroke-white opacity-60" : "fill-white text-white drop-shadow-sm", isCompleted && !isGolden && "fill-none stroke-white stroke-[4]")} />
                 </DuoButton>
               </CircularProgressbarWithChildren>
             </div>
@@ -690,7 +692,7 @@ export const LessonButton = ({
                 isLocked={locked}
                 isGoldenBtn={isGolden && !locked}
               >
-                <Icon className={cn("h-9 w-9 relative z-10", locked ? "fill-white text-white stroke-white opacity-60" : "fill-white text-white drop-shadow-sm", isCompleted && !isGolden && "fill-none stroke-white stroke-[4]")} />
+                <Icon className={cn("h-11 w-11 relative z-10", locked ? "fill-white text-white stroke-white opacity-60" : "fill-white text-white drop-shadow-sm", isCompleted && !isGolden && "fill-none stroke-white stroke-[4]")} />
               </DuoButton>
             </div>
           )}
