@@ -46,14 +46,14 @@ const colorMap: Record<string, {
   popupButton: string;
   popupButtonText: string;
 }> = {
-  blue:   { bg: "!bg-blue-500",   hover: "hover:!bg-blue-600",   bgHex: "#3b82f6", borderHex: "#1d4ed8", shadow: "shadow-blue-200 dark:shadow-blue-900",     glow: "bg-blue-300/40",   progress: ["#3b82f6", "#6366f1"], popup: "bg-blue-500",   popupBorder: "border-blue-600",   popupArrow: "#3b82f6", popupButtonBorder: "#1d4ed8", popupButton: "bg-white", popupButtonText: "text-blue-500"   },
+  blue: { bg: "!bg-blue-500", hover: "hover:!bg-blue-600", bgHex: "#3b82f6", borderHex: "#1d4ed8", shadow: "shadow-blue-200 dark:shadow-blue-900", glow: "bg-blue-300/40", progress: ["#3b82f6", "#6366f1"], popup: "bg-blue-500", popupBorder: "border-blue-600", popupArrow: "#3b82f6", popupButtonBorder: "#1d4ed8", popupButton: "bg-white", popupButtonText: "text-blue-500" },
   purple: { bg: "!bg-purple-500", hover: "hover:!bg-purple-600", bgHex: "#a855f7", borderHex: "#7e22ce", shadow: "shadow-purple-200 dark:shadow-purple-900", glow: "bg-purple-300/40", progress: ["#a855f7", "#8b5cf6"], popup: "bg-purple-500", popupBorder: "border-purple-600", popupArrow: "#a855f7", popupButtonBorder: "#7e22ce", popupButton: "bg-white", popupButtonText: "text-purple-500" },
-  green:  { bg: "!bg-green-500",  hover: "hover:!bg-green-600",  bgHex: "#22c55e", borderHex: "#15803d", shadow: "shadow-green-200 dark:shadow-green-900",   glow: "bg-green-300/40",  progress: ["#22c55e", "#16a34a"], popup: "bg-green-500",  popupBorder: "border-green-600",  popupArrow: "#22c55e", popupButtonBorder: "#15803d", popupButton: "bg-white", popupButtonText: "text-green-600"  },
+  green: { bg: "!bg-green-500", hover: "hover:!bg-green-600", bgHex: "#22c55e", borderHex: "#15803d", shadow: "shadow-green-200 dark:shadow-green-900", glow: "bg-green-300/40", progress: ["#22c55e", "#16a34a"], popup: "bg-green-500", popupBorder: "border-green-600", popupArrow: "#22c55e", popupButtonBorder: "#15803d", popupButton: "bg-white", popupButtonText: "text-green-600" },
   orange: { bg: "!bg-orange-500", hover: "hover:!bg-orange-600", bgHex: "#f97316", borderHex: "#c2410c", shadow: "shadow-orange-200 dark:shadow-orange-900", glow: "bg-orange-300/40", progress: ["#f97316", "#ea580c"], popup: "bg-orange-500", popupBorder: "border-orange-600", popupArrow: "#f97316", popupButtonBorder: "#c2410c", popupButton: "bg-white", popupButtonText: "text-orange-500" },
-  pink:   { bg: "!bg-pink-500",   hover: "hover:!bg-pink-600",   bgHex: "#ec4899", borderHex: "#be185d", shadow: "shadow-pink-200 dark:shadow-pink-900",     glow: "bg-pink-300/40",   progress: ["#ec4899", "#db2777"], popup: "bg-pink-500",   popupBorder: "border-pink-600",   popupArrow: "#ec4899", popupButtonBorder: "#be185d", popupButton: "bg-white", popupButtonText: "text-pink-500"   },
+  pink: { bg: "!bg-pink-500", hover: "hover:!bg-pink-600", bgHex: "#ec4899", borderHex: "#be185d", shadow: "shadow-pink-200 dark:shadow-pink-900", glow: "bg-pink-300/40", progress: ["#ec4899", "#db2777"], popup: "bg-pink-500", popupBorder: "border-pink-600", popupArrow: "#ec4899", popupButtonBorder: "#be185d", popupButton: "bg-white", popupButtonText: "text-pink-500" },
   indigo: { bg: "!bg-indigo-500", hover: "hover:!bg-indigo-600", bgHex: "#6366f1", borderHex: "#4338ca", shadow: "shadow-indigo-200 dark:shadow-indigo-900", glow: "bg-indigo-300/40", progress: ["#6366f1", "#4f46e5"], popup: "bg-indigo-500", popupBorder: "border-indigo-600", popupArrow: "#6366f1", popupButtonBorder: "#4338ca", popupButton: "bg-white", popupButtonText: "text-indigo-500" },
-  teal:   { bg: "!bg-teal-500",   hover: "hover:!bg-teal-600",   bgHex: "#14b8a6", borderHex: "#0f766e", shadow: "shadow-teal-200 dark:shadow-teal-900",     glow: "bg-teal-300/40",   progress: ["#14b8a6", "#0d9488"], popup: "bg-teal-500",   popupBorder: "border-teal-600",   popupArrow: "#14b8a6", popupButtonBorder: "#0f766e", popupButton: "bg-white", popupButtonText: "text-teal-500"   },
-  red:    { bg: "!bg-red-500",    hover: "hover:!bg-red-600",    bgHex: "#ef4444", borderHex: "#b91c1c", shadow: "shadow-red-200 dark:shadow-red-900",       glow: "bg-red-300/40",    progress: ["#ef4444", "#dc2626"], popup: "bg-red-500",    popupBorder: "border-red-600",    popupArrow: "#ef4444", popupButtonBorder: "#b91c1c", popupButton: "bg-white", popupButtonText: "text-red-500"    },
+  teal: { bg: "!bg-teal-500", hover: "hover:!bg-teal-600", bgHex: "#14b8a6", borderHex: "#0f766e", shadow: "shadow-teal-200 dark:shadow-teal-900", glow: "bg-teal-300/40", progress: ["#14b8a6", "#0d9488"], popup: "bg-teal-500", popupBorder: "border-teal-600", popupArrow: "#14b8a6", popupButtonBorder: "#0f766e", popupButton: "bg-white", popupButtonText: "text-teal-500" },
+  red: { bg: "!bg-red-500", hover: "hover:!bg-red-600", bgHex: "#ef4444", borderHex: "#b91c1c", shadow: "shadow-red-200 dark:shadow-red-900", glow: "bg-red-300/40", progress: ["#ef4444", "#dc2626"], popup: "bg-red-500", popupBorder: "border-red-600", popupArrow: "#ef4444", popupButtonBorder: "#b91c1c", popupButton: "bg-white", popupButtonText: "text-red-500" },
 };
 
 // ─── Données de transition ────────────────────────────────────────────────────
@@ -75,10 +75,10 @@ type TransitionScreenProps = {
 };
 
 const TransitionScreen = ({ color, onNavigate, practiceContent }: TransitionScreenProps) => {
-  const [gifSrc]   = useState(() => GIFS[Math.floor(Math.random() * GIFS.length)]);
-  const [label]    = useState(() => TRANSITION_LABELS[Math.floor(Math.random() * TRANSITION_LABELS.length)]);
+  const [gifSrc] = useState(() => GIFS[Math.floor(Math.random() * GIFS.length)]);
+  const [label] = useState(() => TRANSITION_LABELS[Math.floor(Math.random() * TRANSITION_LABELS.length)]);
   const [duration] = useState(() => DURATIONS[Math.floor(Math.random() * DURATIONS.length)]);
-  const [mounted,  setMounted]  = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [progress, setProgress] = useState(0);
   const navigatedRef = useRef(false);
 
@@ -215,17 +215,17 @@ export const LessonButton = ({
 }: Props) => {
   const router = useRouter();
 
-  const [showPopup,                    setShowPopup]                    = useState(false);
-  const [popupVisible,                 setPopupVisible]                 = useState(false);
-  const [pressing,                     setPressing]                     = useState(false);
-  const [showTransition,               setShowTransition]               = useState(false);
-  const [showPracticeInTransition,     setShowPracticeInTransition]     = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [pressing, setPressing] = useState(false);
+  const [showTransition, setShowTransition] = useState(false);
+  const [showPracticeInTransition, setShowPracticeInTransition] = useState(false);
 
   const destinationRef = useRef<string>("/lesson");
-  const popupRef       = useRef<HTMLDivElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
 
   // ─── Sons ────────────────────────────────────────────────────────────────
-  const audioBoutonRef    = useRef<HTMLAudioElement | null>(null);
+  const audioBoutonRef = useRef<HTMLAudioElement | null>(null);
   const audioCommencerRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -240,34 +240,34 @@ export const LessonButton = ({
 
   const playBouton = () => {
     const a = audioBoutonRef.current;
-    if (a) { a.currentTime = 0; a.play().catch(() => {}); }
+    if (a) { a.currentTime = 0; a.play().catch(() => { }); }
     if ("vibrate" in navigator) navigator.vibrate([8, 50, 8]);
   };
 
   const playCommencer = () => {
     const a = audioCommencerRef.current;
-    if (a) { a.currentTime = 0; a.play().catch(() => {}); }
+    if (a) { a.currentTime = 0; a.play().catch(() => { }); }
     if ("vibrate" in navigator) navigator.vibrate([10, 40, 20, 40, 40]);
   };
 
   // ─── Layout sinusoidal pour les leçons ───────────────────────────────────
   const cycleLength = 8;
-  const cycleIndex  = index % cycleLength;
+  const cycleIndex = index % cycleLength;
   let indentationLevel: number;
-  if      (cycleIndex <= 2) indentationLevel = cycleIndex;
+  if (cycleIndex <= 2) indentationLevel = cycleIndex;
   else if (cycleIndex <= 4) indentationLevel = 4 - cycleIndex;
   else if (cycleIndex <= 6) indentationLevel = 4 - cycleIndex;
-  else                      indentationLevel = cycleIndex - 8;
+  else indentationLevel = cycleIndex - 8;
   const rightPosition = indentationLevel * 40;
 
-  const isFirst     = index === 0;
+  const isFirst = index === 0;
   const isCompleted = !current && !locked;
-  const isPerfect   = isCompleted && percentage === 100;
-  const isGolden    = isLastLesson && !isChest;
+  const isPerfect = isCompleted && percentage === 100;
+  const isGolden = isLastLesson && !isChest;
 
-  const Icon    = isGolden ? Crown : isCompleted ? Check : Star;
-  const colors  = colorMap[unitColor] || colorMap.green;
-  
+  const Icon = isGolden ? Crown : isCompleted ? Check : Star;
+  const colors = colorMap[unitColor] || colorMap.green;
+
   // ─── CALCUL XP ────────────────────────────────────────────────────────────
   const lessonXP = lessonChallengeCount * XP_PER_CHALLENGE;
   const displayXP = isChest && unitTotalXP !== undefined ? unitTotalXP : lessonXP;
@@ -295,7 +295,7 @@ export const LessonButton = ({
     if (locked) return;
     playBouton();
     if (showPopup) closePopup();
-    else           openPopup();
+    else openPopup();
   };
 
   const handleStart = () => {
@@ -408,20 +408,9 @@ export const LessonButton = ({
   const practiceButtons = showPracticeInTransition ? (
     <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", marginTop: 8 }}>
       <Button
-        variant="primary"
+        variant="secondary"
         onClick={handlePracticeConfirm}
-        style={{
-          width: "100%",
-          padding: "13px 0",
-          borderRadius: 14,
-          backgroundColor: "#ffffff",
-          color: colors.bgHex,
-          fontWeight: 800,
-          fontSize: 15,
-          border: "none",
-          cursor: "pointer",
-          letterSpacing: "0.3px",
-        }}
+        className="w-full py-[13px] rounded-[14px] font-extrabold text-[15px] tracking-wide"
       >
         Je comprends
       </Button>
@@ -446,7 +435,7 @@ export const LessonButton = ({
   if (isChest) {
     const chestCompleted = !locked;
     const chestTotalXP = unitTotalXP ?? lessonXP;
-    
+
     return (
       <>
         {showTransition && (
@@ -612,24 +601,25 @@ export const LessonButton = ({
               <p className="text-white/80 text-xs mb-4">
                 Leçon {index + 1} sur {totalCount}
               </p>
-              <button
-                onMouseDown={handleButtonPress}
-                onClick={handleStart}
-                className={cn(
-                  "w-full py-2.5 rounded-xl font-extrabold text-sm uppercase tracking-wide",
-                  "transition-all duration-100",
-                  colors.popupButton,
-                  colors.popupButtonText,
-                )}
-                style={{
-                  borderBottom: pressing
-                    ? `1px solid ${colors.popupButtonBorder}`
-                    : `4px solid ${colors.popupButtonBorder}`,
-                  transform: pressing ? "translateY(3px)" : "translateY(0px)",
-                }}
-              >
-                {isCompleted ? "Pratiquer" : `Commencer +${lessonXP} XP`}
-              </button>
+           <Button
+  variant="default"
+  onMouseDown={handleButtonPress}
+  onClick={handleStart}
+  className={cn(
+    "w-full py-2.5 text-sm font-extrabold",
+    "border-0",
+    "shadow-[0_6px_0_0_#e8e8e8]", // Ombre plus épaisse (6px au lieu de 4px)
+    "active:shadow-[0_1px_0_0_#e8e8e8]",
+    "active:translate-y-[5px]", // Enfoncement plus grand
+    "transition-all duration-100",
+    colors.popupButtonText,
+  )}
+  style={{
+    transform: pressing ? "translateY(5px)" : "translateY(0px)",
+  }}
+>
+  {isCompleted ? "Pratiquer" : `Commencer +${lessonXP} XP`}
+</Button>
             </div>
           )}
 
@@ -657,14 +647,14 @@ export const LessonButton = ({
               <CircularProgressbarWithChildren
                 value={Number.isNaN(percentage) ? 0 : percentage}
                 styles={{
-                  path:  { stroke: "url(#progressGradient)", strokeLinecap: "round" },
+                  path: { stroke: "url(#progressGradient)", strokeLinecap: "round" },
                   trail: { stroke: "#e8e8f0" },
                 }}
               >
                 <svg style={{ height: 0, width: 0, position: "absolute" }}>
                   <defs>
                     <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%"   stopColor={colors.progress[0]} />
+                      <stop offset="0%" stopColor={colors.progress[0]} />
                       <stop offset="100%" stopColor={colors.progress[1]} />
                     </linearGradient>
                   </defs>
