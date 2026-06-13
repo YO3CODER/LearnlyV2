@@ -6,10 +6,10 @@ import { FeedWrapper } from "@/components/feed-wrapper";
 import { UserProgress } from "@/components/user-progress";
 import { StickyWrapper } from "@/components/sticky-wrapper";
 import { lessons, units as unitsSchema } from "@/db/schema";
-import { 
-  getCourseProgress, 
-  getLessonPercentage, 
-  getUnits, 
+import {
+  getCourseProgress,
+  getLessonPercentage,
+  getUnits,
   getUserProgress,
   getUserSubscription
 } from "@/db/queries";
@@ -68,16 +68,16 @@ const LearnPage = async () => {
           />
         </div>
 
-       <StickyUnitBanner
-  units={units.map((unit, index) => ({
-    id: unit.id,
-    title: unit.title,
-    description: unit.description,
-    color: ["blue","purple","green","orange","pink","indigo","teal","red"][index % 8],
-    order: unit.order,
-    index: index,
-  }))}
-/>
+        <StickyUnitBanner
+          units={units.map((unit, index) => ({
+            id: unit.id,
+            title: unit.title,
+            description: unit.description,
+            color: ["blue", "purple", "green", "orange", "pink", "indigo", "teal", "red"][index % 8],
+            order: unit.order,
+            index: index,
+          }))}
+        />
 
         {units.map((unit, index) => (
           <div key={unit.id}>
@@ -108,11 +108,11 @@ const LearnPage = async () => {
       <StickyWrapper>
         {!isPro && <Promo />}
         <Quests
-  points={userProgress.points}
-  streak={userProgress.streak ?? 0}
-  lessonsCompleted={userProgress.lessonsCompleted ?? 0}
-  challengesCompleted={userProgress.challengesCompleted ?? 0}
-/>
+          points={userProgress.points}
+          streak={userProgress.streak ?? 0}
+          lessonsCompleted={userProgress.lessonsCompleted ?? 0}
+          challengesCompleted={userProgress.challengesCompleted ?? 0}
+        />
       </StickyWrapper>
 
     </div>
