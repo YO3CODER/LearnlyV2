@@ -33,19 +33,16 @@ export const Footer = ({
   return (
     <footer
       className={cn(
-        "lg:h-[140px] h-[100px] transition-colors duration-300 border-t-2",
+        "min-h-[80px] lg:min-h-[140px] transition-colors duration-300 border-t-2",
         status === "none" && "bg-background border-border",
-
         status === "correct" &&
-        "bg-green-950/80 border-green-600 shadow-[0_-4px_20px_rgba(34,197,94,0.25)]",
-
+          "bg-green-950/80 border-green-600 shadow-[0_-4px_20px_rgba(34,197,94,0.25)]",
         status === "wrong" &&
-        "bg-rose-950/80 border-rose-600 shadow-[0_-4px_20px_rgba(244,63,94,0.20)]",
+          "bg-rose-950/80 border-rose-600 shadow-[0_-4px_20px_rgba(244,63,94,0.20)]",
         status === "completed" && "bg-background border-border"
       )}
     >
-      <div className="max-w-[1140px] h-full mx-auto flex items-center justify-between px-6 lg:px-10">
-
+      <div className="max-w-[1140px] h-full mx-auto flex items-center justify-between px-4 lg:px-10 py-3 lg:py-6 gap-4">
         {/* Correct */}
         {status === "correct" && (
           <div className="flex items-center gap-x-3">
@@ -96,7 +93,7 @@ export const Footer = ({
           </Button>
         )}
 
-        {/* Bouton principal */}
+        {/* Main Button */}
         <Button
           disabled={disabled}
           onClick={onCheck}
@@ -105,16 +102,13 @@ export const Footer = ({
           className={cn(
             "ml-auto rounded-xl font-bold tracking-wide transition-all duration-200 border-2 border-b-4",
             status === "none" &&
-            "bg-green-500 hover:bg-green-600 text-white border-green-600",
-
+              "bg-green-500 hover:bg-green-600 text-white border-green-600",
             status === "correct" &&
-            "bg-green-500 hover:bg-green-600 text-white border-green-700 scale-105",
-
+              "bg-green-500 hover:bg-green-600 text-white border-green-700 scale-105",
             status === "wrong" &&
-            "bg-red-400 hover:bg-red-500 text-white opacity-70 border-red-600",
-
+              "bg-red-400 hover:bg-red-500 text-white opacity-70 border-red-600",
             status === "completed" &&
-            "bg-green-500 hover:bg-green-600 text-white border-green-600"
+              "bg-green-500 hover:bg-green-600 text-white border-green-600"
           )}
         >
           {buttonLabel()}
