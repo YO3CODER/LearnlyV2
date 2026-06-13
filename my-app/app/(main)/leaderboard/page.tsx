@@ -8,6 +8,7 @@ import { getTopTenUsers, getUserProgress, getUserSubscription } from "@/db/queri
 import { Promo } from "@/components/promo";
 import { Quests } from "@/components/quests";
 import { LeaderboardClient } from "./leaderboard-client";
+import { EditableUserAvatar } from "./editable-user-avatar";
 import { auth } from "@clerk/nextjs/server";
 
 export const dynamic = "force-dynamic";
@@ -134,10 +135,10 @@ const LeaderboardPage = async () => {
 
           {/* ── Division Card ── */}
           <div className={`w-full rounded-2xl border-2 border-b-4 ${division.border} ${division.bg} p-4 mb-6`}>
-            <div className="flex items-center gap-3 mb-3">
-              <div className={`p-2 rounded-xl bg-background shadow-sm border-2 border-b-4 ${division.border}`}>
-                <Image src={division.image} alt={division.name} width={24} height={24} className="drop-shadow-sm" />
-              </div>
+            <div className="flex items-center gap-4 mb-3">
+              {/* AVATAR ÉDITABLE */}
+              <EditableUserAvatar />
+              
               <div>
                 <p className="text-xs text-muted-foreground font-medium">Votre division</p>
                 <p className={`font-extrabold text-lg ${division.color}`}>{division.name}</p>

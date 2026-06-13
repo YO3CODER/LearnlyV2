@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useUser } from "@clerk/nextjs";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { getCurrentMondayISO } from "@/utils/week";
 
@@ -126,11 +127,13 @@ const RankSpotlight = ({
   rank,
   xp,
   onDone,
+  currentUserImage,
 }: {
   entry: LeaderboardEntry;
   rank:  number;
-  xp:    number;         // ← XP correct selon l'onglet actif
+  xp:    number;
   onDone: () => void;
+  currentUserImage?: string;
 }) => {
   const [visible, setVisible] = useState(false);
   const [leaving, setLeaving] = useState(false);
@@ -150,6 +153,7 @@ const RankSpotlight = ({
   }, [onDone]);
 
   const isTop3 = rank <= 3;
+  const displayImage = currentUserImage || entry.userImageSrc;
 
   const content = (
     <div
@@ -185,7 +189,7 @@ const RankSpotlight = ({
         )}
         <div style={{ display: "flex", alignItems: "center", gap: 14, backgroundColor: "rgba(255,255,255,0.12)", border: "1.5px solid rgba(255,255,255,0.2)", borderRadius: 20, padding: "14px 22px", backdropFilter: "blur(8px)", minWidth: 240 }}>
           <Avatar className="h-12 w-12 border-2 border-white/30 shadow-md">
-            <AvatarImage className="object-cover" src={entry.userImageSrc} alt={entry.userName} />
+            <AvatarImage className="object-cover" src={displayImage} alt={entry.userName} />
           </Avatar>
           <div>
             <p style={{ color: "#fff", fontWeight: 800, fontSize: 16, margin: 0 }}>{entry.userName}</p>
@@ -193,7 +197,6 @@ const RankSpotlight = ({
               <Image src={division.image} alt={division.name} width={13} height={13} />
               <span style={{ color: "rgba(255,255,255,0.75)", fontSize: 12, fontWeight: 600 }}>{division.name}</span>
               <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>·</span>
-              {/* ✅ Fix : affiche le bon XP selon l'onglet */}
               <span style={{ color: "rgba(255,255,255,0.75)", fontSize: 12, fontWeight: 700 }}>{xp} XP</span>
             </div>
           </div>
@@ -240,12 +243,14 @@ const AnimatedRow = ({
   isCurrentUser,
   tab,
   maxXp,
+  currentUserImage,
 }: {
   entry:        LeaderboardEntry;
   index:        number;
   isCurrentUser: boolean;
   tab:          Tab;
   maxXp:        number;
+  currentUserImage?: string;
 }) => {
   const [visible, setVisible] = useState(false);
   const prevTab = useRef(tab);
@@ -258,7 +263,6 @@ const AnimatedRow = ({
     let timeoutId: ReturnType<typeof setTimeout>;
     const rafId = requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        // Si changement d'onglet : délai échelonné ; sinon apparition rapide
         const delay = tabChanged ? index * 60 : index * 80;
         timeoutId = setTimeout(() => setVisible(true), delay);
       });
@@ -270,11 +274,12 @@ const AnimatedRow = ({
   const division    = getDivision(entry.points);
   const currentMonday  = getCurrentMondayISO();
 
-  // ✅ Fix logique : inactif = resetDate différente du lundi actuel ET weeklyPoints = 0
   const isInactiveThisWeek =
     tab === "weekly" &&
     entry.weeklyPoints === 0 &&
     entry.weeklyResetDate !== currentMonday;
+
+  const displayImage = isCurrentUser && currentUserImage ? currentUserImage : entry.userImageSrc;
 
   return (
     <div
@@ -302,7 +307,7 @@ const AnimatedRow = ({
 
       {/* Avatar */}
       <Avatar className="h-11 w-11 mx-3 shrink-0">
-        <AvatarImage className="object-cover" src={entry.userImageSrc} alt={entry.userName} />
+        <AvatarImage className="object-cover" src={displayImage} alt={entry.userName} />
       </Avatar>
 
       {/* Nom + barre */}
@@ -337,6 +342,7 @@ const AnimatedRow = ({
 // ─── LeaderboardClient ────────────────────────────────────────────────────────
 
 export const LeaderboardClient = ({ leaderboard, currentUserId }: Props) => {
+  const { user } = useUser();
   const [mounted,       setMounted]       = useState(false);
   const [showSpotlight, setShowSpotlight] = useState(false);
   const [tab,           setTab]           = useState<Tab>("alltime");
@@ -352,7 +358,6 @@ export const LeaderboardClient = ({ leaderboard, currentUserId }: Props) => {
     return b.points - a.points;
   });
 
-  // XP max du leader (pour calibrer les barres)
   const maxXp = sorted.length > 0
     ? (tab === "weekly" ? sorted[0].weeklyPoints : sorted[0].points)
     : 1;
@@ -362,7 +367,6 @@ export const LeaderboardClient = ({ leaderboard, currentUserId }: Props) => {
     ? sorted.findIndex(e => e.userId === currentUserId) + 1
     : null;
 
-  // XP correct pour le spotlight selon l'onglet
   const spotlightXp = currentUserEntry
     ? (tab === "weekly" ? currentUserEntry.weeklyPoints : currentUserEntry.points)
     : 0;
@@ -385,6 +389,7 @@ export const LeaderboardClient = ({ leaderboard, currentUserId }: Props) => {
           rank={currentUserRank}
           xp={spotlightXp}
           onDone={() => setShowSpotlight(false)}
+          currentUserImage={user?.imageUrl}
         />
       )}
 
@@ -421,6 +426,7 @@ export const LeaderboardClient = ({ leaderboard, currentUserId }: Props) => {
               isCurrentUser={entry.userId === currentUserId}
               tab={tab}
               maxXp={maxXp}
+              currentUserImage={user?.imageUrl}
             />
           );
         })}
