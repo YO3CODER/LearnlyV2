@@ -145,14 +145,14 @@ const LeaderboardPage = async () => {
               </div>
               <div className="ml-auto text-right">
                <div className="ml-auto">
-  <div className="px-3 py-2 rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 border border-blue-200 dark:border-blue-800">
+  <div className="px-3 py-2 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border border-amber-200 dark:border-amber-800">
     <div className="flex items-center gap-1 mb-1">
       <Image src="/xp-bolt.svg" alt="XP" width={12} height={12} className="drop-shadow-sm" />
-      <p className="text-[9px] sm:text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Points</p>
+      <p className="text-[8px] sm:text-[9px] md:text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Points</p>
     </div>
     <div className="flex items-center gap-1.5">
-      <Image src="/xp-bolt.svg" alt="XP" width={16} height={16} className="drop-shadow-sm text-yellow-500" />
-      <p className="font-black text-sm sm:text-base md:text-lg bg-gradient-to-r from-yellow-600 to-yellow-500 dark:from-yellow-400 dark:to-yellow-400 bg-clip-text text-transparent">
+      <Image src="/xp-bolt.svg" alt="XP" width={16} height={16} className="drop-shadow-sm" />
+      <p className="font-black text-xs sm:text-sm md:text-base lg:text-lg bg-gradient-to-r from-amber-600 to-orange-500 dark:from-amber-400 dark:to-orange-400 bg-clip-text text-transparent">
         {userProgress.points} XP
       </p>
     </div>
