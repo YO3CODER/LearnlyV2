@@ -19,7 +19,7 @@ import { Header } from "./header";
 import { StickyUnitBannerDesktop, StickyUnitBannerMobile } from "./sticky-unit-banner";
 import { UnitSeparator } from "./unit-separator";
 
-const LearnPage = async () => {
+export default async function LearnPage() {
   const userProgressData = getUserProgress();
   const courseProgressData = getCourseProgress();
   const lessonPercentageData = getLessonPercentage();
@@ -61,12 +61,9 @@ const LearnPage = async () => {
 
   return (
     <div className="flex items-start gap-[48px] px-6 w-full max-w-full">
-
-      {/* Feed — partie gauche */}
       <FeedWrapper>
-
-        {/* Header desktop - avec bordure seulement */}
-        <div className="hidden lg:flex lg:flex-col sticky top-0 z-50 bg-background">
+        {/* Header sticky desktop uniquement */}
+        <div className="hidden lg:block sticky top-0 z-50 bg-background">
           <div className="flex items-center justify-between border-b border-border pb-3">
             <Header title={userProgress.activeCourse.title} />
             <UserProgress
@@ -80,20 +77,8 @@ const LearnPage = async () => {
           <StickyUnitBannerDesktop units={mappedUnits} />
         </div>
 
-        {/* Header mobile + Unit Banner collé */}
-        <div className="lg:hidden sticky top-0 z-50 bg-background">
-          <div className="flex items-center justify-between border-b border-border pb-3">
-            <Header title={userProgress.activeCourse.title} />
-            <UserProgress
-              activeCourse={userProgress.activeCourse}
-              hearts={userProgress.hearts}
-              points={userProgress.points}
-              hasActiveSubscription={isPro}
-              streak={userProgress.streak ?? 0}
-            />
-          </div>
-          <StickyUnitBannerMobile units={mappedUnits} />
-        </div>
+        {/* Banner mobile uniquement */}
+        <StickyUnitBannerMobile units={mappedUnits} />
 
         {units.map((unit, index) => (
           <div key={unit.id}>
@@ -120,7 +105,6 @@ const LearnPage = async () => {
         ))}
       </FeedWrapper>
 
-      {/* Sticky sidebar droite */}
       <StickyWrapper>
         {!isPro && <Promo />}
         <Quests
@@ -130,9 +114,6 @@ const LearnPage = async () => {
           challengesCompleted={userProgress.challengesCompleted ?? 0}
         />
       </StickyWrapper>
-
     </div>
   );
-};
-
-export default LearnPage;
+}

@@ -49,12 +49,6 @@ const useActiveUnit = (units: UnitInfo[]) => {
   return { activeUnit: units[activeUnitIndex], isVisible };
 };
 
-/**
- * Desktop : pas de position fixed.
- * Placé DANS le même bloc sticky que le header, juste après —
- * reste donc en haut au scroll, et change de couleur/titre/description
- * automatiquement selon l'unité active.
- */
 export const StickyUnitBannerDesktop = ({ units }: Props) => {
   const { activeUnit, isVisible } = useActiveUnit(units);
 
@@ -76,38 +70,21 @@ export const StickyUnitBannerDesktop = ({ units }: Props) => {
   );
 };
 
-/**
- * Mobile : fixed sous le MobileHeader (56px), même logique dynamique.
- */
 export const StickyUnitBannerMobile = ({ units }: Props) => {
   const { activeUnit, isVisible } = useActiveUnit(units);
-  const [bannerHeight, setBannerHeight] = useState(0);
-  const bannerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (bannerRef.current) {
-      setBannerHeight(bannerRef.current.offsetHeight);
-    }
-  }, [isVisible]);
 
   if (!isVisible) return null;
 
   return (
-    <>
-      <div
-        ref={bannerRef}
-        className="fixed left-0 right-0 z-40 top-[56px] px-4 py-2 lg:hidden transition-all duration-300 animate-in slide-in-from-top"
-      >
-        <UnitBanner
-          key={activeUnit.id}
-          title={activeUnit.title}
-          description={activeUnit.description}
-          color={activeUnit.color}
-          order={activeUnit.order}
-          index={activeUnit.index}
-        />
-      </div>
-      <div className="lg:hidden" style={{ height: bannerHeight + 8 }} />
-    </>
+    <div className="lg:hidden sticky top-[57px] z-40 bg-background px-4 py-2 animate-in slide-in-from-top duration-300">
+      <UnitBanner
+        key={activeUnit.id}
+        title={activeUnit.title}
+        description={activeUnit.description}
+        color={activeUnit.color}
+        order={activeUnit.order}
+        index={activeUnit.index}
+      />
+    </div>
   );
 };
