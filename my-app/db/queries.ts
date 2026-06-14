@@ -2,7 +2,7 @@ import { cache } from "react";
 import { eq } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
 import { unstable_noStore as noStore } from "next/cache";
-
+import { clerkClient } from "@clerk/nextjs/server";
 import db from "@/db/drizzle";
 import { 
   challengeProgress,
@@ -245,19 +245,39 @@ export const getTopTenUsers = async () => {
     columns: {
       userId: true,
       userName: true,
-      userImageSrc: true,
       points: true,
-      weeklyPoints: true,    // 👈
-      weeklyResetDate: true, // 👈
+      weeklyPoints: true,
+      weeklyResetDate: true,
+      // userImageSrc: true,  ← On ne le récupère plus d'ici
     },
   });
 
-  return data.map((entry) => ({
-    userId:          entry.userId,
-    userName:        entry.userName ?? "Anonymous",
-    userImageSrc:    entry.userImageSrc ?? "/default-avatar.png",
-    points:          entry.points ?? 0,
-    weeklyPoints:    entry.weeklyPoints ?? 0,    // 👈
-    weeklyResetDate: entry.weeklyResetDate ?? "", // 👈
-  }));
+  // Récupère les images à jour depuis Clerk
+  const client = await clerkClient();
+  const usersFromClerk = await Promise.all(
+    data.map(async (entry) => {
+      try {
+        const clerkUser = await client.users.getUser(entry.userId!);
+        return {
+          userId: entry.userId,
+          userName: entry.userName ?? "Anonymous",
+          userImageSrc: clerkUser.imageUrl ?? "/default-avatar.png", // ← À jour !
+          points: entry.points ?? 0,
+          weeklyPoints: entry.weeklyPoints ?? 0,
+          weeklyResetDate: entry.weeklyResetDate ?? "",
+        };
+      } catch {
+        return {
+          userId: entry.userId,
+          userName: entry.userName ?? "Anonymous",
+          userImageSrc: "/default-avatar.png",
+          points: entry.points ?? 0,
+          weeklyPoints: entry.weeklyPoints ?? 0,
+          weeklyResetDate: entry.weeklyResetDate ?? "",
+        };
+      }
+    })
+  );
+
+  return usersFromClerk;
 };
