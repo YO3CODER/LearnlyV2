@@ -146,7 +146,7 @@ const LeaderboardPage = async () => {
               </div>
               <div className="ml-auto text-right">
                <div className="ml-auto">
-  <Button variant="default" size="sm" className="flex items-center gap-1.5">
+  <Button variant="default" size="sm" className={`flex items-center gap-1.5 border-2 border-b-4 ${division.border}`}>
     <Image src="/xp-bolt.svg" alt="XP" width={16} height={16} />
     <span className={`text-xs sm:text-sm md:text-base font-bold ${division.color}`}>{userProgress.points} XP</span>
   </Button>
