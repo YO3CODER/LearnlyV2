@@ -65,7 +65,7 @@ const LearnPage = async () => {
       {/* Feed — partie gauche */}
       <FeedWrapper>
 
-        {/* Header + Unit Banner desktop : un seul bloc sticky - SANS ESPACE */}
+        {/* Header desktop - avec bordure seulement */}
         <div className="hidden lg:flex lg:flex-col sticky top-0 z-50 bg-background">
           <div className="flex items-center justify-between border-b border-border pb-3">
             <Header title={userProgress.activeCourse.title} />
@@ -80,8 +80,20 @@ const LearnPage = async () => {
           <StickyUnitBannerDesktop units={mappedUnits} />
         </div>
 
-        {/* Unit Banner mobile, fixed sous le MobileHeader */}
-        <StickyUnitBannerMobile units={mappedUnits} />
+        {/* Header mobile + Unit Banner collé */}
+        <div className="lg:hidden sticky top-0 z-50 bg-background">
+          <div className="flex items-center justify-between border-b border-border pb-3">
+            <Header title={userProgress.activeCourse.title} />
+            <UserProgress
+              activeCourse={userProgress.activeCourse}
+              hearts={userProgress.hearts}
+              points={userProgress.points}
+              hasActiveSubscription={isPro}
+              streak={userProgress.streak ?? 0}
+            />
+          </div>
+          <StickyUnitBannerMobile units={mappedUnits} />
+        </div>
 
         {units.map((unit, index) => (
           <div key={unit.id}>
