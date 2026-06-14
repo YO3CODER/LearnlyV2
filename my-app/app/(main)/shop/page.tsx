@@ -9,6 +9,7 @@ import { getUserProgress, getUserSubscription } from "@/db/queries";
 
 import { Items } from "./items";
 import { Quests } from "@/components/quests";
+import { PrivateCoursesBanner } from "./private-courses-banner";
 
 const ShopPage = async () => {
   const userProgressData = getUserProgress();
@@ -37,9 +38,7 @@ const ShopPage = async () => {
           hasActiveSubscription={isPro}
           streak={userProgress.streak ?? 0}
         />
-
         {!isPro && <Promo />}
-
         <Quests
           points={userProgress.points}
           streak={userProgress.streak ?? 0}
@@ -59,15 +58,16 @@ const ShopPage = async () => {
             width={90}
           />
 
-          {/* TITRE */}
           <h1 className="text-center font-bold text-foreground text-2xl my-6">
             Boutique
           </h1>
 
-          {/* DESCRIPTION */}
           <p className="text-muted-foreground text-center text-lg mb-6">
             Dépense tes points pour des trucs sympas.
           </p>
+
+          {/* BANNIÈRE COURS PRIVÉS */}
+          <PrivateCoursesBanner />
 
           {/* ARTICLES */}
           <Items
