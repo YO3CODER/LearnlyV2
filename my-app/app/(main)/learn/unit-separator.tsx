@@ -25,22 +25,44 @@ export const UnitSeparator = ({ nextUnitTitle, unitIndex }: Props) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const getOffset = () => {
+    const isMobile = window.innerWidth < 1024;
+
+    if (isMobile) {
+      const banner = document.getElementById("sticky-banner-mobile");
+      const bannerHeight = banner ? banner.offsetHeight : 0;
+      // header (56px) + banner + padding + banner encore pour dépasser
+      return 56 + bannerHeight + 16 + bannerHeight;
+    } else {
+      return 88 + 16;
+    }
+  };
+
   const scrollToUnit = () => {
-    const unit = document.getElementById(`unit-${isAbove ? unitIndex + 1 : unitIndex}`);
-    if (unit) unit.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (isAbove) {
+      const unit = document.getElementById(`unit-${unitIndex + 1}`);
+      if (unit) unit.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      const unit = document.getElementById(`unit-${unitIndex}`);
+      if (unit) {
+        const offset = getOffset();
+        const top = unit.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: "smooth" });
+      }
+    }
   };
 
   return (
     <div ref={ref} className="flex items-center gap-x-4 my-10 px-2">
-      {/* Trait gauche — style bouton */}
+      {/* Trait gauche */}
       <div className="flex-1 h-[2px] rounded-full bg-border" style={{ borderBottom: "2px solid hsl(var(--border))" }} />
 
-      {/* text au centre */}
-      <span className="text-muted-foreground  text-xl tracking-wide whitespace-nowrap">
+      {/* Texte au centre */}
+      <span className="text-muted-foreground text-sm lg:text-xl tracking-wide whitespace-nowrap">
         {nextUnitTitle}
       </span>
 
-      {/* Trait droit — style bouton */}
+      {/* Trait droit */}
       <div className="flex-1 h-[2px] rounded-full bg-border" style={{ borderBottom: "2px solid hsl(var(--border))" }} />
 
       {/* Bouton flèche */}

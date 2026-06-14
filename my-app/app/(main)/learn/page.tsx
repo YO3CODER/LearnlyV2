@@ -16,7 +16,7 @@ import {
 
 import { Unit } from "./unit";
 import { Header } from "./header";
-import { StickyUnitBanner } from "./sticky-unit-banner";
+import { StickyUnitBannerDesktop, StickyUnitBannerMobile } from "./sticky-unit-banner";
 import { UnitSeparator } from "./unit-separator";
 
 const LearnPage = async () => {
@@ -50,34 +50,38 @@ const LearnPage = async () => {
 
   const isPro = !!userSubscription?.isActive;
 
+  const mappedUnits = units.map((unit, index) => ({
+    id: unit.id,
+    title: unit.title,
+    description: unit.description,
+    color: ["blue", "purple", "green", "orange", "pink", "indigo", "teal", "red"][index % 8],
+    order: unit.order,
+    index: index,
+  }));
+
   return (
-    <div className="flex items-start gap-[48px] px-6 w-full max-w-full overflow-x-hidden">
+    <div className="flex items-start gap-[48px] px-6 w-full max-w-full">
 
       {/* Feed — partie gauche */}
       <FeedWrapper>
 
-        {/* Header desktop uniquement */}
-        <div className="hidden lg:flex sticky top-0 z-50 bg-background border-b border-border mb-5 pb-3 lg:pt-[28px] lg:mt-[-28px] items-center justify-between">
-          <Header title={userProgress.activeCourse.title} />
-          <UserProgress
-            activeCourse={userProgress.activeCourse}
-            hearts={userProgress.hearts}
-            points={userProgress.points}
-            hasActiveSubscription={isPro}
-            streak={userProgress.streak ?? 0}
-          />
+        {/* Header + Unit Banner desktop : un seul bloc sticky */}
+        <div className="hidden lg:flex lg:flex-col sticky top-0 z-50 bg-background mb-5 lg:pt-[28px] lg:mt-[-28px]">
+          <div className="flex items-center justify-between border-b border-border pb-3">
+            <Header title={userProgress.activeCourse.title} />
+            <UserProgress
+              activeCourse={userProgress.activeCourse}
+              hearts={userProgress.hearts}
+              points={userProgress.points}
+              hasActiveSubscription={isPro}
+              streak={userProgress.streak ?? 0}
+            />
+          </div>
+          <StickyUnitBannerDesktop units={mappedUnits} />
         </div>
 
-        <StickyUnitBanner
-          units={units.map((unit, index) => ({
-            id: unit.id,
-            title: unit.title,
-            description: unit.description,
-            color: ["blue", "purple", "green", "orange", "pink", "indigo", "teal", "red"][index % 8],
-            order: unit.order,
-            index: index,
-          }))}
-        />
+        {/* Unit Banner mobile, fixed sous le MobileHeader */}
+        <StickyUnitBannerMobile units={mappedUnits} />
 
         {units.map((unit, index) => (
           <div key={unit.id}>
