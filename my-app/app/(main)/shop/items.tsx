@@ -38,7 +38,7 @@ export const Items = ({
 
   const onUpgrade = () => {
     toast.info(
-      "🔧 Paiement indisponible pour le moment. Cette fonctionnalité arrive bientôt !",
+      "Paiement indisponible pour le moment. Cette fonctionnalité arrive bientôt !",
       {
         duration: 4000,
         icon: "💙",
@@ -51,15 +51,12 @@ export const Items = ({
 
       {/* RECHARGER LES CŒURS */}
       <li className="flex items-center w-full p-4 gap-x-4 border-t-2 border-border">
-
         <Image src="/heart.svg" alt="Cœur" height={60} width={60} />
-
         <div className="flex-1">
           <p className="text-slate-700 dark:text-foreground text-base lg:text-xl font-bold">
             Recharger les cœurs
           </p>
         </div>
-
         <Button
           onClick={onRefillHearts}
           disabled={pending || hearts === 5 || points < POINTS_TO_REFILL}
@@ -78,25 +75,65 @@ export const Items = ({
 
       {/* CŒURS ILLIMITÉS */}
       <li className="flex items-center w-full p-4 pt-8 gap-x-4 border-t-2 border-border">
-
         <Image src="/heartInfin.svg" alt="Illimité" height={60} width={60} />
-
         <div className="flex-1">
           <p className="text-slate-700 dark:text-foreground text-base lg:text-xl font-bold">
             Cœurs illimités
           </p>
-
           <p className="text-sm text-slate-500 dark:text-muted-foreground">
-            🔧 Bientôt disponible
+            Bientôt disponible
           </p>
         </div>
-
         <Button
           onClick={onUpgrade}
           disabled={pending}
           variant="primary"
         >
           {hasActiveSubscription ? "Paramètres" : "Améliorer"}
+        </Button>
+      </li>
+
+      {/* COURS PRIVÉS - WHATSAPP */}
+      <li className="flex items-center w-full p-4 pt-8 gap-x-4 border-t-2 border-border">
+        <Image src="/mascot.svg" alt="Cours privés" height={60} width={60} />
+        <div className="flex-1">
+          <p className="text-slate-700 dark:text-foreground text-base lg:text-xl font-bold">
+            Prendre des cours privés
+          </p>
+          <p className="text-sm text-slate-500 dark:text-muted-foreground">
+            Contacte un formateur directement
+          </p>
+        </div>
+        <Button variant="primary" asChild>
+          <a
+            href="https://wa.me/2250700601174"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Contacter
+          </a>
+        </Button>
+      </li>
+
+      {/* DÉCOUVRIR NOTRE SITE */}
+      <li className="flex items-center w-full p-4 pt-8 gap-x-4 border-t-2 border-border">
+        <Image src="/mascot.svg" alt="Learnly site" height={60} width={60} />
+        <div className="flex-1">
+          <p className="text-slate-700 dark:text-foreground text-base lg:text-xl font-bold">
+            Découvrir notre site
+          </p>
+          <p className="text-sm text-slate-500 dark:text-muted-foreground">
+            Accède à toutes nos ressources en ligne
+          </p>
+        </div>
+        <Button variant="primary" asChild>
+          <a
+            href="https://learnlysite.yosite.fun"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Visiter
+          </a>
         </Button>
       </li>
 

@@ -75,6 +75,7 @@ const ShopPage = async () => {
             points={userProgress.points}
             hasActiveSubscription={isPro}
           />
+
         </div>
       </FeedWrapper>
 
