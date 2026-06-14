@@ -10,6 +10,7 @@ import { Quests } from "@/components/quests";
 import { LeaderboardClient } from "./leaderboard-client";
 import { EditableUserAvatar } from "./editable-user-avatar";
 import { auth } from "@clerk/nextjs/server";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -145,18 +146,10 @@ const LeaderboardPage = async () => {
               </div>
               <div className="ml-auto text-right">
                <div className="ml-auto">
-  <div className="px-3 py-2 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border border-amber-200 dark:border-amber-800">
-    <div className="flex items-center gap-1 mb-1">
-      <Image src="/xp-bolt.svg" alt="XP" width={12} height={12} className="drop-shadow-sm" />
-      <p className="text-[8px] sm:text-[9px] md:text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Points</p>
-    </div>
-    <div className="flex items-center gap-1.5">
-      <Image src="/xp-bolt.svg" alt="XP" width={16} height={16} className="drop-shadow-sm" />
-      <p className="font-black text-xs sm:text-sm md:text-base lg:text-lg bg-gradient-to-r from-amber-600 to-orange-500 dark:from-amber-400 dark:to-orange-400 bg-clip-text text-transparent">
-        {userProgress.points} XP
-      </p>
-    </div>
-  </div>
+  <Button variant="default" size="sm" className="flex items-center gap-1.5">
+    <Image src="/xp-bolt.svg" alt="XP" width={16} height={16} />
+    <span className={`text-xs sm:text-sm md:text-base font-bold ${division.color}`}>{userProgress.points} XP</span>
+  </Button>
 </div>
               </div>
             </div>
