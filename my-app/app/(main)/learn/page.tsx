@@ -65,8 +65,8 @@ const LearnPage = async () => {
       {/* Feed — partie gauche */}
       <FeedWrapper>
 
-        {/* Header + Unit Banner desktop : un seul bloc sticky */}
-        <div className="hidden lg:flex lg:flex-col sticky top-0 z-50 bg-background mb-5 lg:pt-[28px] lg:mt-[-28px]">
+        {/* Header + Unit Banner desktop : un seul bloc sticky - SANS ESPACE */}
+        <div className="hidden lg:flex lg:flex-col sticky top-0 z-50 bg-background">
           <div className="flex items-center justify-between border-b border-border pb-3">
             <Header title={userProgress.activeCourse.title} />
             <UserProgress
