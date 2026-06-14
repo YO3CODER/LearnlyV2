@@ -526,7 +526,9 @@ export default function CoursPage() {
                   </button>
                 )}
               </div>
-              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+
+              {/* Filtres catégories - responsive: horizontal sur desktop, grille sur mobile */}
+              <div className="hidden sm:flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                 {ALL_CATEGORIES.map((cat) => {
                   const catStyle = getCategoryStyle(cat);
                   return (
@@ -544,6 +546,29 @@ export default function CoursPage() {
                   );
                 })}
               </div>
+
+              {/* Version mobile: grille 3 colonnes */}
+              <div className="sm:hidden">
+                <div className="grid grid-cols-3 gap-2">
+                  {ALL_CATEGORIES.map((cat) => {
+                    const catStyle = getCategoryStyle(cat);
+                    return (
+                      <button
+                        key={cat}
+                        onClick={() => setCategory(cat)}
+                        style={fredoka}
+                        className={cn(
+                          "px-3 py-1.5 rounded-full text-sm font-semibold border-2 transition-all duration-150 hover:shadow-md text-center truncate",
+                          category === cat ? catStyle.filterActive : catStyle.filterInactive
+                        )}
+                      >
+                        {cat}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               {(search || category !== "Tout") && (
                 <p className="text-xs text-muted-foreground mt-2" style={fredoka}>
                   {filteredCourses.length} cours trouvé{filteredCourses.length !== 1 ? "s" : ""}
