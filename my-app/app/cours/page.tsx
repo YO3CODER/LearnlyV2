@@ -12,45 +12,156 @@ import { MobileNavbar } from "@/components/mobile-navbar";
 
 const fredoka = { fontFamily: "'Fredoka', sans-serif" } as const;
 
-type Category = "Tout" | "Maths" | "Français" | "Sciences" | "Histoire";
-const ALL_CATEGORIES: Category[] = ["Tout", "Maths", "Français", "Sciences", "Histoire"];
+// ─── Styles de catégories ────────────────────────────────────────────────────
 
-const categoryColors: Record<Category, string> = {
-  Tout: "bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600",
-  Maths: "bg-sky-100 text-sky-700 border-sky-300 dark:bg-sky-900/40 dark:text-sky-300 dark:border-sky-700",
-  Français: "bg-violet-100 text-violet-700 border-violet-300 dark:bg-violet-900/40 dark:text-violet-300 dark:border-violet-700",
-  Sciences: "bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-700",
-  Histoire: "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900/40 dark:text-amber-300 dark:border-amber-700",
+type CategoryStyle = {
+  filterInactive: string;
+  filterActive: string;
+  badge: string;
+  button: string;
+  accent: string;
+  modal: string;
 };
 
-const categoryActiveColors: Record<Category, string> = {
-  Tout: "bg-gray-600 text-white border-gray-700",
-  Maths: "bg-sky-500 text-white border-sky-600",
-  Français: "bg-violet-500 text-white border-violet-600",
-  Sciences: "bg-emerald-500 text-white border-emerald-600",
-  Histoire: "bg-amber-500 text-white border-amber-600",
+const TOUT_STYLE: CategoryStyle = {
+  filterInactive: "bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600",
+  filterActive: "bg-gray-600 text-white border-gray-700",
+  badge: "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300",
+  button: "bg-gray-500 text-white border-gray-600 border-b-4 hover:bg-gray-500/90 active:border-b-0",
+  accent: "border-gray-400",
+  modal: "from-gray-400 to-gray-500",
 };
 
-const categoryBadgeColors: Record<string, string> = {
-  Maths: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
-  Français: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
-  Sciences: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-  Histoire: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+/** Couleurs fixes pour les catégories d'origine (look inchangé) */
+const KNOWN_STYLES: Record<string, CategoryStyle> = {
+  Maths: {
+    filterInactive: "bg-sky-100 text-sky-700 border-sky-300 dark:bg-sky-900/40 dark:text-sky-300 dark:border-sky-700",
+    filterActive: "bg-sky-500 text-white border-sky-600",
+    badge: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
+    button: "bg-sky-400 text-white border-sky-500 border-b-4 hover:bg-sky-400/90 active:border-b-0",
+    accent: "border-sky-400",
+    modal: "from-sky-400 to-cyan-400",
+  },
+  "Français": {
+    filterInactive: "bg-violet-100 text-violet-700 border-violet-300 dark:bg-violet-900/40 dark:text-violet-300 dark:border-violet-700",
+    filterActive: "bg-violet-500 text-white border-violet-600",
+    badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+    button: "bg-violet-500 text-white border-violet-600 border-b-4 hover:bg-violet-500/90 active:border-b-0",
+    accent: "border-violet-500",
+    modal: "from-violet-500 to-purple-400",
+  },
+  Sciences: {
+    filterInactive: "bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-700",
+    filterActive: "bg-emerald-500 text-white border-emerald-600",
+    badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+    button: "bg-emerald-500 text-white border-emerald-600 border-b-4 hover:bg-emerald-500/90 active:border-b-0",
+    accent: "border-emerald-500",
+    modal: "from-emerald-500 to-teal-400",
+  },
+  Histoire: {
+    filterInactive: "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900/40 dark:text-amber-300 dark:border-amber-700",
+    filterActive: "bg-amber-500 text-white border-amber-600",
+    badge: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+    button: "bg-amber-400 text-gray-900 border-amber-500 border-b-4 hover:bg-amber-400/90 active:border-b-0",
+    accent: "border-amber-400",
+    modal: "from-amber-400 to-orange-400",
+  },
 };
 
-const courseButtonColor: Record<string, string> = {
-  Maths: "bg-sky-400 text-white border-sky-500 border-b-4 hover:bg-sky-400/90 active:border-b-0",
-  Français: "bg-violet-500 text-white border-violet-600 border-b-4 hover:bg-violet-500/90 active:border-b-0",
-  Sciences: "bg-emerald-500 text-white border-emerald-600 border-b-4 hover:bg-emerald-500/90 active:border-b-0",
-  Histoire: "bg-amber-400 text-gray-900 border-amber-500 border-b-4 hover:bg-amber-400/90 active:border-b-0",
-};
+/** Palette assignée automatiquement aux nouvelles catégories (toujours la même couleur pour un même nom) */
+const EXTRA_PALETTE: CategoryStyle[] = [
+  {
+    filterInactive: "bg-rose-100 text-rose-700 border-rose-300 dark:bg-rose-900/40 dark:text-rose-300 dark:border-rose-700",
+    filterActive: "bg-rose-500 text-white border-rose-600",
+    badge: "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
+    button: "bg-rose-400 text-white border-rose-500 border-b-4 hover:bg-rose-400/90 active:border-b-0",
+    accent: "border-rose-400",
+    modal: "from-rose-400 to-pink-400",
+  },
+  {
+    filterInactive: "bg-indigo-100 text-indigo-700 border-indigo-300 dark:bg-indigo-900/40 dark:text-indigo-300 dark:border-indigo-700",
+    filterActive: "bg-indigo-500 text-white border-indigo-600",
+    badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300",
+    button: "bg-indigo-500 text-white border-indigo-600 border-b-4 hover:bg-indigo-500/90 active:border-b-0",
+    accent: "border-indigo-500",
+    modal: "from-indigo-400 to-blue-400",
+  },
+  {
+    filterInactive: "bg-teal-100 text-teal-700 border-teal-300 dark:bg-teal-900/40 dark:text-teal-300 dark:border-teal-700",
+    filterActive: "bg-teal-500 text-white border-teal-600",
+    badge: "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
+    button: "bg-teal-500 text-white border-teal-600 border-b-4 hover:bg-teal-500/90 active:border-b-0",
+    accent: "border-teal-500",
+    modal: "from-teal-400 to-cyan-400",
+  },
+  {
+    filterInactive: "bg-fuchsia-100 text-fuchsia-700 border-fuchsia-300 dark:bg-fuchsia-900/40 dark:text-fuchsia-300 dark:border-fuchsia-700",
+    filterActive: "bg-fuchsia-500 text-white border-fuchsia-600",
+    badge: "bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/40 dark:text-fuchsia-300",
+    button: "bg-fuchsia-500 text-white border-fuchsia-600 border-b-4 hover:bg-fuchsia-500/90 active:border-b-0",
+    accent: "border-fuchsia-500",
+    modal: "from-fuchsia-400 to-pink-400",
+  },
+  {
+    filterInactive: "bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900/40 dark:text-orange-300 dark:border-orange-700",
+    filterActive: "bg-orange-500 text-white border-orange-600",
+    badge: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300",
+    button: "bg-orange-400 text-white border-orange-500 border-b-4 hover:bg-orange-400/90 active:border-b-0",
+    accent: "border-orange-400",
+    modal: "from-orange-400 to-amber-400",
+  },
+  {
+    filterInactive: "bg-cyan-100 text-cyan-700 border-cyan-300 dark:bg-cyan-900/40 dark:text-cyan-300 dark:border-cyan-700",
+    filterActive: "bg-cyan-500 text-white border-cyan-600",
+    badge: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300",
+    button: "bg-cyan-500 text-white border-cyan-600 border-b-4 hover:bg-cyan-500/90 active:border-b-0",
+    accent: "border-cyan-500",
+    modal: "from-cyan-400 to-sky-400",
+  },
+  {
+    filterInactive: "bg-lime-100 text-lime-700 border-lime-300 dark:bg-lime-900/40 dark:text-lime-300 dark:border-lime-700",
+    filterActive: "bg-lime-500 text-white border-lime-600",
+    badge: "bg-lime-100 text-lime-700 dark:bg-lime-900/40 dark:text-lime-300",
+    button: "bg-lime-400 text-gray-900 border-lime-500 border-b-4 hover:bg-lime-400/90 active:border-b-0",
+    accent: "border-lime-400",
+    modal: "from-lime-400 to-emerald-400",
+  },
+  {
+    filterInactive: "bg-pink-100 text-pink-700 border-pink-300 dark:bg-pink-900/40 dark:text-pink-300 dark:border-pink-700",
+    filterActive: "bg-pink-500 text-white border-pink-600",
+    badge: "bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300",
+    button: "bg-pink-500 text-white border-pink-600 border-b-4 hover:bg-pink-500/90 active:border-b-0",
+    accent: "border-pink-500",
+    modal: "from-pink-400 to-rose-400",
+  },
+  {
+    filterInactive: "bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-900/40 dark:text-purple-300 dark:border-purple-700",
+    filterActive: "bg-purple-500 text-white border-purple-600",
+    badge: "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
+    button: "bg-purple-500 text-white border-purple-600 border-b-4 hover:bg-purple-500/90 active:border-b-0",
+    accent: "border-purple-500",
+    modal: "from-purple-400 to-violet-400",
+  },
+  {
+    filterInactive: "bg-red-100 text-red-700 border-red-300 dark:bg-red-900/40 dark:text-red-300 dark:border-red-700",
+    filterActive: "bg-red-500 text-white border-red-600",
+    badge: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
+    button: "bg-red-500 text-white border-red-600 border-b-4 hover:bg-red-500/90 active:border-b-0",
+    accent: "border-red-500",
+    modal: "from-red-400 to-rose-400",
+  },
+];
 
-const cardAccentColor: Record<string, string> = {
-  Maths: "border-sky-400",
-  Français: "border-violet-500",
-  Sciences: "border-emerald-500",
-  Histoire: "border-amber-400",
-};
+/** Style associé à une catégorie : couleurs fixes pour les 4 d'origine, sinon couleur stable assignée automatiquement */
+function getCategoryStyle(categorie: string): CategoryStyle {
+  if (categorie === "Tout") return TOUT_STYLE;
+  if (KNOWN_STYLES[categorie]) return KNOWN_STYLES[categorie];
+  let hash = 0;
+  for (let i = 0; i < categorie.length; i++) {
+    hash = (hash * 31 + categorie.charCodeAt(i)) >>> 0;
+  }
+  return EXTRA_PALETTE[hash % EXTRA_PALETTE.length];
+}
 
 const RECENT_KEY = "courses_recent";
 const COMPLETED_KEY = "courses_completed";
@@ -153,59 +264,63 @@ type CourseCardProps = {
   index: number;
 };
 
-const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCardProps) => (
-  <div
-    style={{ animationDelay: `${index * 40}ms` }}
-    className={cn(
-      "bg-card rounded-xl border border-border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col overflow-hidden opacity-0 animate-[fadeSlideIn_0.4s_cubic-bezier(0.34,1.56,0.64,1)_forwards] border-l-4",
-      cardAccentColor[course.categorie]
-    )}
-  >
-    <div className="relative w-full bg-muted overflow-hidden group" style={{ paddingBottom: "56.25%" }}>
-      <img
-        src={`https://img.youtube.com/vi/${course.videoId}/mqdefault.jpg`}
-        alt={course.titre}
-        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-      />
-      {isCompleted && (
-        <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center shadow">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-        </div>
-      )}
-      {isRecent && !isCompleted && (
-        <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-orange-400 text-white text-xs font-semibold shadow-md" style={fredoka}>
-          Récent
-        </div>
-      )}
-    </div>
+const CourseCard = ({ course, isCompleted, isRecent, onPlay, index }: CourseCardProps) => {
+  const style = getCategoryStyle(course.categorie);
 
-    <div className="p-3 flex flex-col flex-grow gap-2">
-      <span style={fredoka} className={cn("self-start text-xs font-semibold px-2 py-0.5 rounded-full", categoryBadgeColors[course.categorie])}>
-        {course.categorie}
-      </span>
-      <p className="text-sm font-semibold text-foreground leading-snug line-clamp-2 flex-grow" style={fredoka}>
-        {course.titre}
-      </p>
-      <button
-        onClick={() => onPlay(course)}
-        style={fredoka}
-        className={cn(
-          "w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg font-semibold text-sm transition-all duration-200 transform active:scale-95 hover:shadow-md",
-          courseButtonColor[course.categorie]
+  return (
+    <div
+      style={{ animationDelay: `${index * 40}ms` }}
+      className={cn(
+        "bg-card rounded-xl border border-border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col overflow-hidden opacity-0 animate-[fadeSlideIn_0.4s_cubic-bezier(0.34,1.56,0.64,1)_forwards] border-l-4",
+        style.accent
+      )}
+    >
+      <div className="relative w-full bg-muted overflow-hidden group" style={{ paddingBottom: "56.25%" }}>
+        <img
+          src={`https://img.youtube.com/vi/${course.videoId}/mqdefault.jpg`}
+          alt={course.titre}
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        {isCompleted && (
+          <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center shadow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
         )}
-      >
-        <IconPlay />
-        {isCompleted ? "Revoir" : "Commencer"}
-      </button>
+        {isRecent && !isCompleted && (
+          <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-orange-400 text-white text-xs font-semibold shadow-md" style={fredoka}>
+            Récent
+          </div>
+        )}
+      </div>
+
+      <div className="p-3 flex flex-col flex-grow gap-2">
+        <span style={fredoka} className={cn("self-start text-xs font-semibold px-2 py-0.5 rounded-full", style.badge)}>
+          {course.categorie}
+        </span>
+        <p className="text-sm font-semibold text-foreground leading-snug line-clamp-2 flex-grow" style={fredoka}>
+          {course.titre}
+        </p>
+        <button
+          onClick={() => onPlay(course)}
+          style={fredoka}
+          className={cn(
+            "w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg font-semibold text-sm transition-all duration-200 transform active:scale-95 hover:shadow-md",
+            style.button
+          )}
+        >
+          <IconPlay />
+          {isCompleted ? "Revoir" : "Commencer"}
+        </button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default function CoursPage() {
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState<Category>("Tout");
+  const [category, setCategory] = useState<string>("Tout");
   const [videoOpen, setVideoOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [selectedTitle, setSelectedTitle] = useState("");
@@ -218,6 +333,7 @@ export default function CoursPage() {
   const [completedIds, setCompletedIds] = useState<string[]>([]);
   const [courses, setCourses] = useState<Cours[]>([]);
   const [coursesLoading, setCoursesLoading] = useState(true);
+  const [categories, setCategories] = useState<string[]>([]);
 
   useEffect(() => {
     fetch("/api/cours")
@@ -228,6 +344,13 @@ export default function CoursPage() {
   }, []);
 
   useEffect(() => {
+    fetch("/api/admin2/categories")
+      .then((res) => res.json())
+      .then((data) => setCategories(Array.isArray(data) ? data : []))
+      .catch(() => setCategories([]));
+  }, []);
+
+  useEffect(() => {
     try {
       const r = localStorage.getItem(RECENT_KEY);
       const c = localStorage.getItem(COMPLETED_KEY);
@@ -235,6 +358,8 @@ export default function CoursPage() {
       if (c) setCompletedIds(JSON.parse(c));
     } catch { }
   }, []);
+
+  const ALL_CATEGORIES = useMemo(() => ["Tout", ...categories], [categories]);
 
   const filteredCourses = useMemo(() =>
     courses.filter((c) => {
@@ -275,13 +400,6 @@ export default function CoursPage() {
   };
 
   const isCurrentCompleted = completedIds.includes(selectedVideoId);
-
-  const modalAccentBar: Record<string, string> = {
-    Maths: "from-sky-400 to-cyan-400",
-    Français: "from-violet-500 to-purple-400",
-    Sciences: "from-emerald-500 to-teal-400",
-    Histoire: "from-amber-400 to-orange-400",
-  };
 
   if (coursesLoading) {
     return (
@@ -409,19 +527,22 @@ export default function CoursPage() {
                 )}
               </div>
               <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                {ALL_CATEGORIES.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setCategory(cat)}
-                    style={fredoka}
-                    className={cn(
-                      "flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-semibold border-2 transition-all duration-150 hover:shadow-md",
-                      category === cat ? categoryActiveColors[cat] : categoryColors[cat]
-                    )}
-                  >
-                    {cat}
-                  </button>
-                ))}
+                {ALL_CATEGORIES.map((cat) => {
+                  const catStyle = getCategoryStyle(cat);
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setCategory(cat)}
+                      style={fredoka}
+                      className={cn(
+                        "flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-semibold border-2 transition-all duration-150 hover:shadow-md",
+                        category === cat ? catStyle.filterActive : catStyle.filterInactive
+                      )}
+                    >
+                      {cat}
+                    </button>
+                  );
+                })}
               </div>
               {(search || category !== "Tout") && (
                 <p className="text-xs text-muted-foreground mt-2" style={fredoka}>
@@ -509,11 +630,11 @@ export default function CoursPage() {
             transition
             className="relative transform overflow-hidden rounded-2xl bg-card shadow-2xl transition-all duration-500 data-closed:scale-95 data-closed:opacity-0 data-enter:duration-500 data-enter:ease-out data-leave:duration-300 data-leave:ease-in w-full max-w-2xl border border-border flex flex-col"
           >
-            <div className={cn("h-1 w-full bg-gradient-to-r flex-shrink-0", modalAccentBar[selectedCategorie] ?? "from-blue-400 to-cyan-400")} />
+            <div className={cn("h-1 w-full bg-gradient-to-r flex-shrink-0", getCategoryStyle(selectedCategorie).modal)} />
 
             <div className="px-5 py-3 border-b border-border flex-shrink-0 flex items-center justify-between gap-3 bg-card">
               <div className="min-w-0">
-                <span style={fredoka} className={cn("inline-block text-xs font-semibold px-2 py-0.5 rounded-full mb-1", categoryBadgeColors[selectedCategorie] ?? "bg-muted text-muted-foreground")}>
+                <span style={fredoka} className={cn("inline-block text-xs font-semibold px-2 py-0.5 rounded-full mb-1", getCategoryStyle(selectedCategorie).badge)}>
                   {selectedCategorie}
                 </span>
                 <p className="text-sm font-semibold text-foreground truncate leading-snug" style={fredoka}>{selectedTitle}</p>

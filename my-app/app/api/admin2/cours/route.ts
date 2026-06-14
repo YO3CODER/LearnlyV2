@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
-import { mapLigneVersCours, extraireYoutubeId, CATEGORIES } from "@/lib/cours-utils";
+import { mapLigneVersCours, extraireYoutubeId } from "@/lib/cours-utils";
 
 export async function GET() {
   const lignes = await sql`
     SELECT id, titre, lien, video_id, categorie, pdf_cours, pdf_fiche, pdf_corrige
     FROM cours
-    ORDER BY cree_le DESC
+    ORDER BY cree_le DESC 
   `;
   return NextResponse.json(lignes.map(mapLigneVersCours));
 }
@@ -19,7 +19,9 @@ export async function POST(req: Request) {
     if (!titre?.trim()) {
       return NextResponse.json({ error: "Le titre est requis" }, { status: 400 });
     }
-    if (!CATEGORIES.includes(categorie)) {
+
+    const [categorieExiste] = await sql`SELECT 1 FROM categories WHERE nom = ${categorie}`;
+    if (!categorieExiste) {
       return NextResponse.json({ error: "Catégorie invalide" }, { status: 400 });
     }
 

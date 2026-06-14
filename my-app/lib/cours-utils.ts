@@ -1,5 +1,6 @@
-export type Categorie = "Maths" | "Français" | "Sciences" | "Histoire";
+export type Categorie = string;
 
+/** Catégories par défaut (utilisées en cas d'échec de récupération depuis l'API) */
 export const CATEGORIES: Categorie[] = ["Maths", "Français", "Sciences", "Histoire"];
 
 export type Cours = {
@@ -12,6 +13,21 @@ export type Cours = {
   pdfFiche?: string | null;
   pdfCorrige?: string | null;
 };
+
+/**
+ * Récupère la liste des catégories depuis l'API (table `categories` en BD).
+ * Retourne CATEGORIES en cas d'erreur ou de liste vide.
+ */
+export async function fetchCategories(): Promise<Categorie[]> {
+  try {
+    const res = await fetch("/api/admin2/categories");
+    if (!res.ok) return CATEGORIES;
+    const data = await res.json();
+    return Array.isArray(data) && data.length > 0 ? data : CATEGORIES;
+  } catch {
+    return CATEGORIES;
+  }
+}
 
 /**
  * Extrait l'identifiant vidéo depuis une URL YouTube
@@ -43,4 +59,4 @@ export function mapLigneVersCours(ligne: any): Cours {
     pdfFiche: ligne.pdf_fiche,
     pdfCorrige: ligne.pdf_corrige,
   };
-}
+} 

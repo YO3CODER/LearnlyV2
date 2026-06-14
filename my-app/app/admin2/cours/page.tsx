@@ -111,10 +111,13 @@ const ChampPdf = ({ label, valeur, onChange }: ChampPdfProps) => {
 
 export default function PageAdminCours() {
   const [coursListe, setCoursListe] = useState<Cours[]>([]);
+  const [categories, setCategories] = useState<Categorie[]>([]);
   const [chargement, setChargement] = useState(true);
   const [formulaire, setFormulaire] = useState<Formulaire>(FORMULAIRE_VIDE);
   const [envoiEnCours, setEnvoiEnCours] = useState(false);
   const [erreurFormulaire, setErreurFormulaire] = useState<string | null>(null);
+  const [nouvelleCategorie, setNouvelleCategorie] = useState("");
+  const [erreurCategorie, setErreurCategorie] = useState<string | null>(null);
 
   const chargerCours = async () => {
     setChargement(true);
@@ -127,8 +130,19 @@ export default function PageAdminCours() {
     }
   };
 
+  const chargerCategories = async () => {
+    try {
+      const res = await fetch("/api/admin2/categories");
+      const data = await res.json();
+      setCategories(data);
+    } catch (err) {
+      console.error("Erreur chargement catégories:", err);
+    }
+  };
+
   useEffect(() => {
     chargerCours();
+    chargerCategories();
   }, []);
 
   const apercuVideoId = extraireYoutubeId(formulaire.urlYoutube);
@@ -182,6 +196,51 @@ export default function PageAdminCours() {
     }
   };
 
+  const ajouterCategorie = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErreurCategorie(null);
+
+    if (!nouvelleCategorie.trim()) {
+      setErreurCategorie("Le nom de la catégorie est requis");
+      return;
+    }
+
+    if (categories.includes(nouvelleCategorie as Categorie)) {
+      setErreurCategorie("Cette catégorie existe déjà");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/admin2/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nom: nouvelleCategorie }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erreur");
+
+      setNouvelleCategorie("");
+      chargerCategories();
+    } catch (err: any) {
+      setErreurCategorie(err.message);
+    }
+  };
+
+  const supprimerCategorie = async (cat: Categorie) => {
+    if (!confirm(`Supprimer la catégorie "${cat}" ?`)) return;
+    try {
+      const res = await fetch("/api/admin2/categories", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nom: cat }),
+      });
+      if (!res.ok) throw new Error("Erreur");
+      chargerCategories();
+    } catch (err) {
+      setErreurCategorie("Erreur lors de la suppression");
+    }
+  };
+
   const modifier = (cours: Cours) => {
     setFormulaire({
       id: cours.id,
@@ -207,14 +266,61 @@ export default function PageAdminCours() {
       <div className="max-w-3xl mx-auto space-y-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-800" style={fredoka}>
-            Administration des cours
+            Administration
           </h1>
           <p className="text-sm text-gray-400" style={fredoka}>
-            Ajouter, modifier ou supprimer des cours vidéo
+            Gérer les catégories et les cours vidéo
           </p>
         </div>
 
-        {/* Formulaire */}
+        {/* ─── Gestion des Catégories ─── */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-4">
+          <h2 className="text-base font-semibold text-gray-700" style={fredoka}>
+            Catégories ({categories.length})
+          </h2>
+
+          <form onSubmit={ajouterCategorie} className="flex gap-2">
+            <input
+              type="text"
+              value={nouvelleCategorie}
+              onChange={(e) => setNouvelleCategorie(e.target.value)}
+              style={fredoka}
+              className="flex-1 px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-400"
+              placeholder="Nouvelle catégorie (ex: Anglais)"
+            />
+            <button
+              type="submit"
+              style={fredoka}
+              className="px-4 py-2 rounded-lg font-semibold text-sm bg-sky-500 text-white border-b-4 border-sky-600 hover:bg-sky-500/90 active:border-b-0 transition-all"
+            >
+              Ajouter
+            </button>
+          </form>
+
+          {erreurCategorie && (
+            <p className="text-sm text-rose-500" style={fredoka}>{erreurCategorie}</p>
+          )}
+
+          <div className="flex gap-2 flex-wrap">
+            {categories.map((cat) => (
+              <div
+                key={cat}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-100 text-sky-700 text-sm font-semibold"
+              >
+                <span>{cat}</span>
+                <button
+                  type="button"
+                  onClick={() => supprimerCategorie(cat)}
+                  className="text-sky-700 hover:text-sky-900 font-bold text-lg leading-none"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Formulaire Cours */}
         <form
           onSubmit={soumettre}
           className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-4"
@@ -268,17 +374,17 @@ export default function PageAdminCours() {
               Catégorie
             </label>
             <div className="flex gap-2 flex-wrap">
-              {CATEGORIES.map((cat) => (
+              {categories.map((cat) => (
                 <button
                   key={cat}
                   type="button"
-                  onClick={() => setFormulaire((f) => ({ ...f, categorie: cat }))}
+                  onClick={() => setFormulaire((f) => ({ ...f, categorie: cat as Categorie }))}
                   style={fredoka}
                   className={cn(
                     "px-3 py-1.5 rounded-full text-sm font-semibold border transition-all",
                     formulaire.categorie === cat
                       ? "bg-sky-500 text-white border-sky-600"
-                      : couleursCategorie[cat] + " border-transparent"
+                      : "bg-gray-100 text-gray-700 border-transparent hover:bg-gray-200"
                   )}
                 >
                   {cat}
@@ -358,10 +464,7 @@ export default function PageAdminCours() {
                     </p>
                     <span
                       style={fredoka}
-                      className={cn(
-                        "inline-block text-xs font-semibold px-2 py-0.5 rounded-full mt-1",
-                        couleursCategorie[cours.categorie]
-                      )}
+                      className="inline-block text-xs font-semibold px-2 py-0.5 rounded-full mt-1 bg-sky-100 text-sky-700"
                     >
                       {cours.categorie}
                     </span>

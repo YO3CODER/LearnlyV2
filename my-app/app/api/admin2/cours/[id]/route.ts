@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
-import { mapLigneVersCours, extraireYoutubeId, CATEGORIES } from "@/lib/cours-utils";
+import { mapLigneVersCours, extraireYoutubeId } from "@/lib/cours-utils";
 
 export async function PUT(
   req: Request,
@@ -15,7 +15,9 @@ export async function PUT(
     if (!titre?.trim()) {
       return NextResponse.json({ error: "Le titre est requis" }, { status: 400 });
     }
-    if (!CATEGORIES.includes(categorie)) {
+
+    const [categorieExiste] = await sql`SELECT 1 FROM categories WHERE nom = ${categorie}`;
+    if (!categorieExiste) {
       return NextResponse.json({ error: "Catégorie invalide" }, { status: 400 });
     }
 
