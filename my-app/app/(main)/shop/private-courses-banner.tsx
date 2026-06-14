@@ -85,7 +85,7 @@ export const PrivateCoursesBanner = () => {
             </div>
             <div>
               <p className="text-white/70 text-xs font-semibold uppercase tracking-widest mb-0.5">
-                Learnly AgroTech
+                Learnly
               </p>
               <h2 className="text-white font-bold text-xl leading-tight">
                 Cours particuliers privés
