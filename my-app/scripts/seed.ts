@@ -40,6 +40,8 @@ const main = async () => {
       { id: 12, courseId: 1, title: "Trigonométrie Avancée", description: "Identités et équations trigonométriques", order: 6 },
       { id: 13, courseId: 1, title: "Nombres Complexes", description: "Algèbre et géométrie des complexes", order: 7 },
       { id: 14, courseId: 1, title: "Algèbre Linéaire", description: "Matrices et systèmes linéaires avancés", order: 8 },
+      { id: 100, courseId: 1, title: "Logarithmes", description: "Propriétés et équations logarithmiques", order: 9 },
+      { id: 101, courseId: 1, title: "Suites et Séries", description: "Suites arithmétiques, géométriques et convergence", order: 10 },
     ]);
 
     await db.insert(schema.lessons).values([
@@ -67,138 +69,153 @@ const main = async () => {
       { id: 35, unitId: 14, order: 1, title: "Opérations sur les matrices" },
       { id: 36, unitId: 14, order: 2, title: "Déterminant et inverse" },
       { id: 37, unitId: 14, order: 3, title: "Systèmes linéaires (méthode de Gauss)" },
+      { id: 500, unitId: 100, order: 1, title: "Propriétés des logarithmes" },
+      { id: 501, unitId: 100, order: 2, title: "Équations logarithmiques" },
+      { id: 502, unitId: 101, order: 1, title: "Suites arithmétiques" },
+      { id: 503, unitId: 101, order: 2, title: "Suites géométriques" },
     ]);
 
     await db.insert(schema.challenges).values([
+      // Équations
       { id: 1, lessonId: 1, type: "ASSIST", order: 1, question: "Résous : 3x + 7 = 2x + 15" },
       { id: 2, lessonId: 1, type: "ASSIST", order: 2, question: "Résous : 5(x - 2) = 3(x + 4)" },
       { id: 3, lessonId: 1, type: "ASSIST", order: 3, question: "Résous : 7x - 9 = 5x + 15" },
       { id: 4, lessonId: 1, type: "ASSIST", order: 4, question: "Résous : 4(2x - 1) = 6x + 10" },
-      { id: 200, lessonId: 1, type: "FILL_BLANK", order: 5, question: "Si 3x + 7 = 2x + 15, alors x = ___" },
-      { id: 201, lessonId: 1, type: "FILL_BLANK", order: 6, question: "Si 5x - 3 = 2x + 9, alors x = ___" },
-      { id: 202, lessonId: 1, type: "FILL_BLANK", order: 7, question: "Si 4(x + 2) = 24, alors x = ___" },
-      { id: 305, lessonId: 1, type: "TRANSLATE", order: 8, question: "Traduis : 'Trois fois un nombre moins cinq égale seize'" },
-      { id: 306, lessonId: 1, type: "TRANSLATE", order: 9, question: "Traduis : 'Le double d'un nombre augmenté de sept égale vingt-trois'" },
-
       { id: 5, lessonId: 2, type: "ASSIST", order: 1, question: "Résous : x² - 9 = 0" },
       { id: 6, lessonId: 2, type: "ASSIST", order: 2, question: "Résous : 2x² - 18 = 0" },
       { id: 7, lessonId: 2, type: "ASSIST", order: 3, question: "Résous : (x - 4)(2x + 6) = 0" },
       { id: 8, lessonId: 2, type: "ASSIST", order: 4, question: "Résous : (x + 2)² = 49" },
       { id: 9, lessonId: 2, type: "ASSIST", order: 5, question: "Résous : x² - 5x + 6 = 0" },
-      { id: 203, lessonId: 2, type: "FILL_BLANK", order: 6, question: "Si x² = 25, alors x = ___ ou x = ___" },
-      { id: 204, lessonId: 2, type: "FILL_BLANK", order: 7, question: "Si x² - 7x + 12 = 0, alors x = ___ ou x = ___" },
-
       { id: 10, lessonId: 3, type: "ASSIST", order: 1, question: "Résous : x + y = 10 et x - y = 4" },
       { id: 11, lessonId: 3, type: "ASSIST", order: 2, question: "Résous : 2x + y = 7 et x - y = 2" },
       { id: 12, lessonId: 3, type: "ASSIST", order: 3, question: "Résous : 3x + 2y = 12 et x + y = 5" },
       { id: 13, lessonId: 3, type: "ASSIST", order: 4, question: "Résous : x + 2y = 8 et 2x - y = 1" },
 
+      // Fractions
       { id: 14, lessonId: 4, type: "SELECT", order: 1, question: "Simplifie : 12/18" },
       { id: 15, lessonId: 4, type: "SELECT", order: 2, question: "Simplifie : 24/36" },
       { id: 16, lessonId: 4, type: "SELECT", order: 3, question: "Simplifie : 15/45" },
       { id: 17, lessonId: 4, type: "SELECT", order: 4, question: "Simplifie : 28/42" },
-      { id: 205, lessonId: 4, type: "FILL_BLANK", order: 5, question: "12/18 simplifié donne ___" },
-      { id: 206, lessonId: 4, type: "FILL_BLANK", order: 6, question: "15/45 simplifié donne ___ et 24/36 donne ___" },
-
       { id: 18, lessonId: 5, type: "SELECT", order: 1, question: "Calcule : 1/2 + 1/3" },
       { id: 19, lessonId: 5, type: "SELECT", order: 2, question: "Calcule : 3/4 - 1/6" },
       { id: 20, lessonId: 5, type: "SELECT", order: 3, question: "Calcule : 2/3 × 3/4" },
       { id: 21, lessonId: 5, type: "SELECT", order: 4, question: "Calcule : 5/6 ÷ 5/3" },
-      { id: 207, lessonId: 5, type: "FILL_BLANK", order: 5, question: "1/2 + 1/3 = ___" },
-      { id: 208, lessonId: 5, type: "FILL_BLANK", order: 6, question: "2/3 × 3/4 = ___ et 5/6 ÷ 5/3 = ___" },
-
       { id: 22, lessonId: 6, type: "SELECT", order: 1, question: "Si 3 stylos coûtent 6€, combien coûtent 7 stylos ?" },
       { id: 23, lessonId: 6, type: "SELECT", order: 2, question: "Une voiture roule 150 km en 2h. Quelle distance en 5h ?" },
       { id: 24, lessonId: 6, type: "SELECT", order: 3, question: "4 ouvriers font un travail en 6 jours. Combien faut-il d'ouvriers pour 3 jours ?" },
 
+      // Géométrie
       { id: 25, lessonId: 7, type: "SELECT", order: 1, question: "Quelle est l'aire d'un rectangle de 6cm × 4cm ?" },
       { id: 26, lessonId: 7, type: "SELECT", order: 2, question: "Quel est le périmètre d'un carré de côté 5cm ?" },
       { id: 27, lessonId: 7, type: "SELECT", order: 3, question: "Quelle est l'aire d'un triangle de base 8cm et hauteur 5cm ?" },
       { id: 28, lessonId: 7, type: "SELECT", order: 4, question: "Quelle est l'aire d'un cercle de rayon 7cm ? (π ≈ 3.14)" },
-      { id: 209, lessonId: 7, type: "FILL_BLANK", order: 5, question: "L'aire d'un rectangle de 6cm × 4cm est ___ cm²" },
-      { id: 210, lessonId: 7, type: "FILL_BLANK", order: 6, question: "Le périmètre d'un carré de côté 5cm est ___ cm" },
-
       { id: 29, lessonId: 8, type: "SELECT", order: 1, question: "Triangle rectangle : a=3, b=4. Quelle est la valeur de c ?" },
       { id: 30, lessonId: 8, type: "SELECT", order: 2, question: "Triangle rectangle : a=5, b=12. Quelle est la valeur de c ?" },
       { id: 31, lessonId: 8, type: "SELECT", order: 3, question: "Triangle rectangle : c=10, a=6. Quelle est la valeur de b ?" },
-      { id: 211, lessonId: 8, type: "FILL_BLANK", order: 4, question: "Si a = 3 et b = 4, alors c = ___" },
-      { id: 212, lessonId: 8, type: "FILL_BLANK", order: 5, question: "Si a = 5 et b = 12, alors c = ___" },
-
       { id: 32, lessonId: 9, type: "SELECT", order: 1, question: "Si AB=6, AC=9 et AD=4, quelle est la longueur AE ?" },
       { id: 33, lessonId: 9, type: "SELECT", order: 2, question: "Si AB=8, DE=4 et AD=3, quelle est la longueur BC ?" },
 
+      // Statistiques
       { id: 34, lessonId: 10, type: "SELECT", order: 1, question: "Quelle est la moyenne de : 4, 8, 6, 10, 2 ?" },
       { id: 35, lessonId: 10, type: "SELECT", order: 2, question: "Quelle est la médiane de : 3, 7, 1, 9, 5 ?" },
       { id: 36, lessonId: 10, type: "SELECT", order: 3, question: "Quelle est la moyenne de : 12, 15, 18, 9, 6 ?" },
-      { id: 213, lessonId: 10, type: "FILL_BLANK", order: 4, question: "La moyenne de 4, 8, 6, 10, 2 est ___" },
-      { id: 214, lessonId: 10, type: "FILL_BLANK", order: 5, question: "La médiane de 3, 7, 1, 9, 5 est ___" },
-      { id: 322, lessonId: 10, type: "MATCH", order: 6, question: "Relie chaque terme à sa définition" },
-
       { id: 37, lessonId: 11, type: "SELECT", order: 1, question: "On lance un dé. Quelle est la probabilité d'obtenir 6 ?" },
       { id: 38, lessonId: 11, type: "SELECT", order: 2, question: "On tire une carte dans un jeu de 52. Probabilité d'un as ?" },
       { id: 39, lessonId: 11, type: "SELECT", order: 3, question: "On lance une pièce 2 fois. Probabilité d'obtenir 2 faces ?" },
 
+      // Dérivées
       { id: 60, lessonId: 25, type: "SELECT", order: 1, question: "Quelle est la dérivée de f(x) = x³ + 2x² - 5x + 3 ?" },
       { id: 61, lessonId: 25, type: "SELECT", order: 2, question: "Quelle est la dérivée de f(x) = sin(x) + cos(x) ?" },
       { id: 62, lessonId: 25, type: "SELECT", order: 3, question: "Quelle est la dérivée de f(x) = eˣ · x² ?" },
       { id: 63, lessonId: 25, type: "SELECT", order: 4, question: "Quelle est la dérivée de f(x) = ln(x) / x ?" },
-      { id: 215, lessonId: 25, type: "FILL_BLANK", order: 5, question: "La dérivée de x³ est ___ et la dérivée de x⁴ est ___" },
-      { id: 216, lessonId: 25, type: "FILL_BLANK", order: 6, question: "La dérivée de sin(x) est ___ et la dérivée de cos(x) est ___" },
-
       { id: 64, lessonId: 26, type: "SELECT", order: 1, question: "Dérive f(x) = (3x² + 1)⁴" },
       { id: 65, lessonId: 26, type: "SELECT", order: 2, question: "Dérive f(x) = sin(2x + 1)" },
       { id: 66, lessonId: 26, type: "SELECT", order: 3, question: "Dérive f(x) = e^(x² - 1)" },
       { id: 67, lessonId: 26, type: "SELECT", order: 4, question: "Dérive f(x) = ln(cos(x))" },
 
+      // Intégrales
       { id: 68, lessonId: 27, type: "SELECT", order: 1, question: "Calcule ∫₀² x² dx" },
       { id: 69, lessonId: 27, type: "SELECT", order: 2, question: "Calcule ∫₁³ (2x + 1) dx" },
       { id: 70, lessonId: 27, type: "SELECT", order: 3, question: "Calcule ∫₀^π sin(x) dx" },
       { id: 71, lessonId: 27, type: "SELECT", order: 4, question: "Calcule ∫₁^e (1/x) dx" },
-
       { id: 72, lessonId: 28, type: "SELECT", order: 1, question: "Quelle est une primitive de f(x) = 3x² + 2x ?" },
       { id: 73, lessonId: 28, type: "SELECT", order: 2, question: "Quelle est une primitive de f(x) = cos(x) ?" },
       { id: 74, lessonId: 28, type: "SELECT", order: 3, question: "Quelle est une primitive de f(x) = 1/(x+1) ?" },
 
+      // Trigonométrie
       { id: 75, lessonId: 29, type: "SELECT", order: 1, question: "Simplifie : sin²(x) + cos²(x)" },
       { id: 76, lessonId: 29, type: "SELECT", order: 2, question: "Quelle est la valeur de cos(2x) en termes de sin(x) ?" },
       { id: 77, lessonId: 29, type: "SELECT", order: 3, question: "Simplifie : (1 - cos²(x)) / sin(x)" },
       { id: 78, lessonId: 29, type: "SELECT", order: 4, question: "Quelle est la valeur de tan²(x) + 1 ?" },
-      { id: 217, lessonId: 29, type: "FILL_BLANK", order: 5, question: "sin²(x) + cos²(x) = ___" },
-      { id: 218, lessonId: 29, type: "FILL_BLANK", order: 6, question: "tan²(x) + 1 = ___" },
-
       { id: 79, lessonId: 30, type: "SELECT", order: 1, question: "Résous : sin(x) = 1/2 sur [0, 2π]" },
       { id: 80, lessonId: 30, type: "SELECT", order: 2, question: "Résous : cos(x) = -1 sur [0, 2π]" },
       { id: 81, lessonId: 30, type: "SELECT", order: 3, question: "Résous : tan(x) = 1 sur [0, π]" },
-
       { id: 82, lessonId: 31, type: "SELECT", order: 1, question: "Développe : sin(a + b)" },
       { id: 83, lessonId: 31, type: "SELECT", order: 2, question: "Développe : cos(a - b)" },
       { id: 84, lessonId: 31, type: "SELECT", order: 3, question: "Calcule sin(75°) en utilisant sin(45° + 30°)" },
 
+      // Nombres complexes
       { id: 85, lessonId: 32, type: "SELECT", order: 1, question: "Calcule (2 + 3i) + (1 - 5i)" },
       { id: 86, lessonId: 32, type: "SELECT", order: 2, question: "Calcule (1 + 2i)(3 - i)" },
       { id: 87, lessonId: 32, type: "SELECT", order: 3, question: "Calcule (2 + i) / (1 - i)" },
       { id: 88, lessonId: 32, type: "SELECT", order: 4, question: "Quel est le conjugué de z = 4 - 7i ?" },
-
       { id: 89, lessonId: 33, type: "SELECT", order: 1, question: "Quel est le module de z = 3 + 4i ?" },
       { id: 90, lessonId: 33, type: "SELECT", order: 2, question: "Quel est le module de z = -5 + 12i ?" },
       { id: 91, lessonId: 33, type: "SELECT", order: 3, question: "Quel est l'argument de z = 1 + i ?" },
-
       { id: 92, lessonId: 34, type: "SELECT", order: 1, question: "Écris z = 1 + i sous forme trigonométrique" },
       { id: 93, lessonId: 34, type: "SELECT", order: 2, question: "Calcule z³ pour z = √2 · e^(iπ/4)" },
 
+      // Matrices
       { id: 94, lessonId: 35, type: "SELECT", order: 1, question: "A = [[1,2],[3,4]], B = [[5,6],[7,8]]. Calcule A + B." },
       { id: 95, lessonId: 35, type: "SELECT", order: 2, question: "A = [[1,2],[3,4]], B = [[2,0],[1,3]]. Calcule A × B." },
       { id: 96, lessonId: 35, type: "SELECT", order: 3, question: "Calcule 2 × [[1,3],[2,5]]" },
-
       { id: 97, lessonId: 36, type: "SELECT", order: 1, question: "Calcule det([[2,3],[1,4]])" },
       { id: 98, lessonId: 36, type: "SELECT", order: 2, question: "Calcule det([[1,2],[3,4]])" },
       { id: 99, lessonId: 36, type: "SELECT", order: 3, question: "Quelle est l'inverse de A = [[4,7],[2,6]] ?" },
-
       { id: 100, lessonId: 37, type: "SELECT", order: 1, question: "Résous par Gauss : x + y + z = 6, 2x - y + z = 3, x + 2y - z = 2" },
       { id: 101, lessonId: 37, type: "SELECT", order: 2, question: "Résous par Gauss : x + 2y = 5, 3x - y = 1" },
+
+      // Logarithmes
+      { id: 1000, lessonId: 500, type: "SELECT", order: 1, question: "Que vaut log₂(8) ?" },
+      { id: 1001, lessonId: 500, type: "SELECT", order: 2, question: "Que vaut ln(e³) ?" },
+      { id: 1002, lessonId: 500, type: "SELECT", order: 3, question: "Simplifie : log₃(27)" },
+      { id: 1003, lessonId: 500, type: "SELECT", order: 4, question: "logₐ(1) = ?" },
+      { id: 1004, lessonId: 500, type: "SELECT", order: 5, question: "logₐ(a) = ?" },
+      { id: 1005, lessonId: 501, type: "ASSIST", order: 1, question: "Résous : log₂(x) = 3" },
+      { id: 1006, lessonId: 501, type: "ASSIST", order: 2, question: "Résous : ln(x) = 2" },
+      { id: 1007, lessonId: 501, type: "ASSIST", order: 3, question: "Résous : log(x) + log(2) = 1" },
+
+      // Suites
+      { id: 1008, lessonId: 502, type: "SELECT", order: 1, question: "Trouve le 5ème terme de la suite : 2, 5, 8, 11, ..." },
+      { id: 1009, lessonId: 502, type: "SELECT", order: 2, question: "Calcule la somme des 10 premiers termes : 3, 7, 11, 15, ..." },
+      { id: 1010, lessonId: 502, type: "FILL_BLANK", order: 3, question: "Le 10ème terme de la suite arithmétique de premier terme 5 et raison 3 est ___" },
+      { id: 1011, lessonId: 503, type: "SELECT", order: 1, question: "Trouve le 4ème terme de la suite : 3, 6, 12, ..." },
+      { id: 1012, lessonId: 503, type: "SELECT", order: 2, question: "Calcule la somme infinie : 1 + 1/2 + 1/4 + 1/8 + ..." },
+
+      // FILL_BLANK
+      { id: 200, lessonId: 1, type: "FILL_BLANK", order: 5, question: "Si 3x + 7 = 2x + 15, alors x = ___" },
+      { id: 201, lessonId: 1, type: "FILL_BLANK", order: 6, question: "Si 5x - 3 = 2x + 9, alors x = ___" },
+      { id: 202, lessonId: 1, type: "FILL_BLANK", order: 7, question: "Si 4(x + 2) = 24, alors x = ___" },
+      { id: 203, lessonId: 2, type: "FILL_BLANK", order: 6, question: "Si x² = 25, alors x = ___ ou x = ___" },
+      { id: 204, lessonId: 2, type: "FILL_BLANK", order: 7, question: "Si x² - 7x + 12 = 0, alors x = ___ ou x = ___" },
+      { id: 205, lessonId: 4, type: "FILL_BLANK", order: 5, question: "12/18 simplifié donne ___" },
+      { id: 206, lessonId: 4, type: "FILL_BLANK", order: 6, question: "15/45 simplifié donne ___ et 24/36 donne ___" },
+      { id: 207, lessonId: 5, type: "FILL_BLANK", order: 5, question: "1/2 + 1/3 = ___" },
+      { id: 208, lessonId: 5, type: "FILL_BLANK", order: 6, question: "2/3 × 3/4 = ___ et 5/6 ÷ 5/3 = ___" },
+      { id: 209, lessonId: 7, type: "FILL_BLANK", order: 5, question: "L'aire d'un rectangle de 6cm × 4cm est ___ cm²" },
+      { id: 210, lessonId: 7, type: "FILL_BLANK", order: 6, question: "Le périmètre d'un carré de côté 5cm est ___ cm" },
+      { id: 211, lessonId: 8, type: "FILL_BLANK", order: 4, question: "Si a = 3 et b = 4, alors c = ___" },
+      { id: 212, lessonId: 8, type: "FILL_BLANK", order: 5, question: "Si a = 5 et b = 12, alors c = ___" },
+      { id: 213, lessonId: 10, type: "FILL_BLANK", order: 4, question: "La moyenne de 4, 8, 6, 10, 2 est ___" },
+      { id: 214, lessonId: 10, type: "FILL_BLANK", order: 5, question: "La médiane de 3, 7, 1, 9, 5 est ___" },
+      { id: 215, lessonId: 25, type: "FILL_BLANK", order: 5, question: "La dérivée de x³ est ___ et la dérivée de x⁴ est ___" },
+      { id: 216, lessonId: 25, type: "FILL_BLANK", order: 6, question: "La dérivée de sin(x) est ___ et la dérivée de cos(x) est ___" },
+      { id: 217, lessonId: 29, type: "FILL_BLANK", order: 5, question: "sin²(x) + cos²(x) = ___" },
+      { id: 218, lessonId: 29, type: "FILL_BLANK", order: 6, question: "tan²(x) + 1 = ___" },
     ]);
 
     await db.insert(schema.challengeOptions).values([
+      // Équations
       { challengeId: 1, correct: false, text: "x = 6", audioSrc: "/6.mp3" },
       { challengeId: 1, correct: true, text: "x = 8", audioSrc: "/8.mp3" },
       { challengeId: 1, correct: false, text: "x = 10", audioSrc: "/10.mp3" },
@@ -230,6 +247,8 @@ const main = async () => {
       { challengeId: 12, correct: false, text: "x = 1, y = 4" },
       { challengeId: 13, correct: false, text: "x = 3, y = 2" },
       { challengeId: 13, correct: true, text: "x = 2, y = 3" },
+
+      // Fractions
       { challengeId: 14, correct: false, text: "1/2" },
       { challengeId: 14, correct: true, text: "2/3" },
       { challengeId: 14, correct: false, text: "3/4" },
@@ -263,6 +282,8 @@ const main = async () => {
       { challengeId: 24, correct: false, text: "6 ouvriers" },
       { challengeId: 24, correct: true, text: "8 ouvriers" },
       { challengeId: 24, correct: false, text: "10 ouvriers" },
+
+      // Géométrie
       { challengeId: 25, correct: false, text: "20 cm²" },
       { challengeId: 25, correct: true, text: "24 cm²" },
       { challengeId: 25, correct: false, text: "28 cm²" },
@@ -289,6 +310,8 @@ const main = async () => {
       { challengeId: 32, correct: false, text: "AE = 7" },
       { challengeId: 33, correct: true, text: "BC = 6" },
       { challengeId: 33, correct: false, text: "BC = 8" },
+
+      // Statistiques
       { challengeId: 34, correct: false, text: "5" },
       { challengeId: 34, correct: true, text: "6" },
       { challengeId: 34, correct: false, text: "7" },
@@ -306,6 +329,8 @@ const main = async () => {
       { challengeId: 39, correct: false, text: "1/2" },
       { challengeId: 39, correct: true, text: "1/4" },
       { challengeId: 39, correct: false, text: "1/3" },
+
+      // Dérivées
       { challengeId: 60, correct: false, text: "3x² + 4x + 5" },
       { challengeId: 60, correct: true, text: "3x² + 4x - 5" },
       { challengeId: 60, correct: false, text: "x² + 4x - 5" },
@@ -330,6 +355,8 @@ const main = async () => {
       { challengeId: 67, correct: false, text: "1/cos(x)" },
       { challengeId: 67, correct: true, text: "-tan(x)" },
       { challengeId: 67, correct: false, text: "tan(x)" },
+
+      // Intégrales
       { challengeId: 68, correct: false, text: "4/3" },
       { challengeId: 68, correct: true, text: "8/3" },
       { challengeId: 68, correct: false, text: "3" },
@@ -351,6 +378,8 @@ const main = async () => {
       { challengeId: 74, correct: false, text: "-1/(x+1)²" },
       { challengeId: 74, correct: true, text: "ln|x+1|" },
       { challengeId: 74, correct: false, text: "1/(x+1)²" },
+
+      // Trigonométrie
       { challengeId: 75, correct: false, text: "0" },
       { challengeId: 75, correct: true, text: "1" },
       { challengeId: 75, correct: false, text: "2" },
@@ -381,6 +410,8 @@ const main = async () => {
       { challengeId: 84, correct: false, text: "(√6 - √2) / 4" },
       { challengeId: 84, correct: true, text: "(√6 + √2) / 4" },
       { challengeId: 84, correct: false, text: "(√3 + 1) / 4" },
+
+      // Nombres complexes
       { challengeId: 85, correct: false, text: "3 + 8i" },
       { challengeId: 85, correct: true, text: "3 - 2i" },
       { challengeId: 85, correct: false, text: "1 - 2i" },
@@ -408,6 +439,8 @@ const main = async () => {
       { challengeId: 93, correct: false, text: "2√2 · e^(iπ/4)" },
       { challengeId: 93, correct: true, text: "2√2 · e^(i3π/4)" },
       { challengeId: 93, correct: false, text: "√2 · e^(i3π/4)" },
+
+      // Matrices
       { challengeId: 94, correct: false, text: "[[5,8],[10,12]]" },
       { challengeId: 94, correct: true, text: "[[6,8],[10,12]]" },
       { challengeId: 94, correct: false, text: "[[6,8],[9,12]]" },
@@ -433,6 +466,48 @@ const main = async () => {
       { challengeId: 101, correct: false, text: "x=0, y=2" },
       { challengeId: 101, correct: false, text: "x=2, y=1" },
 
+      // Logarithmes
+      { challengeId: 1000, correct: true, text: "3" },
+      { challengeId: 1000, correct: false, text: "2" },
+      { challengeId: 1000, correct: false, text: "4" },
+      { challengeId: 1001, correct: true, text: "3" },
+      { challengeId: 1001, correct: false, text: "1" },
+      { challengeId: 1001, correct: false, text: "e³" },
+      { challengeId: 1002, correct: true, text: "3" },
+      { challengeId: 1002, correct: false, text: "9" },
+      { challengeId: 1002, correct: false, text: "27" },
+      { challengeId: 1003, correct: true, text: "0" },
+      { challengeId: 1003, correct: false, text: "1" },
+      { challengeId: 1003, correct: false, text: "a" },
+      { challengeId: 1004, correct: true, text: "1" },
+      { challengeId: 1004, correct: false, text: "0" },
+      { challengeId: 1004, correct: false, text: "a" },
+      { challengeId: 1005, correct: true, text: "x = 8" },
+      { challengeId: 1005, correct: false, text: "x = 3" },
+      { challengeId: 1005, correct: false, text: "x = 6" },
+      { challengeId: 1006, correct: true, text: "x = e²" },
+      { challengeId: 1006, correct: false, text: "x = 2" },
+      { challengeId: 1006, correct: false, text: "x = ln(2)" },
+      { challengeId: 1007, correct: true, text: "x = 5" },
+      { challengeId: 1007, correct: false, text: "x = 2" },
+      { challengeId: 1007, correct: false, text: "x = 10" },
+
+      // Suites
+      { challengeId: 1008, correct: true, text: "14" },
+      { challengeId: 1008, correct: false, text: "17" },
+      { challengeId: 1008, correct: false, text: "20" },
+      { challengeId: 1009, correct: true, text: "210" },
+      { challengeId: 1009, correct: false, text: "200" },
+      { challengeId: 1009, correct: false, text: "220" },
+      { challengeId: 1010, correct: true, text: "32", blank: 0 },
+      { challengeId: 1011, correct: true, text: "24" },
+      { challengeId: 1011, correct: false, text: "48" },
+      { challengeId: 1011, correct: false, text: "12" },
+      { challengeId: 1012, correct: true, text: "2" },
+      { challengeId: 1012, correct: false, text: "1" },
+      { challengeId: 1012, correct: false, text: "3" },
+
+      // FILL_BLANK
       { challengeId: 200, correct: true, text: "8", blank: 0 },
       { challengeId: 200, correct: false, text: "6", blank: 0 },
       { challengeId: 200, correct: false, text: "10", blank: 0 },
@@ -445,75 +520,28 @@ const main = async () => {
       { challengeId: 203, correct: true, text: "5", blank: 0 },
       { challengeId: 203, correct: true, text: "-5", blank: 1 },
       { challengeId: 203, correct: false, text: "3", blank: 0 },
-      { challengeId: 203, correct: false, text: "-3", blank: 1 },
-      { challengeId: 203, correct: false, text: "25", blank: 0 },
       { challengeId: 204, correct: true, text: "3", blank: 0 },
       { challengeId: 204, correct: true, text: "4", blank: 1 },
-      { challengeId: 204, correct: false, text: "2", blank: 0 },
-      { challengeId: 204, correct: false, text: "6", blank: 1 },
-      { challengeId: 204, correct: false, text: "1", blank: 0 },
       { challengeId: 205, correct: true, text: "2/3", blank: 0 },
       { challengeId: 205, correct: false, text: "1/2", blank: 0 },
-      { challengeId: 205, correct: false, text: "3/4", blank: 0 },
       { challengeId: 206, correct: true, text: "1/3", blank: 0 },
       { challengeId: 206, correct: true, text: "2/3", blank: 1 },
-      { challengeId: 206, correct: false, text: "1/4", blank: 0 },
-      { challengeId: 206, correct: false, text: "3/5", blank: 1 },
-      { challengeId: 206, correct: false, text: "2/5", blank: 0 },
       { challengeId: 207, correct: true, text: "5/6", blank: 0 },
       { challengeId: 207, correct: false, text: "2/5", blank: 0 },
-      { challengeId: 207, correct: false, text: "1/6", blank: 0 },
       { challengeId: 208, correct: true, text: "1/2", blank: 0 },
       { challengeId: 208, correct: true, text: "1/2", blank: 1 },
-      { challengeId: 208, correct: false, text: "2/3", blank: 0 },
-      { challengeId: 208, correct: false, text: "1/3", blank: 1 },
-      { challengeId: 208, correct: false, text: "3/4", blank: 0 },
       { challengeId: 209, correct: true, text: "24", blank: 0 },
-      { challengeId: 209, correct: false, text: "20", blank: 0 },
-      { challengeId: 209, correct: false, text: "28", blank: 0 },
       { challengeId: 210, correct: true, text: "20", blank: 0 },
-      { challengeId: 210, correct: false, text: "15", blank: 0 },
-      { challengeId: 210, correct: false, text: "25", blank: 0 },
       { challengeId: 211, correct: true, text: "5", blank: 0 },
-      { challengeId: 211, correct: false, text: "6", blank: 0 },
-      { challengeId: 211, correct: false, text: "7", blank: 0 },
       { challengeId: 212, correct: true, text: "13", blank: 0 },
-      { challengeId: 212, correct: false, text: "11", blank: 0 },
-      { challengeId: 212, correct: false, text: "15", blank: 0 },
       { challengeId: 213, correct: true, text: "6", blank: 0 },
-      { challengeId: 213, correct: false, text: "5", blank: 0 },
-      { challengeId: 213, correct: false, text: "7", blank: 0 },
       { challengeId: 214, correct: true, text: "5", blank: 0 },
-      { challengeId: 214, correct: false, text: "3", blank: 0 },
-      { challengeId: 214, correct: false, text: "7", blank: 0 },
       { challengeId: 215, correct: true, text: "3x²", blank: 0 },
       { challengeId: 215, correct: true, text: "4x³", blank: 1 },
-      { challengeId: 215, correct: false, text: "2x", blank: 0 },
-      { challengeId: 215, correct: false, text: "3x²", blank: 1 },
-      { challengeId: 215, correct: false, text: "x²", blank: 0 },
       { challengeId: 216, correct: true, text: "cos(x)", blank: 0 },
       { challengeId: 216, correct: true, text: "-sin(x)", blank: 1 },
-      { challengeId: 216, correct: false, text: "-cos(x)", blank: 0 },
-      { challengeId: 216, correct: false, text: "sin(x)", blank: 1 },
-      { challengeId: 216, correct: false, text: "tan(x)", blank: 0 },
       { challengeId: 217, correct: true, text: "1", blank: 0 },
-      { challengeId: 217, correct: false, text: "0", blank: 0 },
-      { challengeId: 217, correct: false, text: "2", blank: 0 },
       { challengeId: 218, correct: true, text: "1/cos²(x)", blank: 0 },
-      { challengeId: 218, correct: false, text: "cos²(x)", blank: 0 },
-      { challengeId: 218, correct: false, text: "sin²(x)", blank: 0 },
-
-      { challengeId: 305, correct: true, text: "3x - 5 = 16|3x-5=16" },
-      { challengeId: 306, correct: true, text: "2x + 7 = 23|2x+7=23" },
-
-      { challengeId: 322, correct: false, text: "Moyenne", order: 1 },
-      { challengeId: 322, correct: true, text: "Somme divisée par le nombre de valeurs", order: 1 },
-      { challengeId: 322, correct: false, text: "Médiane", order: 2 },
-      { challengeId: 322, correct: true, text: "Valeur centrale d'une série triée", order: 2 },
-      { challengeId: 322, correct: false, text: "Mode", order: 3 },
-      { challengeId: 322, correct: true, text: "Valeur la plus fréquente", order: 3 },
-      { challengeId: 322, correct: false, text: "Étendue", order: 4 },
-      { challengeId: 322, correct: true, text: "Max moins Min", order: 4 },
     ]);
 
     // ================================================
@@ -524,7 +552,6 @@ const main = async () => {
       { id: 5, courseId: 2, title: "Introducción", description: "Learn the basics of Spanish", order: 1 },
       { id: 6, courseId: 2, title: "Familia y Amigos", description: "Talk about family and friends", order: 2 },
       { id: 7, courseId: 2, title: "Comida y Bebida", description: "Food and drinks vocabulary", order: 3 },
-      { id: 22, courseId: 2, title: "Traducción & Escucha", description: "Traduis et écoute en espagnol", order: 4 },
     ]);
 
     await db.insert(schema.lessons).values([
@@ -535,9 +562,6 @@ const main = async () => {
       { id: 16, unitId: 6, order: 2, title: "Adjectives" },
       { id: 17, unitId: 7, order: 1, title: "Food" },
       { id: 18, unitId: 7, order: 2, title: "Drinks" },
-      { id: 50, unitId: 22, order: 1, title: "Traducción al Español" },
-      { id: 51, unitId: 22, order: 2, title: "Escucha y Escribe" },
-      { id: 52, unitId: 22, order: 3, title: "Une les Palabras" },
     ]);
 
     await db.insert(schema.challenges).values([
@@ -551,19 +575,6 @@ const main = async () => {
       { id: 47, lessonId: 16, type: "SELECT", order: 1, question: 'Which one means "big"?' },
       { id: 48, lessonId: 17, type: "SELECT", order: 1, question: 'Which one is "bread"?' },
       { id: 49, lessonId: 18, type: "SELECT", order: 1, question: 'Which one is "water"?' },
-      { id: 110, lessonId: 12, type: "WORD_BANK", order: 4, question: 'Translate: "The man eats bread"' },
-      { id: 111, lessonId: 13, type: "WORD_BANK", order: 3, question: 'Translate: "I want to speak Spanish"' },
-      { id: 112, lessonId: 14, type: "WORD_BANK", order: 2, question: 'Translate: "Good morning, how are you?"' },
-      { id: 113, lessonId: 15, type: "WORD_BANK", order: 2, question: 'Translate: "My mother is very kind"' },
-      { id: 114, lessonId: 16, type: "WORD_BANK", order: 2, question: 'Translate: "The big dog is fast"' },
-      { id: 115, lessonId: 17, type: "WORD_BANK", order: 2, question: 'Translate: "I eat bread with cheese"' },
-      { id: 116, lessonId: 18, type: "WORD_BANK", order: 2, question: 'Translate: "She drinks water every day"' },
-      { id: 300, lessonId: 50, type: "TRANSLATE", order: 1, question: "Traduis en espagnol : 'The cat drinks water'" },
-      { id: 301, lessonId: 50, type: "TRANSLATE", order: 2, question: "Traduis en espagnol : 'She reads a book every day'" },
-      { id: 302, lessonId: 50, type: "TRANSLATE", order: 3, question: "Traduis en espagnol : 'We are going to the market'" },
-      { id: 310, lessonId: 51, type: "LISTEN", order: 1, question: "Écoute et écris ce que tu entends" },
-      { id: 311, lessonId: 51, type: "LISTEN", order: 2, question: "Écoute et écris ce que tu entends" },
-      { id: 320, lessonId: 52, type: "MATCH", order: 1, question: "Relie chaque mot à sa traduction" },
     ]);
 
     await db.insert(schema.challengeOptions).values([
@@ -597,70 +608,6 @@ const main = async () => {
       { challengeId: 49, correct: true, text: "el agua", imageSrc: "/water.svg" },
       { challengeId: 49, correct: false, text: "el vino", imageSrc: "/wine.svg" },
       { challengeId: 49, correct: false, text: "la cerveza", imageSrc: "/beer.svg" },
-      { challengeId: 110, correct: true, text: "El", order: 1 },
-      { challengeId: 110, correct: true, text: "hombre", order: 2 },
-      { challengeId: 110, correct: true, text: "come", order: 3 },
-      { challengeId: 110, correct: true, text: "pan", order: 4 },
-      { challengeId: 110, correct: false, text: "bebe", order: null },
-      { challengeId: 110, correct: false, text: "mujer", order: null },
-      { challengeId: 110, correct: false, text: "agua", order: null },
-      { challengeId: 111, correct: true, text: "Quiero", order: 1 },
-      { challengeId: 111, correct: true, text: "hablar", order: 2 },
-      { challengeId: 111, correct: true, text: "español", order: 3 },
-      { challengeId: 111, correct: false, text: "comer", order: null },
-      { challengeId: 111, correct: false, text: "francés", order: null },
-      { challengeId: 111, correct: false, text: "beber", order: null },
-      { challengeId: 112, correct: true, text: "Buenos", order: 1 },
-      { challengeId: 112, correct: true, text: "días,", order: 2 },
-      { challengeId: 112, correct: true, text: "¿cómo", order: 3 },
-      { challengeId: 112, correct: true, text: "estás?", order: 4 },
-      { challengeId: 112, correct: false, text: "noches,", order: null },
-      { challengeId: 112, correct: false, text: "tardes,", order: null },
-      { challengeId: 113, correct: true, text: "Mi", order: 1 },
-      { challengeId: 113, correct: true, text: "madre", order: 2 },
-      { challengeId: 113, correct: true, text: "es", order: 3 },
-      { challengeId: 113, correct: true, text: "muy", order: 4 },
-      { challengeId: 113, correct: true, text: "amable", order: 5 },
-      { challengeId: 113, correct: false, text: "padre", order: null },
-      { challengeId: 113, correct: false, text: "poco", order: null },
-      { challengeId: 113, correct: false, text: "rápida", order: null },
-      { challengeId: 114, correct: true, text: "El", order: 1 },
-      { challengeId: 114, correct: true, text: "perro", order: 2 },
-      { challengeId: 114, correct: true, text: "grande", order: 3 },
-      { challengeId: 114, correct: true, text: "es", order: 4 },
-      { challengeId: 114, correct: true, text: "rápido", order: 5 },
-      { challengeId: 114, correct: false, text: "gato", order: null },
-      { challengeId: 114, correct: false, text: "pequeño", order: null },
-      { challengeId: 114, correct: false, text: "lento", order: null },
-      { challengeId: 115, correct: true, text: "Como", order: 1 },
-      { challengeId: 115, correct: true, text: "pan", order: 2 },
-      { challengeId: 115, correct: true, text: "con", order: 3 },
-      { challengeId: 115, correct: true, text: "queso", order: 4 },
-      { challengeId: 115, correct: false, text: "bebo", order: null },
-      { challengeId: 115, correct: false, text: "agua", order: null },
-      { challengeId: 115, correct: false, text: "carne", order: null },
-      { challengeId: 116, correct: true, text: "Ella", order: 1 },
-      { challengeId: 116, correct: true, text: "bebe", order: 2 },
-      { challengeId: 116, correct: true, text: "agua", order: 3 },
-      { challengeId: 116, correct: true, text: "todos", order: 4 },
-      { challengeId: 116, correct: true, text: "los", order: 5 },
-      { challengeId: 116, correct: true, text: "días", order: 6 },
-      { challengeId: 116, correct: false, text: "come", order: null },
-      { challengeId: 116, correct: false, text: "vino", order: null },
-      { challengeId: 116, correct: false, text: "nunca", order: null },
-      { challengeId: 300, correct: true, text: "El gato bebe agua" },
-      { challengeId: 301, correct: true, text: "Ella lee un libro todos los días|Ella lee un libro cada día" },
-      { challengeId: 302, correct: true, text: "Vamos al mercado|Nosotros vamos al mercado" },
-      { challengeId: 310, correct: true, text: "Hola, ¿cómo estás?|Hola cómo estás", audioSrc: "/audio/es_hola.mp3" },
-      { challengeId: 311, correct: true, text: "Buenos días, señor|Buenos dias señor", audioSrc: "/audio/es_buenos_dias.mp3" },
-      { challengeId: 320, correct: false, text: "perro", order: 1 },
-      { challengeId: 320, correct: true, text: "chien", order: 1 },
-      { challengeId: 320, correct: false, text: "gato", order: 2 },
-      { challengeId: 320, correct: true, text: "chat", order: 2 },
-      { challengeId: 320, correct: false, text: "casa", order: 3 },
-      { challengeId: 320, correct: true, text: "maison", order: 3 },
-      { challengeId: 320, correct: false, text: "libro", order: 4 },
-      { challengeId: 320, correct: true, text: "livre", order: 4 },
     ]);
 
     // ================================================
@@ -679,9 +626,7 @@ const main = async () => {
     await db.insert(schema.challenges).values([
       { id: 120, lessonId: 19, type: "SELECT", order: 1, question: 'Which one is "the cat"?' },
       { id: 121, lessonId: 19, type: "SELECT", order: 2, question: 'Which one is "the dog"?' },
-      { id: 122, lessonId: 19, type: "WORD_BANK", order: 3, question: 'Translate: "The cat drinks milk"' },
       { id: 123, lessonId: 20, type: "SELECT", order: 1, question: 'How do you say "Good morning"?' },
-      { id: 124, lessonId: 20, type: "WORD_BANK", order: 2, question: 'Translate: "Hello, my name is Marco"' },
     ]);
 
     await db.insert(schema.challengeOptions).values([
@@ -691,22 +636,9 @@ const main = async () => {
       { challengeId: 121, correct: true, text: "il cane", imageSrc: "/dog.svg" },
       { challengeId: 121, correct: false, text: "il gatto", imageSrc: "/cat.svg" },
       { challengeId: 121, correct: false, text: "l'uccello", imageSrc: "/bird.svg" },
-      { challengeId: 122, correct: true, text: "Il", order: 1 },
-      { challengeId: 122, correct: true, text: "gatto", order: 2 },
-      { challengeId: 122, correct: true, text: "beve", order: 3 },
-      { challengeId: 122, correct: true, text: "latte", order: 4 },
-      { challengeId: 122, correct: false, text: "cane", order: null },
-      { challengeId: 122, correct: false, text: "mangia", order: null },
-      { challengeId: 122, correct: false, text: "acqua", order: null },
       { challengeId: 123, correct: true, text: "Buongiorno" },
       { challengeId: 123, correct: false, text: "Buonasera" },
       { challengeId: 123, correct: false, text: "Buonanotte" },
-      { challengeId: 124, correct: true, text: "Ciao,", order: 1 },
-      { challengeId: 124, correct: true, text: "mi", order: 2 },
-      { challengeId: 124, correct: true, text: "chiamo", order: 3 },
-      { challengeId: 124, correct: true, text: "Marco", order: 4 },
-      { challengeId: 124, correct: false, text: "sono", order: null },
-      { challengeId: 124, correct: false, text: "Luca", order: null },
     ]);
 
     // ================================================
@@ -716,7 +648,6 @@ const main = async () => {
     await db.insert(schema.units).values([
       { id: 9, courseId: 4, title: "Introduction", description: "Learn the basics of French", order: 1 },
       { id: 21, courseId: 4, title: "La Vie Quotidienne", description: "La vie de tous les jours", order: 2 },
-      { id: 23, courseId: 4, title: "Traduction & Écoute", description: "Traduis et écoute en français", order: 3 },
     ]);
 
     await db.insert(schema.lessons).values([
@@ -725,33 +656,16 @@ const main = async () => {
       { id: 62, unitId: 21, order: 1, title: "Les Animaux" },
       { id: 63, unitId: 21, order: 2, title: "La Famille" },
       { id: 64, unitId: 21, order: 3, title: "Les Couleurs" },
-      { id: 60, unitId: 23, order: 1, title: "Traduction en Français" },
-      { id: 61, unitId: 23, order: 2, title: "Écoute et Écris" },
-      { id: 65, unitId: 23, order: 3, title: "Relie les Mots" },
     ]);
 
     await db.insert(schema.challenges).values([
       { id: 130, lessonId: 21, type: "SELECT", order: 1, question: 'Which one is "the book"?' },
       { id: 131, lessonId: 21, type: "SELECT", order: 2, question: 'Which one is "the table"?' },
-      { id: 132, lessonId: 21, type: "WORD_BANK", order: 3, question: 'Translate: "The book is on the table"' },
       { id: 133, lessonId: 22, type: "SELECT", order: 1, question: 'How do you say "Good evening"?' },
-      { id: 134, lessonId: 22, type: "WORD_BANK", order: 2, question: 'Translate: "Hello, how are you today?"' },
-      { id: 135, lessonId: 22, type: "WORD_BANK", order: 3, question: 'Translate: "My name is Paul, I am French"' },
       { id: 136, lessonId: 62, type: "SELECT", order: 1, question: 'Which one is "the cat"?' },
       { id: 137, lessonId: 62, type: "SELECT", order: 2, question: 'Which one is "the dog"?' },
-      { id: 138, lessonId: 62, type: "WORD_BANK", order: 3, question: 'Translate: "The dog runs in the garden"' },
-      { id: 139, lessonId: 62, type: "WORD_BANK", order: 4, question: 'Translate: "My cat is black and white"' },
       { id: 140, lessonId: 63, type: "SELECT", order: 1, question: 'Which one is "the father"?' },
-      { id: 141, lessonId: 63, type: "WORD_BANK", order: 2, question: 'Translate: "My brother is tall and kind"' },
-      { id: 142, lessonId: 63, type: "WORD_BANK", order: 3, question: 'Translate: "She has two sisters and one brother"' },
       { id: 143, lessonId: 64, type: "SELECT", order: 1, question: 'Which one means "red"?' },
-      { id: 144, lessonId: 64, type: "WORD_BANK", order: 2, question: 'Translate: "The sky is blue and the grass is green"' },
-      { id: 145, lessonId: 64, type: "WORD_BANK", order: 3, question: 'Translate: "I like the red car"' },
-      { id: 303, lessonId: 60, type: "TRANSLATE", order: 1, question: "Traduis en français : 'The dog runs in the park'" },
-      { id: 304, lessonId: 60, type: "TRANSLATE", order: 2, question: "Traduis en français : 'He eats an apple every morning'" },
-      { id: 312, lessonId: 61, type: "LISTEN", order: 1, question: "Écoute et écris ce que tu entends" },
-      { id: 313, lessonId: 61, type: "LISTEN", order: 2, question: "Écoute et écris ce que tu entends" },
-      { id: 321, lessonId: 65, type: "MATCH", order: 1, question: "Relie chaque mot à sa traduction" },
     ]);
 
     await db.insert(schema.challengeOptions).values([
@@ -761,110 +675,21 @@ const main = async () => {
       { challengeId: 131, correct: true, text: "la table", imageSrc: "/table.svg" },
       { challengeId: 131, correct: false, text: "le livre", imageSrc: "/book.svg" },
       { challengeId: 131, correct: false, text: "la chaise", imageSrc: "/chair.svg" },
-      { challengeId: 132, correct: true, text: "Le", order: 1 },
-      { challengeId: 132, correct: true, text: "livre", order: 2 },
-      { challengeId: 132, correct: true, text: "est", order: 3 },
-      { challengeId: 132, correct: true, text: "sur", order: 4 },
-      { challengeId: 132, correct: true, text: "la", order: 5 },
-      { challengeId: 132, correct: true, text: "table", order: 6 },
-      { challengeId: 132, correct: false, text: "sous", order: null },
-      { challengeId: 132, correct: false, text: "chaise", order: null },
       { challengeId: 133, correct: true, text: "Bonsoir" },
       { challengeId: 133, correct: false, text: "Bonjour" },
       { challengeId: 133, correct: false, text: "Bonne nuit" },
-      { challengeId: 134, correct: true, text: "Bonjour,", order: 1 },
-      { challengeId: 134, correct: true, text: "comment", order: 2 },
-      { challengeId: 134, correct: true, text: "allez-vous", order: 3 },
-      { challengeId: 134, correct: true, text: "aujourd'hui", order: 4 },
-      { challengeId: 134, correct: false, text: "Bonsoir,", order: null },
-      { challengeId: 134, correct: false, text: "demain", order: null },
-      { challengeId: 134, correct: false, text: "hier", order: null },
-      { challengeId: 135, correct: true, text: "Je", order: 1 },
-      { challengeId: 135, correct: true, text: "m'appelle", order: 2 },
-      { challengeId: 135, correct: true, text: "Paul,", order: 3 },
-      { challengeId: 135, correct: true, text: "je", order: 4 },
-      { challengeId: 135, correct: true, text: "suis", order: 5 },
-      { challengeId: 135, correct: true, text: "français", order: 6 },
-      { challengeId: 135, correct: false, text: "Marie,", order: null },
-      { challengeId: 135, correct: false, text: "anglais", order: null },
       { challengeId: 136, correct: true, text: "le chat", imageSrc: "/cat.svg" },
       { challengeId: 136, correct: false, text: "le chien", imageSrc: "/dog.svg" },
       { challengeId: 136, correct: false, text: "le lapin", imageSrc: "/rabbit.svg" },
       { challengeId: 137, correct: true, text: "le chien", imageSrc: "/dog.svg" },
       { challengeId: 137, correct: false, text: "le chat", imageSrc: "/cat.svg" },
       { challengeId: 137, correct: false, text: "l'oiseau", imageSrc: "/bird.svg" },
-      { challengeId: 138, correct: true, text: "Le", order: 1 },
-      { challengeId: 138, correct: true, text: "chien", order: 2 },
-      { challengeId: 138, correct: true, text: "court", order: 3 },
-      { challengeId: 138, correct: true, text: "dans", order: 4 },
-      { challengeId: 138, correct: true, text: "le", order: 5 },
-      { challengeId: 138, correct: true, text: "jardin", order: 6 },
-      { challengeId: 138, correct: false, text: "chat", order: null },
-      { challengeId: 138, correct: false, text: "marche", order: null },
-      { challengeId: 138, correct: false, text: "maison", order: null },
-      { challengeId: 139, correct: true, text: "Mon", order: 1 },
-      { challengeId: 139, correct: true, text: "chat", order: 2 },
-      { challengeId: 139, correct: true, text: "est", order: 3 },
-      { challengeId: 139, correct: true, text: "noir", order: 4 },
-      { challengeId: 139, correct: true, text: "et", order: 5 },
-      { challengeId: 139, correct: true, text: "blanc", order: 6 },
-      { challengeId: 139, correct: false, text: "chien", order: null },
-      { challengeId: 139, correct: false, text: "rouge", order: null },
       { challengeId: 140, correct: true, text: "le père", imageSrc: "/father.svg" },
       { challengeId: 140, correct: false, text: "la mère", imageSrc: "/mother.svg" },
       { challengeId: 140, correct: false, text: "le frère", imageSrc: "/brother.svg" },
-      { challengeId: 141, correct: true, text: "Mon", order: 1 },
-      { challengeId: 141, correct: true, text: "frère", order: 2 },
-      { challengeId: 141, correct: true, text: "est", order: 3 },
-      { challengeId: 141, correct: true, text: "grand", order: 4 },
-      { challengeId: 141, correct: true, text: "et", order: 5 },
-      { challengeId: 141, correct: true, text: "gentil", order: 6 },
-      { challengeId: 141, correct: false, text: "sœur", order: null },
-      { challengeId: 141, correct: false, text: "petit", order: null },
-      { challengeId: 141, correct: false, text: "méchant", order: null },
-      { challengeId: 142, correct: true, text: "Elle", order: 1 },
-      { challengeId: 142, correct: true, text: "a", order: 2 },
-      { challengeId: 142, correct: true, text: "deux", order: 3 },
-      { challengeId: 142, correct: true, text: "sœurs", order: 4 },
-      { challengeId: 142, correct: true, text: "et", order: 5 },
-      { challengeId: 142, correct: true, text: "un", order: 6 },
-      { challengeId: 142, correct: true, text: "frère", order: 7 },
-      { challengeId: 142, correct: false, text: "Il", order: null },
-      { challengeId: 142, correct: false, text: "trois", order: null },
-      { challengeId: 142, correct: false, text: "cousins", order: null },
       { challengeId: 143, correct: true, text: "rouge" },
       { challengeId: 143, correct: false, text: "bleu" },
       { challengeId: 143, correct: false, text: "vert" },
-      { challengeId: 144, correct: true, text: "Le", order: 1 },
-      { challengeId: 144, correct: true, text: "ciel", order: 2 },
-      { challengeId: 144, correct: true, text: "est", order: 3 },
-      { challengeId: 144, correct: true, text: "bleu", order: 4 },
-      { challengeId: 144, correct: true, text: "et", order: 5 },
-      { challengeId: 144, correct: true, text: "l'herbe", order: 6 },
-      { challengeId: 144, correct: true, text: "est", order: 7 },
-      { challengeId: 144, correct: true, text: "verte", order: 8 },
-      { challengeId: 144, correct: false, text: "rouge", order: null },
-      { challengeId: 144, correct: false, text: "nuage", order: null },
-      { challengeId: 144, correct: false, text: "jaune", order: null },
-      { challengeId: 145, correct: true, text: "J'aime", order: 1 },
-      { challengeId: 145, correct: true, text: "la", order: 2 },
-      { challengeId: 145, correct: true, text: "voiture", order: 3 },
-      { challengeId: 145, correct: true, text: "rouge", order: 4 },
-      { challengeId: 145, correct: false, text: "bleue", order: null },
-      { challengeId: 145, correct: false, text: "moto", order: null },
-      { challengeId: 145, correct: false, text: "verte", order: null },
-      { challengeId: 303, correct: true, text: "Le chien court dans le parc" },
-      { challengeId: 304, correct: true, text: "Il mange une pomme chaque matin|Il mange une pomme tous les matins" },
-      { challengeId: 312, correct: true, text: "Bonjour, comment vas-tu ?|Bonjour comment vas-tu", audioSrc: "/audio/fr_bonjour.mp3" },
-      { challengeId: 313, correct: true, text: "Il fait beau aujourd'hui", audioSrc: "/audio/fr_beau.mp3" },
-      { challengeId: 321, correct: false, text: "pomme", order: 1 },
-      { challengeId: 321, correct: true, text: "apple", order: 1 },
-      { challengeId: 321, correct: false, text: "eau", order: 2 },
-      { challengeId: 321, correct: true, text: "water", order: 2 },
-      { challengeId: 321, correct: false, text: "soleil", order: 3 },
-      { challengeId: 321, correct: true, text: "sun", order: 3 },
-      { challengeId: 321, correct: false, text: "nuit", order: 4 },
-      { challengeId: 321, correct: true, text: "night", order: 4 },
     ]);
 
     // ================================================
@@ -882,35 +707,20 @@ const main = async () => {
 
     await db.insert(schema.challenges).values([
       { id: 150, lessonId: 23, type: "SELECT", order: 1, question: 'Which one is "the house"?' },
-      { id: 151, lessonId: 23, type: "WORD_BANK", order: 2, question: 'Translate: "The house is big and beautiful"' },
       { id: 152, lessonId: 24, type: "SELECT", order: 1, question: 'How do you say "Thank you"?' },
-      { id: 153, lessonId: 24, type: "WORD_BANK", order: 2, question: 'Translate: "Good morning, how are you?"' },
     ]);
 
     await db.insert(schema.challengeOptions).values([
       { challengeId: 150, correct: true, text: "kuća", imageSrc: "/house.svg" },
       { challengeId: 150, correct: false, text: "auto", imageSrc: "/car.svg" },
       { challengeId: 150, correct: false, text: "pas", imageSrc: "/dog.svg" },
-      { challengeId: 151, correct: true, text: "Kuća", order: 1 },
-      { challengeId: 151, correct: true, text: "je", order: 2 },
-      { challengeId: 151, correct: true, text: "velika", order: 3 },
-      { challengeId: 151, correct: true, text: "i", order: 4 },
-      { challengeId: 151, correct: true, text: "lijepa", order: 5 },
-      { challengeId: 151, correct: false, text: "mala", order: null },
-      { challengeId: 151, correct: false, text: "auto", order: null },
       { challengeId: 152, correct: true, text: "Hvala" },
       { challengeId: 152, correct: false, text: "Molim" },
       { challengeId: 152, correct: false, text: "Dobar dan" },
-      { challengeId: 153, correct: true, text: "Dobro", order: 1 },
-      { challengeId: 153, correct: true, text: "jutro,", order: 2 },
-      { challengeId: 153, correct: true, text: "kako", order: 3 },
-      { challengeId: 153, correct: true, text: "ste?", order: 4 },
-      { challengeId: 153, correct: false, text: "večer,", order: null },
-      { challengeId: 153, correct: false, text: "gdje", order: null },
     ]);
 
     // ================================================
-    // 6. CULTURE GÉNÉRALE
+    // 6. CULTURE GÉNÉRALE (MASSIF)
     // ================================================
 
     await db.insert(schema.units).values([
@@ -945,33 +755,112 @@ const main = async () => {
       { id: 57, unitId: 19, order: 4, title: "Grands Discours" },
       { id: 58, unitId: 20, order: 1, title: "Mythologie Grecque" },
       { id: 59, unitId: 20, order: 2, title: "Mythologie Nordique" },
-      { id: 66, unitId: 20, order: 3, title: "Légendes Médiévales" },
-      { id: 67, unitId: 20, order: 4, title: "Folklore et Traditions" },
     ]);
 
     await db.insert(schema.challenges).values([
+      // Géographie - Capitales
       { id: 160, lessonId: 38, type: "SELECT", order: 1, question: "Quelle est la capitale de la France ?" },
       { id: 161, lessonId: 38, type: "SELECT", order: 2, question: "Quelle est la capitale du Japon ?" },
       { id: 162, lessonId: 38, type: "SELECT", order: 3, question: "Quelle est la capitale du Brésil ?" },
-      { id: 163, lessonId: 39, type: "SELECT", order: 1, question: "Quel est le plus long fleuve du monde ?" },
-      { id: 164, lessonId: 39, type: "SELECT", order: 2, question: "Dans quel continent se trouve l'Amazone ?" },
-      { id: 165, lessonId: 40, type: "SELECT", order: 1, question: "Quel est le plus haut sommet du monde ?" },
-      { id: 166, lessonId: 40, type: "SELECT", order: 2, question: "Sur quel continent se trouve le Mont Everest ?" },
-      { id: 167, lessonId: 41, type: "SELECT", order: 1, question: "Quel est le plus grand désert du monde ?" },
-      { id: 168, lessonId: 42, type: "SELECT", order: 1, question: "Quelle civilisation a construit les pyramides ?" },
-      { id: 169, lessonId: 43, type: "SELECT", order: 1, question: "Qui a peint la Joconde ?" },
-      { id: 170, lessonId: 44, type: "SELECT", order: 1, question: "En quelle année a eu lieu la Révolution française ?" },
-      { id: 171, lessonId: 45, type: "SELECT", order: 1, question: "Qui a inventé le téléphone ?" },
-      { id: 172, lessonId: 46, type: "SELECT", order: 1, question: "Qui a peint La Nuit étoilée ?" },
-      { id: 173, lessonId: 47, type: "SELECT", order: 1, question: "Qui a écrit Les Misérables ?" },
-      { id: 174, lessonId: 50, type: "SELECT", order: 1, question: "Quelle est la formule de l'eau ?" },
-      { id: 175, lessonId: 52, type: "SELECT", order: 1, question: "Quelle planète est la plus proche du Soleil ?" },
-      { id: 176, lessonId: 53, type: "SELECT", order: 1, question: "Qui a découvert la pénicilline ?" },
-      { id: 177, lessonId: 58, type: "SELECT", order: 1, question: "Qui est le dieu grec de la mer ?" },
-      { id: 178, lessonId: 58, type: "SELECT", order: 2, question: "Qui est le dieu grec du soleil ?" },
+      { id: 163, lessonId: 38, type: "SELECT", order: 4, question: "Quelle est la capitale de l'Inde ?" },
+      { id: 164, lessonId: 38, type: "SELECT", order: 5, question: "Quelle est la capitale de l'Australie ?" },
+      { id: 165, lessonId: 38, type: "SELECT", order: 6, question: "Quelle est la capitale de l'Égypte ?" },
+      { id: 166, lessonId: 38, type: "SELECT", order: 7, question: "Quelle est la capitale de l'Argentine ?" },
+      { id: 167, lessonId: 38, type: "SELECT", order: 8, question: "Quelle est la capitale du Canada ?" },
+      { id: 168, lessonId: 38, type: "SELECT", order: 9, question: "Quelle est la capitale de l'Italie ?" },
+      { id: 169, lessonId: 38, type: "SELECT", order: 10, question: "Quelle est la capitale de l'Allemagne ?" },
+
+      // Géographie - Fleuves
+      { id: 170, lessonId: 39, type: "SELECT", order: 1, question: "Quel est le plus long fleuve du monde ?" },
+      { id: 171, lessonId: 39, type: "SELECT", order: 2, question: "Quel fleuve traverse l'Égypte ?" },
+      { id: 172, lessonId: 39, type: "SELECT", order: 3, question: "Quel est le plus long fleuve d'Europe ?" },
+      { id: 173, lessonId: 39, type: "SELECT", order: 4, question: "Quel fleuve traverse Paris ?" },
+      { id: 174, lessonId: 39, type: "FILL_BLANK", order: 5, question: "Le fleuve qui traverse Londres est la ___" },
+
+      // Géographie - Montagnes
+      { id: 175, lessonId: 40, type: "SELECT", order: 1, question: "Quel est le plus haut sommet du monde ?" },
+      { id: 176, lessonId: 40, type: "SELECT", order: 2, question: "Quel est le plus haut sommet d'Afrique ?" },
+      { id: 177, lessonId: 40, type: "SELECT", order: 3, question: "Quelle est la plus haute montagne des Alpes ?" },
+
+      // Géographie - Déserts
+      { id: 178, lessonId: 41, type: "SELECT", order: 1, question: "Quel est le plus grand désert du monde ?" },
+      { id: 179, lessonId: 41, type: "SELECT", order: 2, question: "Où se trouve le désert de Gobi ?" },
+
+      // Histoire - Civilisations
+      { id: 180, lessonId: 42, type: "SELECT", order: 1, question: "Quelle civilisation a construit les pyramides ?" },
+      { id: 181, lessonId: 42, type: "SELECT", order: 2, question: "Qui était le premier empereur romain ?" },
+      { id: 182, lessonId: 42, type: "SELECT", order: 3, question: "Quelle civilisation a construit le Parthénon ?" },
+      { id: 183, lessonId: 42, type: "SELECT", order: 4, question: "Qui a conquis la Gaule ?" },
+      { id: 184, lessonId: 42, type: "SELECT", order: 5, question: "Qui était le roi de Macédoine qui a conquis l'immense empire ?" },
+
+      // Histoire - Personnages
+      { id: 185, lessonId: 43, type: "SELECT", order: 1, question: "Qui a peint la Joconde ?" },
+      { id: 186, lessonId: 43, type: "SELECT", order: 2, question: "Qui a découvert la pénicilline ?" },
+      { id: 187, lessonId: 43, type: "SELECT", order: 3, question: "Qui a prononcé le discours 'I have a dream' ?" },
+      { id: 188, lessonId: 43, type: "SELECT", order: 4, question: "Qui était le roi d'Angleterre en 1066 ?" },
+      { id: 189, lessonId: 43, type: "SELECT", order: 5, question: "Qui a écrit La Divine Comédie ?" },
+
+      // Histoire - Dates
+      { id: 190, lessonId: 44, type: "SELECT", order: 1, question: "En quelle année a eu lieu la Révolution française ?" },
+      { id: 191, lessonId: 44, type: "SELECT", order: 2, question: "En quelle année a commencé la Première Guerre mondiale ?" },
+      { id: 192, lessonId: 44, type: "SELECT", order: 3, question: "En quelle année l'homme a-t-il marché sur la Lune ?" },
+      { id: 193, lessonId: 44, type: "SELECT", order: 4, question: "Quelle année marque la chute du mur de Berlin ?" },
+
+      // Inventions
+      { id: 194, lessonId: 45, type: "SELECT", order: 1, question: "Qui a inventé le téléphone ?" },
+      { id: 195, lessonId: 45, type: "SELECT", order: 2, question: "Qui a inventé l'imprimerie ?" },
+      { id: 196, lessonId: 45, type: "SELECT", order: 3, question: "Qui a inventé l'ampoule électrique ?" },
+
+      // Arts - Peintres
+      { id: 197, lessonId: 46, type: "SELECT", order: 1, question: "Qui a peint La Nuit étoilée ?" },
+      { id: 198, lessonId: 46, type: "SELECT", order: 2, question: "Quel peintre espagnol a peint Guernica ?" },
+      { id: 199, lessonId: 46, type: "SELECT", order: 3, question: "Qui a peint Les Nymphéas ?" },
+
+      // Littérature
+      { id: 300, lessonId: 47, type: "SELECT", order: 1, question: "Qui a écrit Les Misérables ?" },
+      { id: 301, lessonId: 47, type: "SELECT", order: 2, question: "Qui a écrit Guerre et Paix ?" },
+      { id: 302, lessonId: 47, type: "SELECT", order: 3, question: "Qui a écrit Le Petit Prince ?" },
+      { id: 303, lessonId: 47, type: "SELECT", order: 4, question: "Qui a écrit Don Quichotte ?" },
+      { id: 304, lessonId: 47, type: "SELECT", order: 5, question: "Qui a écrit Hamlet ?" },
+
+      // Musique
+      { id: 305, lessonId: 48, type: "SELECT", order: 1, question: "Qui a composé la 5e Symphonie ?" },
+      { id: 306, lessonId: 48, type: "SELECT", order: 2, question: "Quel compositeur est devenu sourd ?" },
+      { id: 307, lessonId: 48, type: "SELECT", order: 3, question: "Qui est connu comme le roi du rock ?" },
+      { id: 308, lessonId: 48, type: "SELECT", order: 4, question: "Quel groupe a chanté 'Bohemian Rhapsody' ?" },
+
+      // Sciences - Physique/Chimie
+      { id: 309, lessonId: 50, type: "SELECT", order: 1, question: "Quelle est la formule de l'eau ?" },
+      { id: 310, lessonId: 50, type: "SELECT", order: 2, question: "Quelle est la formule d'Einstein ?" },
+      { id: 311, lessonId: 50, type: "SELECT", order: 3, question: "Qui a découvert la gravité ?" },
+      { id: 312, lessonId: 50, type: "SELECT", order: 4, question: "Qui a découvert le radium ?" },
+
+      // Biologie
+      { id: 313, lessonId: 51, type: "SELECT", order: 1, question: "Qui a proposé la théorie de l'évolution ?" },
+      { id: 314, lessonId: 51, type: "SELECT", order: 2, question: "Quel est le plus grand organe du corps humain ?" },
+      { id: 315, lessonId: 51, type: "SELECT", order: 3, question: "Combien de chromosomes possède un humain ?" },
+
+      // Astronomie
+      { id: 316, lessonId: 52, type: "SELECT", order: 1, question: "Quelle planète est la plus proche du Soleil ?" },
+      { id: 317, lessonId: 52, type: "SELECT", order: 2, question: "Quelle est la plus grande planète du système solaire ?" },
+      { id: 318, lessonId: 52, type: "SELECT", order: 3, question: "Quelle planète est surnommée la planète rouge ?" },
+      { id: 319, lessonId: 52, type: "SELECT", order: 4, question: "Combien de planètes compte notre système solaire ?" },
+
+      // Mythologie Grecque
+      { id: 320, lessonId: 58, type: "SELECT", order: 1, question: "Qui est le dieu grec de la mer ?" },
+      { id: 321, lessonId: 58, type: "SELECT", order: 2, question: "Qui est le dieu grec du ciel et roi des dieux ?" },
+      { id: 322, lessonId: 58, type: "SELECT", order: 3, question: "Qui est la déesse grecque de la sagesse ?" },
+      { id: 323, lessonId: 58, type: "SELECT", order: 4, question: "Qui a volé le feu aux dieux ?" },
+      { id: 324, lessonId: 58, type: "SELECT", order: 5, question: "Qui a tué le Minotaure ?" },
+      { id: 325, lessonId: 58, type: "FILL_BLANK", order: 6, question: "Le dieu grec du vin et des festivités est ___" },
+
+      // Mythologie Nordique
+      { id: 326, lessonId: 59, type: "SELECT", order: 1, question: "Qui est le dieu du tonnerre dans la mythologie nordique ?" },
+      { id: 327, lessonId: 59, type: "SELECT", order: 2, question: "Quel est le nom de la fin du monde dans la mythologie nordique ?" },
     ]);
 
     await db.insert(schema.challengeOptions).values([
+      // Capitales
       { challengeId: 160, correct: true, text: "Paris" },
       { challengeId: 160, correct: false, text: "Lyon" },
       { challengeId: 160, correct: false, text: "Marseille" },
@@ -981,71 +870,239 @@ const main = async () => {
       { challengeId: 162, correct: true, text: "Brasília" },
       { challengeId: 162, correct: false, text: "Rio de Janeiro" },
       { challengeId: 162, correct: false, text: "São Paulo" },
-      { challengeId: 163, correct: true, text: "Le Nil" },
-      { challengeId: 163, correct: false, text: "L'Amazone" },
-      { challengeId: 163, correct: false, text: "Le Yangtsé" },
-      { challengeId: 164, correct: true, text: "Amérique du Sud" },
-      { challengeId: 164, correct: false, text: "Afrique" },
-      { challengeId: 164, correct: false, text: "Asie" },
-      { challengeId: 165, correct: true, text: "Le Mont Everest" },
-      { challengeId: 165, correct: false, text: "Le K2" },
-      { challengeId: 165, correct: false, text: "Le Mont Blanc" },
-      { challengeId: 166, correct: true, text: "Asie" },
-      { challengeId: 166, correct: false, text: "Afrique" },
-      { challengeId: 166, correct: false, text: "Europe" },
-      { challengeId: 167, correct: true, text: "Le Sahara" },
-      { challengeId: 167, correct: false, text: "Le désert d'Arabie" },
-      { challengeId: 167, correct: false, text: "Le désert de Gobi" },
-      { challengeId: 168, correct: true, text: "Les Égyptiens" },
-      { challengeId: 168, correct: false, text: "Les Grecs" },
-      { challengeId: 168, correct: false, text: "Les Romains" },
-      { challengeId: 169, correct: true, text: "Léonard de Vinci" },
-      { challengeId: 169, correct: false, text: "Michel-Ange" },
-      { challengeId: 169, correct: false, text: "Raphaël" },
-      { challengeId: 170, correct: true, text: "1789" },
-      { challengeId: 170, correct: false, text: "1776" },
-      { challengeId: 170, correct: false, text: "1804" },
-      { challengeId: 171, correct: true, text: "Alexander Graham Bell" },
-      { challengeId: 171, correct: false, text: "Thomas Edison" },
-      { challengeId: 171, correct: false, text: "Nikola Tesla" },
-      { challengeId: 172, correct: true, text: "Vincent van Gogh" },
-      { challengeId: 172, correct: false, text: "Pablo Picasso" },
-      { challengeId: 172, correct: false, text: "Claude Monet" },
-      { challengeId: 173, correct: true, text: "Victor Hugo" },
-      { challengeId: 173, correct: false, text: "Émile Zola" },
-      { challengeId: 173, correct: false, text: "Gustave Flaubert" },
-      { challengeId: 174, correct: true, text: "H₂O" },
-      { challengeId: 174, correct: false, text: "CO₂" },
-      { challengeId: 174, correct: false, text: "NaCl" },
-      { challengeId: 175, correct: true, text: "Mercure" },
-      { challengeId: 175, correct: false, text: "Vénus" },
-      { challengeId: 175, correct: false, text: "Mars" },
-      { challengeId: 176, correct: true, text: "Alexander Fleming" },
-      { challengeId: 176, correct: false, text: "Louis Pasteur" },
-      { challengeId: 176, correct: false, text: "Marie Curie" },
-      { challengeId: 177, correct: true, text: "Poséidon" },
-      { challengeId: 177, correct: false, text: "Zeus" },
-      { challengeId: 177, correct: false, text: "Hadès" },
-      { challengeId: 178, correct: true, text: "Apollon" },
-      { challengeId: 178, correct: false, text: "Hélios" },
-      { challengeId: 178, correct: false, text: "Hermès" },
-    ]);
+      { challengeId: 163, correct: true, text: "New Delhi" },
+      { challengeId: 163, correct: false, text: "Mumbai" },
+      { challengeId: 163, correct: false, text: "Calcutta" },
+      { challengeId: 164, correct: true, text: "Canberra" },
+      { challengeId: 164, correct: false, text: "Sydney" },
+      { challengeId: 164, correct: false, text: "Melbourne" },
+      { challengeId: 165, correct: true, text: "Le Caire" },
+      { challengeId: 165, correct: false, text: "Alexandrie" },
+      { challengeId: 165, correct: false, text: "Gizeh" },
+      { challengeId: 166, correct: true, text: "Buenos Aires" },
+      { challengeId: 166, correct: false, text: "Santiago" },
+      { challengeId: 166, correct: false, text: "Montevideo" },
+      { challengeId: 167, correct: true, text: "Ottawa" },
+      { challengeId: 167, correct: false, text: "Toronto" },
+      { challengeId: 167, correct: false, text: "Montréal" },
+      { challengeId: 168, correct: true, text: "Rome" },
+      { challengeId: 168, correct: false, text: "Florence" },
+      { challengeId: 168, correct: false, text: "Naples" },
+      { challengeId: 169, correct: true, text: "Berlin" },
+      { challengeId: 169, correct: false, text: "Munich" },
+      { challengeId: 169, correct: false, text: "Hambourg" },
 
+      // Fleuves
+      { challengeId: 170, correct: true, text: "Le Nil" },
+      { challengeId: 170, correct: false, text: "L'Amazone" },
+      { challengeId: 170, correct: false, text: "Le Yangtsé" },
+      { challengeId: 171, correct: true, text: "Le Nil" },
+      { challengeId: 171, correct: false, text: "Le Congo" },
+      { challengeId: 171, correct: false, text: "Le Niger" },
+      { challengeId: 172, correct: true, text: "La Volga" },
+      { challengeId: 172, correct: false, text: "Le Danube" },
+      { challengeId: 172, correct: false, text: "Le Rhin" },
+      { challengeId: 173, correct: true, text: "La Seine" },
+      { challengeId: 173, correct: false, text: "La Loire" },
+      { challengeId: 173, correct: false, text: "Le Rhône" },
+      { challengeId: 174, correct: true, text: "Tamise", blank: 0 },
+
+      // Montagnes
+      { challengeId: 175, correct: true, text: "L'Everest" },
+      { challengeId: 175, correct: false, text: "Le K2" },
+      { challengeId: 175, correct: false, text: "Le Mont-Blanc" },
+      { challengeId: 176, correct: true, text: "Le Kilimandjaro" },
+      { challengeId: 176, correct: false, text: "Le Mont Kenya" },
+      { challengeId: 176, correct: false, text: "Le Ras Dashen" },
+      { challengeId: 177, correct: true, text: "Le Mont-Blanc" },
+      { challengeId: 177, correct: false, text: "La Jungfrau" },
+      { challengeId: 177, correct: false, text: "Le Cervin" },
+
+      // Déserts
+      { challengeId: 178, correct: true, text: "Le Sahara" },
+      { challengeId: 178, correct: false, text: "Le désert d'Arabie" },
+      { challengeId: 178, correct: false, text: "Le désert de Gobi" },
+      { challengeId: 179, correct: true, text: "Asie" },
+      { challengeId: 179, correct: false, text: "Afrique" },
+      { challengeId: 179, correct: false, text: "Europe" },
+
+      // Civilisations
+      { challengeId: 180, correct: true, text: "Les Égyptiens" },
+      { challengeId: 180, correct: false, text: "Les Grecs" },
+      { challengeId: 180, correct: false, text: "Les Romains" },
+      { challengeId: 181, correct: true, text: "Auguste" },
+      { challengeId: 181, correct: false, text: "Jules César" },
+      { challengeId: 181, correct: false, text: "Néron" },
+      { challengeId: 182, correct: true, text: "Les Grecs" },
+      { challengeId: 182, correct: false, text: "Les Romains" },
+      { challengeId: 182, correct: false, text: "Les Égyptiens" },
+      { challengeId: 183, correct: true, text: "Jules César" },
+      { challengeId: 183, correct: false, text: "Auguste" },
+      { challengeId: 183, correct: false, text: "Vercingétorix" },
+      { challengeId: 184, correct: true, text: "Alexandre le Grand" },
+      { challengeId: 184, correct: false, text: "Philippe II" },
+      { challengeId: 184, correct: false, text: "Périclès" },
+
+      // Personnages
+      { challengeId: 185, correct: true, text: "Léonard de Vinci" },
+      { challengeId: 185, correct: false, text: "Michel-Ange" },
+      { challengeId: 185, correct: false, text: "Raphaël" },
+      { challengeId: 186, correct: true, text: "Alexander Fleming" },
+      { challengeId: 186, correct: false, text: "Louis Pasteur" },
+      { challengeId: 186, correct: false, text: "Marie Curie" },
+      { challengeId: 187, correct: true, text: "Martin Luther King" },
+      { challengeId: 187, correct: false, text: "Malcolm X" },
+      { challengeId: 187, correct: false, text: "Kennedy" },
+      { challengeId: 188, correct: true, text: "Guillaume le Conquérant" },
+      { challengeId: 188, correct: false, text: "Richard Cœur de Lion" },
+      { challengeId: 188, correct: false, text: "Henri VIII" },
+      { challengeId: 189, correct: true, text: "Dante Alighieri" },
+      { challengeId: 189, correct: false, text: "Pétrarque" },
+      { challengeId: 189, correct: false, text: "Boccace" },
+
+      // Dates
+      { challengeId: 190, correct: true, text: "1789" },
+      { challengeId: 190, correct: false, text: "1776" },
+      { challengeId: 190, correct: false, text: "1804" },
+      { challengeId: 191, correct: true, text: "1914" },
+      { challengeId: 191, correct: false, text: "1912" },
+      { challengeId: 191, correct: false, text: "1918" },
+      { challengeId: 192, correct: true, text: "1969" },
+      { challengeId: 192, correct: false, text: "1965" },
+      { challengeId: 192, correct: false, text: "1972" },
+      { challengeId: 193, correct: true, text: "1989" },
+      { challengeId: 193, correct: false, text: "1987" },
+      { challengeId: 193, correct: false, text: "1991" },
+
+      // Inventions
+      { challengeId: 194, correct: true, text: "Alexander Graham Bell" },
+      { challengeId: 194, correct: false, text: "Thomas Edison" },
+      { challengeId: 194, correct: false, text: "Nikola Tesla" },
+      { challengeId: 195, correct: true, text: "Gutenberg" },
+      { challengeId: 195, correct: false, text: "Caxton" },
+      { challengeId: 195, correct: false, text: "Fust" },
+      { challengeId: 196, correct: true, text: "Thomas Edison" },
+      { challengeId: 196, correct: false, text: "Nikola Tesla" },
+      { challengeId: 196, correct: false, text: "Alexander Graham Bell" },
+
+      // Peintres
+      { challengeId: 197, correct: true, text: "Van Gogh" },
+      { challengeId: 197, correct: false, text: "Monet" },
+      { challengeId: 197, correct: false, text: "Cézanne" },
+      { challengeId: 198, correct: true, text: "Picasso" },
+      { challengeId: 198, correct: false, text: "Dalí" },
+      { challengeId: 198, correct: false, text: "Miró" },
+      { challengeId: 199, correct: true, text: "Monet" },
+      { challengeId: 199, correct: false, text: "Renoir" },
+      { challengeId: 199, correct: false, text: "Manet" },
+
+      // Auteurs
+      { challengeId: 300, correct: true, text: "Victor Hugo" },
+      { challengeId: 300, correct: false, text: "Émile Zola" },
+      { challengeId: 300, correct: false, text: "Honoré de Balzac" },
+      { challengeId: 301, correct: true, text: "Tolstoï" },
+      { challengeId: 301, correct: false, text: "Dostoïevski" },
+      { challengeId: 301, correct: false, text: "Pouchkine" },
+      { challengeId: 302, correct: true, text: "Saint-Exupéry" },
+      { challengeId: 302, correct: false, text: "Jules Verne" },
+      { challengeId: 302, correct: false, text: "Alexandre Dumas" },
+      { challengeId: 303, correct: true, text: "Cervantes" },
+      { challengeId: 303, correct: false, text: "Lope de Vega" },
+      { challengeId: 303, correct: false, text: "Calderón" },
+      { challengeId: 304, correct: true, text: "Shakespeare" },
+      { challengeId: 304, correct: false, text: "Marlowe" },
+      { challengeId: 304, correct: false, text: "Jonson" },
+
+      // Musique
+      { challengeId: 305, correct: true, text: "Beethoven" },
+      { challengeId: 305, correct: false, text: "Mozart" },
+      { challengeId: 305, correct: false, text: "Bach" },
+      { challengeId: 306, correct: true, text: "Beethoven" },
+      { challengeId: 306, correct: false, text: "Mozart" },
+      { challengeId: 306, correct: false, text: "Bach" },
+      { challengeId: 307, correct: true, text: "Elvis Presley" },
+      { challengeId: 307, correct: false, text: "Chuck Berry" },
+      { challengeId: 307, correct: false, text: "Little Richard" },
+      { challengeId: 308, correct: true, text: "Queen" },
+      { challengeId: 308, correct: false, text: "The Beatles" },
+      { challengeId: 308, correct: false, text: "Led Zeppelin" },
+
+      // Sciences
+      { challengeId: 309, correct: true, text: "H₂O" },
+      { challengeId: 309, correct: false, text: "CO₂" },
+      { challengeId: 309, correct: false, text: "NaCl" },
+      { challengeId: 310, correct: true, text: "E=mc²" },
+      { challengeId: 310, correct: false, text: "F=ma" },
+      { challengeId: 310, correct: false, text: "V=IR" },
+      { challengeId: 311, correct: true, text: "Newton" },
+      { challengeId: 311, correct: false, text: "Einstein" },
+      { challengeId: 311, correct: false, text: "Galilée" },
+      { challengeId: 312, correct: true, text: "Marie Curie" },
+      { challengeId: 312, correct: false, text: "Pierre Curie" },
+      { challengeId: 312, correct: false, text: "Becquerel" },
+
+      // Biologie
+      { challengeId: 313, correct: true, text: "Darwin" },
+      { challengeId: 313, correct: false, text: "Lamarck" },
+      { challengeId: 313, correct: false, text: "Mendel" },
+      { challengeId: 314, correct: true, text: "La peau" },
+      { challengeId: 314, correct: false, text: "Le foie" },
+      { challengeId: 314, correct: false, text: "Le cœur" },
+      { challengeId: 315, correct: true, text: "46" },
+      { challengeId: 315, correct: false, text: "48" },
+      { challengeId: 315, correct: false, text: "44" },
+
+      // Astronomie
+      { challengeId: 316, correct: true, text: "Mercure" },
+      { challengeId: 316, correct: false, text: "Vénus" },
+      { challengeId: 316, correct: false, text: "Mars" },
+      { challengeId: 317, correct: true, text: "Jupiter" },
+      { challengeId: 317, correct: false, text: "Saturne" },
+      { challengeId: 317, correct: false, text: "Neptune" },
+      { challengeId: 318, correct: true, text: "Mars" },
+      { challengeId: 318, correct: false, text: "Vénus" },
+      { challengeId: 318, correct: false, text: "Mercure" },
+      { challengeId: 319, correct: true, text: "8" },
+      { challengeId: 319, correct: false, text: "9" },
+      { challengeId: 319, correct: false, text: "7" },
+
+      // Mythologie Grecque
+      { challengeId: 320, correct: true, text: "Poséidon" },
+      { challengeId: 320, correct: false, text: "Zeus" },
+      { challengeId: 320, correct: false, text: "Hadès" },
+      { challengeId: 321, correct: true, text: "Zeus" },
+      { challengeId: 321, correct: false, text: "Poséidon" },
+      { challengeId: 321, correct: false, text: "Hadès" },
+      { challengeId: 322, correct: true, text: "Athéna" },
+      { challengeId: 322, correct: false, text: "Artémis" },
+      { challengeId: 322, correct: false, text: "Héra" },
+      { challengeId: 323, correct: true, text: "Prométhée" },
+      { challengeId: 323, correct: false, text: "Épiméthée" },
+      { challengeId: 323, correct: false, text: "Atlas" },
+      { challengeId: 324, correct: true, text: "Thésée" },
+      { challengeId: 324, correct: false, text: "Persée" },
+      { challengeId: 324, correct: false, text: "Hercule" },
+      { challengeId: 325, correct: true, text: "Dionysos", blank: 0 },
+
+      // Mythologie Nordique
+      { challengeId: 326, correct: true, text: "Thor" },
+      { challengeId: 326, correct: false, text: "Odin" },
+      { challengeId: 326, correct: false, text: "Loki" },
+      { challengeId: 327, correct: true, text: "Ragnarök" },
+      { challengeId: 327, correct: false, text: "Valhalla" },
+      { challengeId: 327, correct: false, text: "Asgard" },
+    ]);
 
     // ================================================
     // RÉINITIALISER TOUTES LES SÉQUENCES
     // ================================================
     console.log("🔄 Resetting sequences...");
     
-    await sql`SELECT setval('courses_id_seq', (SELECT COALESCE(MAX(id), 0) + 1 FROM courses))`;
-    await sql`SELECT setval('units_id_seq', (SELECT COALESCE(MAX(id), 0) + 1 FROM units))`;
-    await sql`SELECT setval('lessons_id_seq', (SELECT COALESCE(MAX(id), 0) + 1 FROM lessons))`;
-    await sql`SELECT setval('challenges_id_seq', (SELECT COALESCE(MAX(id), 0) + 1 FROM challenges))`;
-    await sql`SELECT setval('challenge_options_id_seq', (SELECT COALESCE(MAX(id), 0) + 1 FROM challenge_options))`;
-    await sql`SELECT setval('challenge_progress_id_seq', (SELECT COALESCE(MAX(id), 0) + 1 FROM challenge_progress))`;
-    await sql`SELECT setval('user_subscription_id_seq', (SELECT COALESCE(MAX(id), 0) + 1 FROM user_subscription))`;
-
-    console.log("✅ Seeding finished successfully!");
+    await sql`SELECT setval('courses_id_seq', (SELECT COALESCE(MAX(id), 0) FROM courses))`;
+    await sql`SELECT setval('units_id_seq', (SELECT COALESCE(MAX(id), 0) FROM units))`;
+    await sql`SELECT setval('lessons_id_seq', (SELECT COALESCE(MAX(id), 0) FROM lessons))`;
+    await sql`SELECT setval('challenges_id_seq', (SELECT COALESCE(MAX(id), 0) FROM challenges))`;
+    await sql`SELECT setval('challenge_options_id_seq', (SELECT COALESCE(MAX(id), 0) FROM challenge_options))`;
 
     console.log("✅ Seeding finished successfully!");
 
