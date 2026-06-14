@@ -4,10 +4,14 @@ type Props = {
 
 export const StickyWrapper = ({ children }: Props) => {
   return (
-    <div className="hidden lg:block w-[320px] shrink-0">
-      <div className="min-h-[calc(100vh-48px)] sticky top-6 flex flex-col gap-y-4">
+    <>
+      {/* Spacer pour réserver la place dans le layout flex */}
+      <div className="hidden lg:block w-[320px] shrink-0" />
+
+      {/* Sidebar fixe sur desktop */}
+      <div className="hidden lg:flex flex-col gap-y-4 fixed top-6 right-6 w-[320px] max-h-[calc(100vh-48px)] overflow-y-auto">
         {children}
       </div>
-    </div>
+    </>
   );
 };

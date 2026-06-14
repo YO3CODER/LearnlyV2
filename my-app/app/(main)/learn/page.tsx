@@ -51,7 +51,7 @@ const LearnPage = async () => {
   const isPro = !!userSubscription?.isActive;
 
   return (
-    <div className="flex gap-[48px] px-6">
+    <div className="flex items-start gap-[48px] px-6 w-full max-w-full overflow-x-hidden">
 
       {/* Feed — partie gauche */}
       <FeedWrapper>

@@ -3,8 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -75,7 +73,15 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Fix scroll horizontal mobile sans casser sticky */
+  html,
+  body {
+    overflow-x: clip;
+    max-width: 100%;
+  }
 }
+
 @keyframes fadeSlideIn {
   0%   { opacity: 0; transform: translateY(12px) scale(0.97); }
   60%  { opacity: 1; transform: translateY(-2px) scale(1.01); }

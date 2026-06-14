@@ -30,7 +30,7 @@ const MainLayout = async ({ children }: Props) => {
       />
       <Sidebar className="hidden lg:flex" />
       <main className="lg:pl-[80px] h-full pt-[56px] pb-[60px] lg:pt-0 lg:pb-0">
-        <div className="max-w-[1056px] mx-auto pt-6 h-full">
+        <div className="max-w-[1056px] mx-auto pt-6 h-full overflow-x-clip">
           {children}
         </div>
       </main>

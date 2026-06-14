@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, BookOpen, MoveRight } from "lucide-react";
+import { ArrowLeft, MoveRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -62,35 +62,50 @@ export const UnitBanner = ({
   };
 
   return (
-    <div className={`w-full rounded-2xl px-6 py-6 lg:py-8 flex items-center justify-between ${getBgColor()} ${getBorderColor()} border-2 border-b-4 relative overflow-hidden`}>
+    <div className={`
+      w-full min-w-0 overflow-hidden
+      rounded-2xl px-6 py-6 lg:py-8
+      flex items-center justify-between
+      ${getBgColor()} ${getBorderColor()}
+      border-2 border-b-4 relative
+    `}>
 
       {/* Gauche : flèche + label + titre */}
-      <div className="relative z-10 flex flex-col gap-2 flex-1">
+      <div className="relative z-10 flex flex-col gap-2 flex-1 min-w-0 overflow-hidden">
         <div className="flex items-center gap-2">
-          <Link href="/courses" className="inline-flex">
-  <ArrowLeft className="h-4 w-4 text-white/80 flex-shrink-0 hover:opacity-90 transition-opacity" />
-</Link>
-          <span className="text-white/70 text-xs font-bold  tracking-wider" style={{ fontFamily: "'Outfit', sans-serif" }}>
+          <Link href="/courses" className="inline-flex shrink-0">
+            <ArrowLeft className="h-4 w-4 text-white/80 hover:opacity-90 transition-opacity" />
+          </Link>
+          <span
+            className="text-white/70 text-xs font-bold tracking-wider truncate"
+            style={{ fontFamily: "'Outfit', sans-serif" }}
+          >
             Unité {order}
           </span>
         </div>
-        <h3 className="text-xl lg:text-xl font-extrabold text-white leading-tight" style={{ fontFamily: "'Fredoka', sans-serif" }}>
-          {title}
-          <h4 className="text-sm text-white/80" >{description}</h4>
-        </h3>
+        <div className="min-w-0">
+          <h3
+            className="text-xl font-extrabold text-white leading-tight truncate"
+            style={{ fontFamily: "'Fredoka', sans-serif" }}
+          >
+            {title}
+          </h3>
+          <p className="text-sm text-white/80 truncate">{description}</p>
+        </div>
       </div>
 
-      {/* Droite : bouton Guide */}
+      {/* Droite : bouton */}
       <Link href="/lesson" className="relative z-10 shrink-0 ml-4">
         <Button
           size="default"
-          className={`flex items-center gap-2 px-5 h-12 lg:h-14
+          className={`
+            flex items-center gap-2 px-5 h-12 lg:h-14
             ${getButtonColor()}
             text-white font-extrabold text-sm lg:text-base uppercase tracking-wide
-            border-2 border-b-4
-            rounded-2xl
+            border-2 border-b-4 rounded-2xl
             transition-all duration-150
-            shadow-lg active:scale-95 active:border-b-2 active:shadow-md`}
+            shadow-lg active:scale-95 active:border-b-2 active:shadow-md
+          `}
           style={{ fontFamily: "'Outfit', sans-serif" }}
         >
           <MoveRight className="h-5 w-5 lg:h-6 lg:w-6" />

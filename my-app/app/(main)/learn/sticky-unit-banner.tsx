@@ -19,7 +19,15 @@ type Props = {
 export const StickyUnitBanner = ({ units }: Props) => {
   const [activeUnitIndex, setActiveUnitIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [bannerHeight, setBannerHeight] = useState(0);
+  const bannerRef = useRef<HTMLDivElement>(null);
   const observersRef = useRef<IntersectionObserver[]>([]);
+
+  useEffect(() => {
+    if (bannerRef.current) {
+      setBannerHeight(bannerRef.current.offsetHeight);
+    }
+  }, [isVisible]);
 
   useEffect(() => {
     observersRef.current.forEach(obs => obs.disconnect());
@@ -51,15 +59,50 @@ export const StickyUnitBanner = ({ units }: Props) => {
   const activeUnit = units[activeUnitIndex];
 
   return (
-    <div className="sticky top-[60px] lg:top-[88px] z-40 mb-2 lg:mb-6 transition-all duration-300 animate-in slide-in-from-top">
-      <UnitBanner
-        key={activeUnit.id}
-        title={activeUnit.title}
-        description={activeUnit.description}
-        color={activeUnit.color}
-        order={activeUnit.order}
-        index={activeUnit.index}
+    <>
+      {/* Mobile : fixed sous le MobileHeader (56px) */}
+      <div
+        ref={bannerRef}
+        className="
+          fixed left-0 right-0 z-40
+          top-[56px]
+          px-4 py-2
+          lg:hidden
+          transition-all duration-300 animate-in slide-in-from-top
+        "
+      >
+        <UnitBanner
+          key={activeUnit.id}
+          title={activeUnit.title}
+          description={activeUnit.description}
+          color={activeUnit.color}
+          order={activeUnit.order}
+          index={activeUnit.index}
+        />
+      </div>
+
+      {/* Desktop : sticky normal (pas fixed, le header desktop gère déjà le top) */}
+      <div className="
+        hidden lg:block
+        sticky top-[88px] z-40
+        mb-6
+        transition-all duration-300 animate-in slide-in-from-top
+      ">
+        <UnitBanner
+          key={activeUnit.id}
+          title={activeUnit.title}
+          description={activeUnit.description}
+          color={activeUnit.color}
+          order={activeUnit.order}
+          index={activeUnit.index}
+        />
+      </div>
+
+      {/* Spacer mobile uniquement */}
+      <div
+        className="lg:hidden"
+        style={{ height: bannerHeight + 8 }}
       />
-    </div>
+    </>
   );
 };
