@@ -36,7 +36,7 @@ const useActiveUnit = (units: UnitInfo[]) => {
             setIsVisible(true);
           }
         },
-        { threshold: 0.3, rootMargin: "-56px 0px -40% 0px" }
+        { threshold: 0, rootMargin: "-56px 0px -80% 0px" }
       );
 
       observer.observe(el);
