@@ -641,9 +641,10 @@ export const LessonButton = ({
                   "text-foreground text-xs font-extrabold uppercase tracking-widest",
                   "shadow-lg whitespace-nowrap",
                   "bounce-infinite",
+                   colors.popupButtonText,
                 )}
               >
-                Début
+                COMMENCER
                 <div className="absolute -bottom-[10px] left-1/2 -translate-x-1/2" style={{ width: 0, height: 0, borderLeft: "6px solid transparent", borderRight: "6px solid transparent", borderTop: "8px solid hsl(var(--border))" }} />
                 <div className="absolute -bottom-[7px]  left-1/2 -translate-x-1/2" style={{ width: 0, height: 0, borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: "7px solid hsl(var(--background))" }} />
               </div>
