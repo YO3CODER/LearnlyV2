@@ -55,7 +55,6 @@ export const lessonsRelations = relations(lessons, ({ one, many }) => ({
   challenges: many(challenges),
 }));
 
-// 👇 FILL_BLANK ajouté
 export const challengesEnum = pgEnum("type", [
   "SELECT",
   "ASSIST",
@@ -94,8 +93,8 @@ export const challengeOptions = pgTable("challenge_options", {
   correct: boolean("correct").notNull(),
   imageSrc: text("image_src"),
   audioSrc: text("audio_src"),
-  order: integer("order"), // WORD_BANK — position du mot
-  blank: integer("blank"), // 👈 FILL_BLANK — index du blank que cette option remplit (0, 1, 2...)
+  order: integer("order"),
+  blank: integer("blank"),
 });
 
 export const challengeOptionsRelations = relations(
@@ -132,7 +131,7 @@ export const userProgress = pgTable("user_progress", {
   userName: text("user_name").notNull().default("User"),
   userImageSrc: text("user_image_src").notNull().default("/mascot.svg"),
   activeCourseId: integer("active_course_id").references(() => courses.id, {
-    onDelete: "cascade",
+    onDelete: "set null", // ✅ était "cascade" — préserve hearts, XP, streak
   }),
   hearts: integer("hearts").notNull().default(5),
   points: integer("points").notNull().default(0),
@@ -158,4 +157,4 @@ export const userSubscription = pgTable("user_subscription", {
   stripeSubscriptionId: text("stripe_subscription_id").notNull().unique(),
   stripePriceId: text("stripe_price_id").notNull(),
   stripeCurrentPeriodEnd: timestamp("stripe_current_period_end").notNull(),
-});  
+});
