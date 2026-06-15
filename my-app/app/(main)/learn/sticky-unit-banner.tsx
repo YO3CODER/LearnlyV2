@@ -55,10 +55,7 @@ export const StickyUnitBannerDesktop = ({ units }: Props) => {
   if (!isVisible) return null;
 
   return (
-    <div
-      key={activeUnit.id}
-      className="hidden lg:block pt-3 animate-in slide-in-from-top duration-300"
-    >
+    <div className="hidden lg:block pt-3">
       <UnitBanner
         title={activeUnit.title}
         description={activeUnit.description}
@@ -76,9 +73,8 @@ export const StickyUnitBannerMobile = ({ units }: Props) => {
   if (!isVisible) return null;
 
   return (
-    <div className="lg:hidden sticky top-[57px] z-40 bg-background px-4 py-2 animate-in slide-in-from-top duration-300">
+    <div className="lg:hidden sticky top-[57px] z-40 bg-background px-4 py-2">
       <UnitBanner
-        key={activeUnit.id}
         title={activeUnit.title}
         description={activeUnit.description}
         color={activeUnit.color}
