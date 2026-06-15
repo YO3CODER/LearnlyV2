@@ -69,18 +69,32 @@ export const StickyUnitBannerDesktop = ({ units }: Props) => {
 
 export const StickyUnitBannerMobile = ({ units }: Props) => {
   const { activeUnit, isVisible } = useActiveUnit(units);
+  const [headerHeight, setHeaderHeight] = useState(56);
+
+  useEffect(() => {
+    const mobileHeader = document.querySelector("header");
+    if (mobileHeader) {
+      setHeaderHeight(mobileHeader.offsetHeight);
+    }
+  }, []);
 
   if (!isVisible) return null;
 
   return (
-    <div className="lg:hidden sticky top-[57px] z-40 bg-background px-4 py-2">
-      <UnitBanner
-        title={activeUnit.title}
-        description={activeUnit.description}
-        color={activeUnit.color}
-        order={activeUnit.order}
-        index={activeUnit.index}
-      />
-    </div>
+    <>
+      <div
+        className="fixed left-0 right-0 z-40 px-4 py-2 bg-background lg:hidden"
+        style={{ top: headerHeight }}
+      >
+        <UnitBanner
+          title={activeUnit.title}
+          description={activeUnit.description}
+          color={activeUnit.color}
+          order={activeUnit.order}
+          index={activeUnit.index}
+        />
+      </div>
+      <div className="lg:hidden h-[80px]" />
+    </>
   );
 };
