@@ -2,14 +2,15 @@ import "dotenv/config";
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
 import * as schema from "../db/schema";
+import { eq } from "drizzle-orm";
 
 const sql = neon(process.env.DATABASE_URL!);
 // @ts-ignore
 const db = drizzle(sql, { schema });
 
-const fixMissingOptions = async () => {
+const addMissingAimerOptions = async () => {
   try {
-    console.log("🔧 Correction des options manquantes pour les challenges SELECT...\n");
+    console.log("🔧 Ajout des options manquantes pour 'aimer' et autres verbes...\n");
 
     // 1. Trouver le cours Mimi
     const mimiCourse = await db.query.courses.findFirst({
@@ -38,150 +39,164 @@ const fixMissingOptions = async () => {
       throw new Error("Leçon non trouvée");
     }
 
-    // 4. Récupérer tous les challenges SELECT de cette leçon qui n'ont pas d'options
+    // 4. Récupérer tous les challenges de cette leçon
     const challenges = await db.query.challenges.findMany({
       where: (challenges, { eq }) => eq(challenges.lessonId, lesson.id)
     });
 
-    console.log(`📚 ${challenges.length} challenges trouvés dans la leçon\n`);
+    console.log(`📚 ${challenges.length} challenges trouvés\n`);
 
-    // 5. Pour chaque challenge, vérifier s'il a des options
+    let addedCount = 0;
+
+    // 5. Pour chaque challenge, vérifier et ajouter les options
     for (const challenge of challenges) {
       const existingOptions = await db.query.challengeOptions.findMany({
         where: (options, { eq }) => eq(options.challengeId, challenge.id)
       });
 
       if (existingOptions.length === 0) {
-        console.log(`⚠️ Challenge ${challenge.id} - "${challenge.question}" n'a pas d'options. Ajout...`);
-
-        // Générer les options basées sur la question
+        const question = challenge.question;
         let options: string[] = [];
         let correctAnswer = "";
 
-        // Extraire le verbe et la personne de la question
-        const question = challenge.question;
-        
-        // Déterminer la bonne réponse et les mauvaises options
-        if (question.includes("parler") && question.includes("(je)")) {
-          correctAnswer = "je parle";
-          options = ["je parle", "je parles", "je parlent", "nous parlons", "vous parlez", "ils parlent"];
+        // ============================================
+        // VERBE AIMER
+        // ============================================
+        if (question === "Conjugue 'aimer' au présent (je)") {
+          correctAnswer = "j'aime";
+          options = ["j'aime", "j'aimes", "j'aiment", "nous aimons", "vous aimez", "ils aiment"];
         }
-        else if (question.includes("parler") && question.includes("(tu)")) {
-          correctAnswer = "tu parles";
-          options = ["tu parles", "tu parle", "tu parlent", "nous parlons", "vous parlez", "ils parlent"];
+        else if (question === "Conjugue 'aimer' au présent (tu)") {
+          correctAnswer = "tu aimes";
+          options = ["tu aimes", "tu aime", "tu aiment", "nous aimons", "vous aimez", "ils aiment"];
         }
-        else if (question.includes("parler") && question.includes("(il)")) {
-          correctAnswer = "il parle";
-          options = ["il parle", "il parles", "il parlent", "nous parlons", "vous parlez", "ils parlent"];
+        else if (question === "Conjugue 'aimer' au présent (il)") {
+          correctAnswer = "il aime";
+          options = ["il aime", "il aimes", "il aiment", "nous aimons", "vous aimez", "ils aiment"];
         }
-        else if (question.includes("parler") && question.includes("(nous)")) {
-          correctAnswer = "nous parlons";
-          options = ["nous parlons", "je parle", "tu parles", "il parle", "vous parlez", "ils parlent"];
+        else if (question === "Conjugue 'aimer' au présent (elle)") {
+          correctAnswer = "elle aime";
+          options = ["elle aime", "elle aimes", "elle aiment", "nous aimons", "vous aimez", "ils aiment"];
         }
-        else if (question.includes("parler") && question.includes("(vous)")) {
-          correctAnswer = "vous parlez";
-          options = ["vous parlez", "je parle", "tu parles", "il parle", "nous parlons", "ils parlent"];
+        else if (question === "Conjugue 'aimer' au présent (nous)") {
+          correctAnswer = "nous aimons";
+          options = ["nous aimons", "j'aime", "tu aimes", "il aime", "vous aimez", "ils aiment"];
         }
-        else if (question.includes("parler") && question.includes("(ils)")) {
-          correctAnswer = "ils parlent";
-          options = ["ils parlent", "je parle", "tu parles", "il parle", "nous parlons", "vous parlez"];
+        else if (question === "Conjugue 'aimer' au présent (vous)") {
+          correctAnswer = "vous aimez";
+          options = ["vous aimez", "j'aime", "tu aimes", "il aime", "nous aimons", "ils aiment"];
         }
-        // MANGER
-        else if (question.includes("manger") && question.includes("(je)")) {
-          correctAnswer = "je mange";
-          options = ["je mange", "je manges", "je mangent", "nous mangeons", "vous mangez", "ils mangent"];
+        else if (question === "Conjugue 'aimer' au présent (ils)") {
+          correctAnswer = "ils aiment";
+          options = ["ils aiment", "j'aime", "tu aimes", "il aime", "nous aimons", "vous aimez"];
         }
-        else if (question.includes("manger") && question.includes("(tu)")) {
-          correctAnswer = "tu manges";
-          options = ["tu manges", "tu mange", "tu mangent", "nous mangeons", "vous mangez", "ils mangent"];
+        // ============================================
+        // VERBE DÉTESTER
+        // ============================================
+        else if (question === "Conjugue 'détester' au présent (je)") {
+          correctAnswer = "je déteste";
+          options = ["je déteste", "je détestes", "je détestent", "nous détestons", "vous détestez", "ils détestent"];
         }
-        else if (question.includes("manger") && question.includes("(il)")) {
-          correctAnswer = "il mange";
-          options = ["il mange", "il manges", "il mangent", "nous mangeons", "vous mangez", "ils mangent"];
+        else if (question === "Conjugue 'détester' au présent (tu)") {
+          correctAnswer = "tu détestes";
+          options = ["tu détestes", "tu déteste", "tu détestent", "nous détestons", "vous détestez", "ils détestent"];
         }
-        else if (question.includes("manger") && question.includes("(nous)")) {
-          correctAnswer = "nous mangeons";
-          options = ["nous mangeons", "je mange", "tu manges", "il mange", "vous mangez", "ils mangent"];
+        else if (question === "Conjugue 'détester' au présent (il)") {
+          correctAnswer = "il déteste";
+          options = ["il déteste", "il détestes", "il détestent", "nous détestons", "vous détestez", "ils détestent"];
         }
-        else if (question.includes("manger") && question.includes("(vous)")) {
-          correctAnswer = "vous mangez";
-          options = ["vous mangez", "je mange", "tu manges", "il mange", "nous mangeons", "ils mangent"];
+        else if (question === "Conjugue 'détester' au présent (nous)") {
+          correctAnswer = "nous détestons";
+          options = ["nous détestons", "je déteste", "tu détestes", "il déteste", "vous détestez", "ils détestent"];
         }
-        else if (question.includes("manger") && question.includes("(ils)")) {
-          correctAnswer = "ils mangent";
-          options = ["ils mangent", "je mange", "tu manges", "il mange", "nous mangeons", "vous mangez"];
+        else if (question === "Conjugue 'détester' au présent (vous)") {
+          correctAnswer = "vous détestez";
+          options = ["vous détestez", "je déteste", "tu détestes", "il déteste", "nous détestons", "ils détestent"];
         }
-        // CHANTER
-        else if (question.includes("chanter") && question.includes("(je)")) {
-          correctAnswer = "je chante";
-          options = ["je chante", "je chantes", "je chantent", "nous chantons", "vous chantez", "ils chantent"];
+        else if (question === "Conjugue 'détester' au présent (ils)") {
+          correctAnswer = "ils détestent";
+          options = ["ils détestent", "je déteste", "tu détestes", "il déteste", "nous détestons", "vous détestez"];
         }
-        else if (question.includes("chanter") && question.includes("(tu)")) {
-          correctAnswer = "tu chantes";
-          options = ["tu chantes", "tu chante", "tu chantent", "nous chantons", "vous chantez", "ils chantent"];
+        // ============================================
+        // VERBE ADORER
+        // ============================================
+        else if (question === "Conjugue 'adorer' au présent (je)") {
+          correctAnswer = "j'adore";
+          options = ["j'adore", "j'adores", "j'adorent", "nous adorons", "vous adorez", "ils adorent"];
         }
-        else if (question.includes("chanter") && question.includes("(il)")) {
-          correctAnswer = "il chante";
-          options = ["il chante", "il chantes", "il chantent", "nous chantons", "vous chantez", "ils chantent"];
+        else if (question === "Conjugue 'adorer' au présent (tu)") {
+          correctAnswer = "tu adores";
+          options = ["tu adores", "tu adore", "tu adorent", "nous adorons", "vous adorez", "ils adorent"];
         }
-        else if (question.includes("chanter") && question.includes("(nous)")) {
-          correctAnswer = "nous chantons";
-          options = ["nous chantons", "je chante", "tu chantes", "il chante", "vous chantez", "ils chantent"];
+        else if (question === "Conjugue 'adorer' au présent (il)") {
+          correctAnswer = "il adore";
+          options = ["il adore", "il adores", "il adorent", "nous adorons", "vous adorez", "ils adorent"];
         }
-        else if (question.includes("chanter") && question.includes("(vous)")) {
-          correctAnswer = "vous chantez";
-          options = ["vous chantez", "je chante", "tu chantes", "il chante", "nous chantons", "ils chantent"];
+        else if (question === "Conjugue 'adorer' au présent (vous)") {
+          correctAnswer = "vous adorez";
+          options = ["vous adorez", "j'adore", "tu adores", "il adore", "nous adorons", "ils adorent"];
         }
-        else if (question.includes("chanter") && question.includes("(ils)")) {
-          correctAnswer = "ils chantent";
-          options = ["ils chantent", "je chante", "tu chantes", "il chante", "nous chantons", "vous chantez"];
+        else if (question === "Conjugue 'adorer' au présent (ils)") {
+          correctAnswer = "ils adorent";
+          options = ["ils adorent", "j'adore", "tu adores", "il adore", "nous adorons", "vous adorez"];
         }
-        // DANSER
-        else if (question.includes("danser") && question.includes("(je)")) {
-          correctAnswer = "je danse";
-          options = ["je danse", "je danses", "je dansent", "nous dansons", "vous dansez", "ils dansent"];
+        // ============================================
+        // VERBE PRÉFÉRER (verbe à é_è)
+        // ============================================
+        else if (question === "Conjugue 'préférer' au présent (je)") {
+          correctAnswer = "je préfère";
+          options = ["je préfère", "je préfères", "je préfèrent", "nous préférons", "vous préférez", "ils préfèrent"];
         }
-        else if (question.includes("danser") && question.includes("(tu)")) {
-          correctAnswer = "tu danses";
-          options = ["tu danses", "tu danse", "tu dansent", "nous dansons", "vous dansez", "ils dansent"];
+        else if (question === "Conjugue 'préférer' au présent (tu)") {
+          correctAnswer = "tu préfères";
+          options = ["tu préfères", "tu préfère", "tu préfèrent", "nous préférons", "vous préférez", "ils préfèrent"];
         }
-        else if (question.includes("danser") && question.includes("(il)")) {
-          correctAnswer = "il danse";
-          options = ["il danse", "il danses", "il dansent", "nous dansons", "vous dansez", "ils dansent"];
+        else if (question === "Conjugue 'préférer' au présent (il)") {
+          correctAnswer = "il préfère";
+          options = ["il préfère", "il préfères", "il préfèrent", "nous préférons", "vous préférez", "ils préfèrent"];
         }
-        else if (question.includes("danser") && question.includes("(nous)")) {
-          correctAnswer = "nous dansons";
-          options = ["nous dansons", "je danse", "tu danses", "il danse", "vous dansez", "ils dansent"];
+        else if (question === "Conjugue 'préférer' au présent (nous)") {
+          correctAnswer = "nous préférons";
+          options = ["nous préférons", "je préfère", "tu préfères", "il préfère", "vous préférez", "ils préfèrent"];
         }
-        else if (question.includes("danser") && question.includes("(vous)")) {
-          correctAnswer = "vous dansez";
-          options = ["vous dansez", "je danse", "tu danses", "il danse", "nous dansons", "ils dansent"];
+        else if (question === "Conjugue 'préférer' au présent (vous)") {
+          correctAnswer = "vous préférez";
+          options = ["vous préférez", "je préfère", "tu préfères", "il préfère", "nous préférons", "ils préfèrent"];
         }
-        else if (question.includes("danser") && question.includes("(ils)")) {
-          correctAnswer = "ils dansent";
-          options = ["ils dansent", "je danse", "tu danses", "il danse", "nous dansons", "vous dansez"];
+        else if (question === "Conjugue 'préférer' au présent (ils)") {
+          correctAnswer = "ils préfèrent";
+          options = ["ils préfèrent", "je préfère", "tu préfères", "il préfère", "nous préférons", "vous préférez"];
         }
-        // Cas par défaut
+        // ============================================
+        // AUTRES VERBES à ajouter
+        // ============================================
         else {
-          console.log(`   ⚠️ Challenge ${challenge.id}: "${question}" - À traiter manuellement`);
+          // Ignorer les challenges non SELECT (ASSIST, FILL_BLANK)
+          if (!question.includes("Conjugue")) {
+            continue;
+          }
+          console.log(`   ⚠️ Challenge non traité: "${question}"`);
           continue;
         }
 
         // Insérer les options
-        for (const opt of options) {
+        for (let i = 0; i < options.length; i++) {
           await db.insert(schema.challengeOptions).values({
             challengeId: challenge.id,
-            text: opt,
-            correct: opt === correctAnswer
+            text: options[i],
+            correct: options[i] === correctAnswer,
+            order: i
           });
         }
-        console.log(`   ✅ ${options.length} options ajoutées pour le challenge ${challenge.id}`);
-      } else {
-        console.log(`✅ Challenge ${challenge.id} a déjà ${existingOptions.length} options`);
+        console.log(`✅ Challenge ${challenge.id}: "${question}" - ${options.length} options ajoutées`);
+        addedCount++;
       }
     }
 
-    console.log("\n✅ Correction terminée !");
+    console.log("\n" + "=".repeat(60));
+    console.log("📊 RÉSUMÉ:");
+    console.log("=".repeat(60));
+    console.log(`✅ Challenges corrigés: ${addedCount}`);
 
   } catch (error) {
     console.error("❌ Erreur:", error);
@@ -189,4 +204,4 @@ const fixMissingOptions = async () => {
 };
 
 // Exécuter
-fixMissingOptions();
+addMissingAimerOptions();
