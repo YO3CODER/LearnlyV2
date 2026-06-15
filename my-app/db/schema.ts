@@ -55,6 +55,7 @@ export const lessonsRelations = relations(lessons, ({ one, many }) => ({
   challenges: many(challenges),
 }));
 
+// 👇 FILL_BLANK ajouté
 export const challengesEnum = pgEnum("type", [
   "SELECT",
   "ASSIST",
@@ -93,8 +94,8 @@ export const challengeOptions = pgTable("challenge_options", {
   correct: boolean("correct").notNull(),
   imageSrc: text("image_src"),
   audioSrc: text("audio_src"),
-  order: integer("order"),
-  blank: integer("blank"),
+  order: integer("order"), // WORD_BANK — position du mot
+  blank: integer("blank"), // 👈 FILL_BLANK — index du blank que cette option remplit (0, 1, 2...)
 });
 
 export const challengeOptionsRelations = relations(
