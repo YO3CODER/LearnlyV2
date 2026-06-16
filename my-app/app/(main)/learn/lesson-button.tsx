@@ -28,6 +28,9 @@ type Props = {
   lessonChallengeCount?: number;
   unitTotalXP?: number;
   mascotGif?: string;
+  isQuest?: boolean;
+  questIndex?: number;
+  questCompleted?: boolean;
 };
 
 // ─── Color map ────────────────────────────────────────────────────────────────
@@ -226,6 +229,9 @@ export const LessonButton = ({
   lessonChallengeCount = 5,
   unitTotalXP,
   mascotGif,
+  isQuest = false,
+  questIndex,
+  questCompleted = false,
 }: Props) => {
   const router = useRouter();
 
@@ -298,7 +304,8 @@ export const LessonButton = ({
   }, [playSound]);
 
   // ─── Layout zigzag ───────────────────────────────────────────────────────
-  const rightPosition = getZigzagOffset(index);
+  const effectiveIndex = questIndex !== undefined && index > questIndex ? index - 1 : index;
+  const rightPosition = getZigzagOffset(effectiveIndex);
 
   const isFirst = index === 0;
   const isCompleted = !current && !locked;
@@ -450,6 +457,12 @@ export const LessonButton = ({
       50%       { transform: translateY(-50%) translateY(-6px); }
     }
     .mascot-float { animation: mascotFloat 2.5s ease-in-out infinite; }
+
+    @keyframes questPulse {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(-50%) scale(1.1) rotate(-5deg); }
+    }
+    .quest-pulse { animation: questPulse 2s ease-in-out infinite; }
   `;
 
   // ─── Contenu practice dans la transition ─────────────────────────────────
@@ -601,39 +614,61 @@ export const LessonButton = ({
           display: "flex",
           justifyContent: "center",
           width: "100%",
+          minHeight: 100,
         }}
         className="animate-in fade-in slide-in-from-bottom-4"
       >
         <style>{infiniteBounceAnimation}</style>
 
-        {/* ── Mascotte dans le creux du zigzag ── */}
-        {mascotGif && Math.abs(rightPosition) > 5 && (
+        {/* ── Icône de Quête (quest.svg) au milieu ── */}
+        {isQuest ? (
           <div
-            className="absolute mascot-float pointer-events-none"
+            className="absolute quest-pulse pointer-events-none"
             style={{
               top: "50%",
               left: `calc(50% + ${rightPosition}px)`,
-              width: 75,
-              height: 75,
+              width: 80,
+              height: 80,
               zIndex: 10,
-              transform: `translate(${
-                rightPosition > 0 ? "-120%" : "120%"
-              }, -50%)`,
-              transition: "transform 0.2s ease-out",
+              transform: "translateY(-50%)",
             }}
           >
             <img
-              src={mascotGif}
-              alt="Mascot"
-              width={75}
-              height={75}
+              src={questCompleted ? "/quest-open.svg" : "/quest.svg"}
+              alt="Quête"
+              width={80}
+              height={80}
               draggable={false}
-              className={cn(
-                "object-contain w-full h-full",
-                locked && "brightness-[0.4] opacity-50"
-              )}
+              className="object-contain w-full h-full"
             />
           </div>
+        ) : (
+          mascotGif && Math.abs(rightPosition) > 5 && (
+            <div
+              className="absolute mascot-float pointer-events-none"
+              style={{
+                top: "50%",
+                left: `calc(50% + ${rightPosition}px)`,
+                width: 75,
+                height: 75,
+                zIndex: 10,
+                transform: `translate(${rightPosition > 0 ? "-135%" : "135%"}, -50%)`,
+                transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+              }}
+            >
+              <img
+                src={mascotGif}
+                alt="Mascot"
+                width={75}
+                height={75}
+                draggable={false}
+                className={cn(
+                  "object-contain w-full h-full",
+                  locked && "brightness-[0.4] opacity-50"
+                )}
+              />
+            </div>
+          )
         )}
 
         {/* ── Conteneur du bouton avec le décalage zigzag ── */}
@@ -649,7 +684,7 @@ export const LessonButton = ({
           }}
         >
           {/* ── Popup de la leçon ── */}
-          {showPopup && !locked && (
+          {showPopup && !locked && !isQuest && (
             <div
               ref={popupRef}
               className={cn(
@@ -714,7 +749,7 @@ export const LessonButton = ({
             </div>
           )}
 
-          {/* ── Bouton leçon courante (avec progression circulaire) ── */}
+          {/* ── Bouton leçon courante ── */}
           {current ? (
             <div
               className="h-[88px] w-[88px] relative flex items-center justify-center"
@@ -800,7 +835,7 @@ export const LessonButton = ({
               </CircularProgressbarWithChildren>
             </div>
           ) : (
-            // ── Bouton leçon normale (complétée ou à venir) ──
+            // ── Bouton leçon normale ──
             <div
               className="relative w-[60px] h-[60px] flex items-center justify-center"
               onClick={() => {
@@ -808,7 +843,7 @@ export const LessonButton = ({
                 handleButtonPress();
               }}
             >
-              {!locked && (
+              {!locked && !isQuest && (
                 <div
                   className={cn(
                     "absolute inset-0 rounded-full blur-md scale-125 opacity-0 hover:opacity-100 transition-all duration-500",
@@ -817,28 +852,58 @@ export const LessonButton = ({
                 />
               )}
 
-              {isPerfect && !isGolden && (
+              {isPerfect && !isGolden && !isQuest && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 px-2 py-0.5 rounded-full bg-gradient-to-r from-yellow-400 to-amber-400 text-white text-[9px] font-extrabold uppercase tracking-wider shadow-sm whitespace-nowrap">
                   Parfait
                 </div>
               )}
 
-              <DuoButton
-                bgHex={isGolden ? "#f59e0b" : colors.bgHex}
-                borderHex={isGolden ? "#b45309" : colors.borderHex}
-                isLocked={locked}
-                isGoldenBtn={isGolden && !locked}
-              >
-                <Icon
-                  className={cn(
-                    "h-8 w-8 relative z-10",
-                    locked
-                      ? "fill-white text-white stroke-white opacity-60"
-                      : "fill-white text-white drop-shadow-sm",
-                    isCompleted && !isGolden && "fill-none stroke-white stroke-[4]"
+              {isQuest ? (
+                <div
+                  style={{
+                    width: 60,
+                    height: 60,
+                    borderRadius: "50%",
+                    backgroundColor: questCompleted ? "#22c55e" : "#f59e0b",
+                    borderBottom: pressing ? "2px solid #b45309" : "4px solid #b45309",
+                    cursor: "pointer",
+                    position: "relative",
+                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "transform 0.1s ease, border-bottom 0.1s ease",
+                    transform: pressing ? "translateY(4px)" : "translateY(0px)",
+                    boxShadow: pressing ? "none" : `0 5px 12px ${questCompleted ? "#22c55e" : "#f59e0b"}66`,
+                    outline: `2px solid ${questCompleted ? "#15803d" : "#b45309"}30`,
+                    outlineOffset: "3px",
+                  }}
+                  className={cn(!pressing && "hover:translate-y-[2px] hover:border-b-[3px]")}
+                >
+                  {questCompleted ? (
+                    <Check className="h-8 w-8 fill-white text-white drop-shadow-sm" />
+                  ) : (
+                    <Star className="h-8 w-8 fill-white text-white drop-shadow-sm" />
                   )}
-                />
-              </DuoButton>
+                </div>
+              ) : (
+                <DuoButton
+                  bgHex={isGolden ? "#f59e0b" : colors.bgHex}
+                  borderHex={isGolden ? "#b45309" : colors.borderHex}
+                  isLocked={locked}
+                  isGoldenBtn={isGolden && !locked}
+                >
+                  <Icon
+                    className={cn(
+                      "h-8 w-8 relative z-10",
+                      locked
+                        ? "fill-white text-white stroke-white opacity-60"
+                        : "fill-white text-white drop-shadow-sm",
+                      isCompleted && !isGolden && "fill-none stroke-white stroke-[4]"
+                    )}
+                  />
+                </DuoButton>
+              )}
             </div>
           )}
         </div>
