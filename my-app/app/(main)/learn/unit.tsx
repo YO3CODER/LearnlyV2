@@ -30,6 +30,65 @@ const getUnitColor = (order: number) => {
 const GIFS = ["/1.gif", "/2.gif", "/3.gif", "/4.gif"];
 const XP_PER_CHALLENGE = 10;
 
+// Reproduit exactement la logique de lesson-button.tsx
+// pour calculer rightPosition de chaque bouton
+const getCycleIndentation = (lessonIndex: number): number => {
+  const cycleLength = 8;
+  const cycleIndex = lessonIndex % cycleLength;
+  let indentationLevel: number;
+  if (cycleIndex <= 2) indentationLevel = cycleIndex;
+  else if (cycleIndex <= 4) indentationLevel = 4 - cycleIndex;
+  else if (cycleIndex <= 6) indentationLevel = 4 - cycleIndex;
+  else indentationLevel = cycleIndex - 8;
+  return indentationLevel * 40; // rightPosition en px
+};
+
+// Trouve les creux du zigzag :
+// - creux DROITE  : rightPosition pic positif (bouton décalé à droite → espace libre à gauche)
+// - creux GAUCHE  : rightPosition pic négatif (bouton décalé à gauche → espace libre à droite)
+const findGifPositions = (lessonCount: number) => {
+  const positions: { lessonIndex: number; side: "left" | "right"; topOffset: number }[] = [];
+
+  // Hauteur approximative de chaque bouton (marginTop 24px + bouton ~80px)
+  const BUTTON_HEIGHT = 104;
+  const FIRST_MARGIN = 60;
+
+  const getTopOffset = (i: number) => {
+    if (i === 0) return FIRST_MARGIN + 40;
+    return FIRST_MARGIN + 40 + i * BUTTON_HEIGHT;
+  };
+
+  for (let i = 0; i < lessonCount; i++) {
+    const curr = getCycleIndentation(i);
+    const prev = i > 0 ? getCycleIndentation(i - 1) : curr;
+    const next = i < lessonCount - 1 ? getCycleIndentation(i + 1) : curr;
+
+    // Pic vers la droite (rightPosition élevé) → GIF à gauche dans le creux
+    if (curr >= prev && curr >= next && curr > 0) {
+      positions.push({
+        lessonIndex: i,
+        side: "left",
+        topOffset: getTopOffset(i),
+      });
+    }
+    // Pic vers la gauche (rightPosition négatif) → GIF à droite dans le creux
+    if (curr <= prev && curr <= next && curr < 0) {
+      positions.push({
+        lessonIndex: i,
+        side: "right",
+        topOffset: getTopOffset(i),
+      });
+    }
+  }
+
+  // Si aucun creux trouvé (unité courte), on met un GIF à droite en haut
+  if (positions.length === 0 && lessonCount > 0) {
+    positions.push({ lessonIndex: 0, side: "right", topOffset: getTopOffset(0) });
+  }
+
+  return positions;
+};
+
 export const Unit = ({
   id,
   order,
@@ -42,7 +101,6 @@ export const Unit = ({
   isLast,
 }: Props) => {
   const unitColor = getUnitColor(order);
-  const unitGif = GIFS[(id - 1) % GIFS.length];
 
   const unitTotalXP = lessons.reduce(
     (sum, lesson) => sum + (lesson.challengeCount ?? 5) * XP_PER_CHALLENGE,
@@ -51,24 +109,40 @@ export const Unit = ({
 
   const allLessonsCompleted = lessons.every(lesson => lesson.completed);
 
+  // Calcule les positions des creux pour cette unité
+  const gifPositions = findGifPositions(lessons.length);
+
   return (
     <div id={`unit-${index}`} style={{ position: "relative", overflow: "visible" }}>
 
-      <div
-        className={`absolute top-20 z-10 animate-[mascot-float_3s_ease-in-out_infinite] ${
-          index % 2 === 0 ? "right-0" : "left-0"
-        }`}
-        style={{ animationDelay: `${index * 300}ms` }}
-      >
-        <Image
-          src={unitGif}
-          alt="Mascot"
-          width={120}
-          height={120}
-          unoptimized
-          className="drop-shadow-lg"
-        />
-      </div>
+      {/* GIFs dans les creux du zigzag */}
+      {gifPositions.map((pos, gifIdx) => {
+        const gifSrc = GIFS[(id + gifIdx) % GIFS.length];
+        return (
+          <div
+            key={`gif-${gifIdx}`}
+            className="absolute z-10 pointer-events-none animate-[mascot-float_3s_ease-in-out_infinite]"
+            style={{
+              top: `${pos.topOffset}px`,
+              ...(pos.side === "right"
+                ? { right: "-10px" }
+                : { left: "-10px" }
+              ),
+              transform: "translateY(-50%)",
+              animationDelay: `${(index * 300) + (gifIdx * 500)}ms`,
+            }}
+          >
+            <Image
+              src={gifSrc}
+              alt="Mascot"
+              width={100}
+              height={100}
+              unoptimized
+              className="drop-shadow-lg"
+            />
+          </div>
+        );
+      })}
 
       <div
         className="flex items-center flex-col relative"
