@@ -607,18 +607,17 @@ export const LessonButton = ({
         <style>{infiniteBounceAnimation}</style>
 
         {/* ── Mascotte dans le creux du zigzag ── */}
-        {/* La mascotte est positionnée par rapport au conteneur parent, pas par rapport au bouton qui bouge */}
         {mascotGif && Math.abs(rightPosition) > 5 && (
           <div
             className="absolute mascot-float pointer-events-none"
             style={{
               top: "50%",
-              left: `calc(50% + ${-rightPosition}px)`,
+              left: `calc(50% + ${rightPosition}px)`,
               width: 75,
               height: 75,
               zIndex: 10,
               transform: `translate(${
-                rightPosition > 0 ? "-120%" : "20%"
+                rightPosition > 0 ? "-120%" : "120%"
               }, -50%)`,
               transition: "transform 0.2s ease-out",
             }}
