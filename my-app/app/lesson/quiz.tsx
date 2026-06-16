@@ -390,7 +390,6 @@ export const Quiz = ({
     slideState === "idle"  && "opacity-100 translate-x-0",
   ].filter(Boolean).join(" ");
 
-  // ✅ Fix compteur : activeIndex est la source de vérité
   const questionNumber = Math.min(activeIndex + 1, totalChallenges);
 
   return (
@@ -428,8 +427,9 @@ export const Quiz = ({
         </div>
       )}
 
+      {/* ── FIX : suppression de min-h-full + items-center ── */}
       <div className="flex-1 overflow-y-auto">
-        <div className="min-h-full flex items-center justify-center py-6">
+        <div className="flex justify-center py-6">
           <div className="w-full max-w-[560px] px-6 lg:px-0 overflow-hidden">
             <div className={slideClasses}>
               <div className="flex flex-col gap-y-6">
