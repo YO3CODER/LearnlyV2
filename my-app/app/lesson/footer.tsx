@@ -33,7 +33,7 @@ export const Footer = ({
   return (
     <footer
       className={cn(
-        "lg:h-[80px] h-[70px] transition-colors duration-300 border-t-2",
+        "fixed inset-x-0 bottom-0 z-40 min-h-[70px] lg:min-h-[80px] transition-colors duration-300 border-t-2",
         status === "none" && "bg-background border-border",
         status === "correct" &&
           "bg-green-950/80 border-green-600 shadow-[0_-4px_20px_rgba(34,197,94,0.25)]",
@@ -41,8 +41,9 @@ export const Footer = ({
           "bg-rose-950/80 border-rose-600 shadow-[0_-4px_20px_rgba(244,63,94,0.20)]",
         status === "completed" && "bg-background border-border"
       )}
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="max-w-[1140px] h-full mx-auto flex items-center justify-between px-6 lg:px-10">
+      <div className="max-w-[1140px] h-[70px] lg:h-[80px] mx-auto flex items-center justify-between px-6 lg:px-10">
 
         {/* Correct */}
         {status === "correct" && (

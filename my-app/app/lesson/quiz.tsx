@@ -428,7 +428,7 @@ export const Quiz = ({
       )}
 
       {/* ── FIX : suppression de min-h-full + items-center ── */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto pb-[90px] lg:pb-[100px]">
         <div className="flex justify-center py-6">
           <div className="w-full max-w-[560px] px-6 lg:px-0 overflow-hidden">
             <div className={slideClasses}>
