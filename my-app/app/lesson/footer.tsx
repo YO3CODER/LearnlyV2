@@ -36,7 +36,7 @@ export const Footer = ({
         "fixed inset-x-0 bottom-0 z-40 min-h-[70px] lg:min-h-[80px] transition-colors duration-300 border-t-2",
         status === "none" && "bg-background border-border",
         status === "correct" &&
-          "bg-green-950/80 border-green-600 shadow-[0_-4px_20px_rgba(34,197,94,0.25)]",
+          "bg-green-300 border-green-400 shadow-[0_-4px_20px_rgba(34,197,94,0.25)]",
         status === "wrong" &&
           "bg-rose-950/80 border-rose-600 shadow-[0_-4px_20px_rgba(244,63,94,0.20)]",
         status === "completed" && "bg-background border-border"
@@ -48,11 +48,11 @@ export const Footer = ({
         {/* Correct */}
         {status === "correct" && (
           <div className="flex items-center gap-x-3">
-            <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-green-300 flex items-center justify-center shrink-0 shadow-lg">
+            <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-green-700 flex items-center justify-center shrink-0 shadow-lg">
               <CheckCircle className="h-4 w-4 lg:h-5 lg:w-5 text-white stroke-[2.7]" />
             </div>
             <div>
-              <p className="font-extrabold text-sm lg:text-base text-green-500 tracking-tight leading-none">
+              <p className="font-extrabold text-sm lg:text-base text-green-300 tracking-tight leading-none">
                 Bravo !
               </p>
               <p className="text-xs font-medium text-green-200 mt-0.5">
