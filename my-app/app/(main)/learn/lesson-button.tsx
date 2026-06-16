@@ -224,31 +224,67 @@ export const LessonButton = ({
   const destinationRef = useRef<string>("/lesson");
   const popupRef = useRef<HTMLDivElement>(null);
 
-  // ─── Sons ────────────────────────────────────────────────────────────────
-  const audioBoutonRef = useRef<HTMLAudioElement | null>(null);
-  const audioCommencerRef = useRef<HTMLAudioElement | null>(null);
+  // ─── Sons via Web Audio API (ne coupe pas Spotify/musique en arrière-plan) ──
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const bufferMapRef = useRef<Record<string, AudioBuffer>>({});
 
-  useEffect(() => {
-    const a1 = new Audio("/boutonsong1.mp3");
-    a1.preload = "auto";
-    audioBoutonRef.current = a1;
-
-    const a2 = new Audio("/boutonsong.mp3");
-    a2.preload = "auto";
-    audioCommencerRef.current = a2;
+  const getCtx = useCallback(() => {
+    if (!audioCtxRef.current) {
+      audioCtxRef.current = new AudioContext();
+    }
+    return audioCtxRef.current;
   }, []);
 
-  const playBouton = () => {
-    const a = audioBoutonRef.current;
-    if (a) { a.currentTime = 0; a.play().catch(() => { }); }
-    if ("vibrate" in navigator) navigator.vibrate([8, 50, 8]);
-  };
+  const loadBuffer = useCallback(async (url: string) => {
+    if (bufferMapRef.current[url]) return bufferMapRef.current[url];
+    const ctx = getCtx();
+    const res = await fetch(url);
+    const raw = await res.arrayBuffer();
+    const buffer = await ctx.decodeAudioData(raw);
+    bufferMapRef.current[url] = buffer;
+    return buffer;
+  }, [getCtx]);
 
-  const playCommencer = () => {
-    const a = audioCommencerRef.current;
-    if (a) { a.currentTime = 0; a.play().catch(() => { }); }
+  const playSound = useCallback(async (url: string) => {
+    try {
+      const ctx = getCtx();
+      // Reprend le contexte si suspendu (politique autoplay des navigateurs)
+      if (ctx.state === "suspended") await ctx.resume();
+      const buffer = await loadBuffer(url);
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      const gain = ctx.createGain();
+      gain.gain.value = 0.8;
+      source.connect(gain);
+      gain.connect(ctx.destination);
+      source.start(0);
+    } catch {
+      // Silently fail — le son est non-critique
+    }
+  }, [getCtx, loadBuffer]);
+
+  // Précharge les sons au montage
+  useEffect(() => {
+    loadBuffer("/boutonsong1.mp3").catch(() => {});
+    loadBuffer("/boutonsong.mp3").catch(() => {});
+  }, [loadBuffer]);
+
+  // Nettoyage de l'AudioContext au démontage
+  useEffect(() => {
+    return () => {
+      audioCtxRef.current?.close();
+    };
+  }, []);
+
+  const playBouton = useCallback(() => {
+    playSound("/boutonsong1.mp3");
+    if ("vibrate" in navigator) navigator.vibrate([8, 50, 8]);
+  }, [playSound]);
+
+  const playCommencer = useCallback(() => {
+    playSound("/boutonsong.mp3");
     if ("vibrate" in navigator) navigator.vibrate([10, 40, 20, 40, 40]);
-  };
+  }, [playSound]);
 
   // ─── Layout sinusoidal pour les leçons ───────────────────────────────────
   const cycleLength = 8;
@@ -604,26 +640,26 @@ export const LessonButton = ({
                 Leçon {index + 1} sur {totalCount}
               </p>
               <Button
-  variant="default"
-  onMouseDown={handleButtonPress}
-  onClick={handleStart}
-  className={cn(
-    "w-full py-2.5 text-sm font-extrabold",
-    "border-0",
-    "bg-white text-black", // Fond blanc, texte noir
-    "shadow-[0_6px_0_0_#d4d4d4]", // Ombre gris clair pour contraste
-    "active:shadow-[0_1px_0_0_#d4d4d4]",
-    "active:translate-y-[5px]",
-    "transition-all duration-100",
-    "hover:bg-gray-50", // Effet hover subtil
-    colors.popupButtonText,
-  )}
-  style={{
-    transform: pressing ? "translateY(5px)" : "translateY(0px)",
-  }}
->
-  {isCompleted ? "Pratiquer" : `Commencer +${lessonXP} XP`}
-</Button>
+                variant="default"
+                onMouseDown={handleButtonPress}
+                onClick={handleStart}
+                className={cn(
+                  "w-full py-2.5 text-sm font-extrabold",
+                  "border-0",
+                  "bg-white text-black",
+                  "shadow-[0_6px_0_0_#d4d4d4]",
+                  "active:shadow-[0_1px_0_0_#d4d4d4]",
+                  "active:translate-y-[5px]",
+                  "transition-all duration-100",
+                  "hover:bg-gray-50",
+                  colors.popupButtonText,
+                )}
+                style={{
+                  transform: pressing ? "translateY(5px)" : "translateY(0px)",
+                }}
+              >
+                {isCompleted ? "Pratiquer" : `Commencer +${lessonXP} XP`}
+              </Button>
             </div>
           )}
 
@@ -641,7 +677,7 @@ export const LessonButton = ({
                   "text-foreground text-xs font-extrabold uppercase tracking-widest",
                   "shadow-lg whitespace-nowrap",
                   "bounce-infinite",
-                   colors.popupButtonText,
+                  colors.popupButtonText,
                 )}
               >
                 COMMENCER
