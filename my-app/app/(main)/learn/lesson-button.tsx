@@ -199,7 +199,7 @@ const TransitionScreen = ({ color, onNavigate, practiceContent }: TransitionScre
 
 const XP_PER_CHALLENGE = 10;
 
-// ─── Position zigzag ────────────────────────────────────────────────────────
+// ─── Position zigzag ─────────────────────────────────────────────────────────
 // Exportée pour être réutilisée ailleurs (ex: Unit.tsx pour positionner les
 // mascottes décoratives exactement dans les creux du chemin).
 export const getZigzagOffset = (index: number): number => {
@@ -242,7 +242,7 @@ export const LessonButton = ({
   const destinationRef = useRef<string>("/lesson");
   const popupRef = useRef<HTMLDivElement>(null);
 
-  // ─── Sons via Web Audio API (ne coupe pas Spotify/musique en arrière-plan) ──
+  // ─── Sons via Web Audio API ───────────────────────────────────────────────
   const audioCtxRef = useRef<AudioContext | null>(null);
   const bufferMapRef = useRef<Record<string, AudioBuffer>>({});
 
@@ -266,7 +266,6 @@ export const LessonButton = ({
   const playSound = useCallback(async (url: string) => {
     try {
       const ctx = getCtx();
-      // Reprend le contexte si suspendu (politique autoplay des navigateurs)
       if (ctx.state === "suspended") await ctx.resume();
       const buffer = await loadBuffer(url);
       const source = ctx.createBufferSource();
@@ -277,17 +276,15 @@ export const LessonButton = ({
       gain.connect(ctx.destination);
       source.start(0);
     } catch {
-      // Silently fail — le son est non-critique
+      // Silently fail
     }
   }, [getCtx, loadBuffer]);
 
-  // Précharge les sons au montage
   useEffect(() => {
     loadBuffer("/boutonsong1.mp3").catch(() => {});
     loadBuffer("/boutonsong.mp3").catch(() => {});
   }, [loadBuffer]);
 
-  // Nettoyage de l'AudioContext au démontage
   useEffect(() => {
     return () => {
       audioCtxRef.current?.close();
@@ -304,7 +301,7 @@ export const LessonButton = ({
     if ("vibrate" in navigator) navigator.vibrate([10, 40, 20, 40, 40]);
   }, [playSound]);
 
-  // ─── Layout sinusoidal pour les leçons ───────────────────────────────────
+  // ─── Layout zigzag ───────────────────────────────────────────────────────
   const rightPosition = getZigzagOffset(index);
 
   const isFirst = index === 0;
@@ -380,7 +377,7 @@ export const LessonButton = ({
     setTimeout(() => setPressing(false), 150);
   };
 
-  // ─── Bouton rond Duolingo amélioré (taille réduite) ────────────────────────
+  // ─── Bouton rond Duolingo ────────────────────────────────────────────────
   const DuoButton = ({
     bgHex,
     borderHex,
@@ -459,31 +456,72 @@ export const LessonButton = ({
     .mascot-float { animation: mascotFloat 3s ease-in-out infinite; }
   `;
 
-  // ─── Mascotte décorative dans le creux du zigzag ──────────────────────────
-  // Rendue À L'INTÉRIEUR du wrapper déjà décalé de `rightPosition`, donc elle
-  // hérite automatiquement du bon décalage horizontal, peu importe la largeur
-  // du conteneur parent (Unit). C'est ce qui corrige le bug de positionnement.
+  // ─── Mascotte dans le creux du zigzag ─────────────────────────────────────
+  //
+  // LOGIQUE DU CREUX :
+  // Le bouton de la leçon est décalé de `rightPosition` pixels vers la droite
+  // (via `right: rightPosition + "px"` sur le wrapper).
+  //
+  // Le creux se trouve du côté opposé au bouton suivant/précédent, c'est-à-dire
+  // là où le chemin "s'éloigne" du bouton courant.
+  //
+  // Pour placer la mascotte dans ce creux :
+  // - Le conteneur du bouton est décalé de `rightPosition` px vers la droite.
+  // - La mascotte doit être décalée du côté opposé au décalage du bouton,
+  //   soit vers la gauche si rightPosition > 0, et vers la droite si < 0.
+  // - On utilise un décalage additionnel de `-rightPosition * 2` pour
+  //   traverser le centre et atterrir dans le creux symétrique.
+  //
+  // Formule :
+  //   offsetMascot = -rightPosition * 2
+  //   Si mascotSide === "left"  → left  = -(buttonSize/2) + offsetMascot
+  //   Si mascotSide === "right" → right = -(buttonSize/2) - offsetMascot
+  //
+  // La taille du bouton normal est ~60px, donc buttonSize/2 = 30px.
+  // On ajoute un gap visuel de ~12px entre le bord du bouton et la mascotte.
+
+  const BUTTON_HALF = 30;   // rayon du bouton en px
+  const MASCOT_GAP  = 12;   // espace entre le bord du bouton et la mascotte
+  const MASCOT_SIZE = 60;   // largeur de l'image mascotte
+
+  // Décalage supplémentaire dû à l'inverse du zigzag
+  const creux = -rightPosition * 2;
+
+  const mascotStyle: React.CSSProperties = {
+    position: "absolute",
+    top: "50%",
+    // translateY(-50%) centré verticalement géré par mascot-float keyframes
+    zIndex: 5,
+    width: MASCOT_SIZE,
+    height: MASCOT_SIZE,
+  };
+
+  if (mascotSide === "left") {
+    // Vers la gauche : on part du centre du bouton (left=50%), on recule de
+    // BUTTON_HALF + GAP + MASCOT_SIZE, puis on ajuste selon le creux.
+    mascotStyle.left = `calc(50% - ${BUTTON_HALF + MASCOT_GAP + MASCOT_SIZE}px + ${creux}px)`;
+  } else {
+    // Vers la droite : symétrique
+    mascotStyle.right = `calc(50% - ${BUTTON_HALF + MASCOT_GAP + MASCOT_SIZE}px - ${creux}px)`;
+  }
+
   const Mascot = mascotGif ? (
     <div
       className="absolute pointer-events-none mascot-float"
-      style={{
-        top: "50%",
-        zIndex: 5,
-        ...(mascotSide === "left" ? { left: "-72px" } : { right: "-72px" }),
-      }}
+      style={mascotStyle}
     >
       <img
         src={mascotGif}
         alt=""
-        width={60}
-        height={60}
+        width={MASCOT_SIZE}
+        height={MASCOT_SIZE}
         draggable={false}
         style={{ display: "block" }}
       />
     </div>
   ) : null;
 
-  // ─── Contenu practice affiché dans la transition ──────────────────────────
+  // ─── Contenu practice dans la transition ─────────────────────────────────
   const practiceButtons = showPracticeInTransition ? (
     <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", marginTop: 8 }}>
       <Button
@@ -510,7 +548,7 @@ export const LessonButton = ({
     </div>
   ) : undefined;
 
-  // ─── RENDER COFFRE (élément séparé) ────────────────────────────────────────
+  // ─── RENDER COFFRE ────────────────────────────────────────────────────────
   if (isChest) {
     const chestCompleted = !locked;
     const chestTotalXP = unitTotalXP ?? lessonXP;
@@ -610,7 +648,7 @@ export const LessonButton = ({
     );
   }
 
-  // ─── RENDER LEÇON NORMALE ───────────────────────────────────────────────────
+  // ─── RENDER LEÇON NORMALE ─────────────────────────────────────────────────
   return (
     <>
       {showTransition && (
@@ -643,7 +681,7 @@ export const LessonButton = ({
             zIndex: showPopup ? 50 : "auto",
           }}
         >
-          {/* ── Mascotte décorative (creux du zigzag) ── */}
+          {/* ── Mascotte dans le creux du zigzag ── */}
           {Mascot}
 
           {/* ── Popup de la leçon ── */}
@@ -726,7 +764,7 @@ export const LessonButton = ({
               >
                 COMMENCER
                 <div className="absolute -bottom-[8px] left-1/2 -translate-x-1/2" style={{ width: 0, height: 0, borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: "6px solid hsl(var(--border))" }} />
-                <div className="absolute -bottom-[5px]  left-1/2 -translate-x-1/2" style={{ width: 0, height: 0, borderLeft: "4px solid transparent", borderRight: "4px solid transparent", borderTop: "5px solid hsl(var(--background))" }} />
+                <div className="absolute -bottom-[5px] left-1/2 -translate-x-1/2" style={{ width: 0, height: 0, borderLeft: "4px solid transparent", borderRight: "4px solid transparent", borderTop: "5px solid hsl(var(--background))" }} />
               </div>
 
               <CircularProgressbarWithChildren
