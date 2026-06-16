@@ -29,8 +29,7 @@ type Props = {
   unitTotalXP?: number;
   mascotGif?: string;
   isQuest?: boolean;
-  questIndex?: number;
-  questCompleted?: boolean;
+  questIndex?: number; // Index où la quête doit apparaître
 };
 
 // ─── Color map ────────────────────────────────────────────────────────────────
@@ -231,7 +230,6 @@ export const LessonButton = ({
   mascotGif,
   isQuest = false,
   questIndex,
-  questCompleted = false,
 }: Props) => {
   const router = useRouter();
 
@@ -304,6 +302,7 @@ export const LessonButton = ({
   }, [playSound]);
 
   // ─── Layout zigzag ───────────────────────────────────────────────────────
+  // Si questIndex est défini, on décale les indices après la quête
   const effectiveIndex = questIndex !== undefined && index > questIndex ? index - 1 : index;
   const rightPosition = getZigzagOffset(effectiveIndex);
 
@@ -621,6 +620,7 @@ export const LessonButton = ({
         <style>{infiniteBounceAnimation}</style>
 
         {/* ── Icône de Quête (quest.svg) au milieu ── */}
+        {/* La quête apparaît à la place d'une leçon, au milieu du chemin */}
         {isQuest ? (
           <div
             className="absolute quest-pulse pointer-events-none"
@@ -634,7 +634,7 @@ export const LessonButton = ({
             }}
           >
             <img
-              src={questCompleted ? "/quest-open.svg" : "/quest.svg"}
+              src="/quest.svg"
               alt="Quête"
               width={80}
               height={80}
@@ -643,6 +643,7 @@ export const LessonButton = ({
             />
           </div>
         ) : (
+          /* ── Mascotte dans le creux du zigzag ── */
           mascotGif && Math.abs(rightPosition) > 5 && (
             <div
               className="absolute mascot-float pointer-events-none"
@@ -749,7 +750,7 @@ export const LessonButton = ({
             </div>
           )}
 
-          {/* ── Bouton leçon courante ── */}
+          {/* ── Bouton leçon courante (avec progression circulaire) ── */}
           {current ? (
             <div
               className="h-[88px] w-[88px] relative flex items-center justify-center"
@@ -822,8 +823,7 @@ export const LessonButton = ({
                   borderHex={colors.borderHex}
                   isLocked={locked}
                 >
-                  <Icon
-                    className={cn(
+                  <Icon                    className={cn(
                       "h-8 w-8 relative z-10",
                       locked
                         ? "fill-white text-white stroke-white opacity-60"
@@ -835,7 +835,7 @@ export const LessonButton = ({
               </CircularProgressbarWithChildren>
             </div>
           ) : (
-            // ── Bouton leçon normale ──
+            // ── Bouton leçon normale (complétée ou à venir) ──
             <div
               className="relative w-[60px] h-[60px] flex items-center justify-center"
               onClick={() => {
@@ -858,13 +858,14 @@ export const LessonButton = ({
                 </div>
               )}
 
+              {/* Si c'est une quête, on affiche un bouton spécial */}
               {isQuest ? (
                 <div
                   style={{
                     width: 60,
                     height: 60,
                     borderRadius: "50%",
-                    backgroundColor: questCompleted ? "#22c55e" : "#f59e0b",
+                    backgroundColor: "#f59e0b",
                     borderBottom: pressing ? "2px solid #b45309" : "4px solid #b45309",
                     cursor: "pointer",
                     position: "relative",
@@ -874,17 +875,13 @@ export const LessonButton = ({
                     justifyContent: "center",
                     transition: "transform 0.1s ease, border-bottom 0.1s ease",
                     transform: pressing ? "translateY(4px)" : "translateY(0px)",
-                    boxShadow: pressing ? "none" : `0 5px 12px ${questCompleted ? "#22c55e" : "#f59e0b"}66`,
-                    outline: `2px solid ${questCompleted ? "#15803d" : "#b45309"}30`,
+                    boxShadow: pressing ? "none" : "0 5px 12px #f59e0b66",
+                    outline: "2px solid #b4530930",
                     outlineOffset: "3px",
                   }}
                   className={cn(!pressing && "hover:translate-y-[2px] hover:border-b-[3px]")}
                 >
-                  {questCompleted ? (
-                    <Check className="h-8 w-8 fill-white text-white drop-shadow-sm" />
-                  ) : (
-                    <Star className="h-8 w-8 fill-white text-white drop-shadow-sm" />
-                  )}
+                  <Star className="h-8 w-8 fill-white text-white drop-shadow-sm" />
                 </div>
               ) : (
                 <DuoButton
