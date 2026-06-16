@@ -28,8 +28,7 @@ type Props = {
   lessonChallengeCount?: number;
   unitTotalXP?: number;
   mascotGif?: string;
-  isQuest?: boolean;
-  questIndex?: number; // Index où la quête doit apparaître
+  isQuest?: boolean; // Nouvelle prop pour identifier les quêtes
 };
 
 // ─── Color map ────────────────────────────────────────────────────────────────
@@ -229,7 +228,6 @@ export const LessonButton = ({
   unitTotalXP,
   mascotGif,
   isQuest = false,
-  questIndex,
 }: Props) => {
   const router = useRouter();
 
@@ -302,9 +300,7 @@ export const LessonButton = ({
   }, [playSound]);
 
   // ─── Layout zigzag ───────────────────────────────────────────────────────
-  // Si questIndex est défini, on décale les indices après la quête
-  const effectiveIndex = questIndex !== undefined && index > questIndex ? index - 1 : index;
-  const rightPosition = getZigzagOffset(effectiveIndex);
+  const rightPosition = getZigzagOffset(index);
 
   const isFirst = index === 0;
   const isCompleted = !current && !locked;
@@ -459,7 +455,7 @@ export const LessonButton = ({
 
     @keyframes questPulse {
       0%, 100% { transform: translateY(-50%) scale(1); }
-      50% { transform: translateY(-50%) scale(1.1) rotate(-5deg); }
+      50% { transform: translateY(-50%) scale(1.1); }
     }
     .quest-pulse { animation: questPulse 2s ease-in-out infinite; }
   `;
@@ -619,16 +615,16 @@ export const LessonButton = ({
       >
         <style>{infiniteBounceAnimation}</style>
 
-        {/* ── Icône de Quête (quest.svg) au milieu ── */}
-        {/* La quête apparaît à la place d'une leçon, au milieu du chemin */}
+        {/* ── Icône de Quête (quest.svg) ── */}
+        {/* La quête apparaît à la place d'une leçon, sur le chemin */}
         {isQuest ? (
           <div
             className="absolute quest-pulse pointer-events-none"
             style={{
               top: "50%",
               left: `calc(50% + ${rightPosition}px)`,
-              width: 80,
-              height: 80,
+              width: 70,
+              height: 70,
               zIndex: 10,
               transform: "translateY(-50%)",
             }}
@@ -636,8 +632,8 @@ export const LessonButton = ({
             <img
               src="/quest.svg"
               alt="Quête"
-              width={80}
-              height={80}
+              width={70}
+              height={70}
               draggable={false}
               className="object-contain w-full h-full"
             />
@@ -823,7 +819,8 @@ export const LessonButton = ({
                   borderHex={colors.borderHex}
                   isLocked={locked}
                 >
-                  <Icon                    className={cn(
+                  <Icon
+                    className={cn(
                       "h-8 w-8 relative z-10",
                       locked
                         ? "fill-white text-white stroke-white opacity-60"
