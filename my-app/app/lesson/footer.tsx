@@ -36,7 +36,7 @@ export const Footer = ({
         "fixed inset-x-0 bottom-0 z-40 min-h-[70px] lg:min-h-[80px] transition-colors duration-300 border-t-2",
         status === "none" && "bg-background border-border",
         status === "correct" &&
-          "bg-green-300 border-green-400 shadow-[0_-4px_20px_rgba(34,197,94,0.25)]",
+          "bg-green-950/50 border-green-600 shadow-[0_-4px_20px_rgba(34,197,94,0.25)]",
         status === "wrong" &&
           "bg-rose-950/80 border-rose-600 shadow-[0_-4px_20px_rgba(244,63,94,0.20)]",
         status === "completed" && "bg-background border-border"
