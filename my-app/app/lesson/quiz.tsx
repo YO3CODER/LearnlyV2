@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition, useEffect, useRef } from "react";
 import { useAudio, useWindowSize, useMount } from "react-use";
 import { motion } from "framer-motion";
+import { RefreshCw } from "lucide-react";
 
 import { completeLesson, reduceHearts } from "@/actions/user-progress";
 import { useHeartsModal } from "@/store/use-hearts-modal";
@@ -435,17 +436,14 @@ export const Quiz = ({
               <div className="flex flex-col gap-y-6">
 
                 {/* Bannière tour de révision */}
-                {isRetryRound && (
-                  <div className="relative overflow-hidden rounded-2xl border border-amber-200 dark:border-amber-800 bg-gradient-to-r from-amber-50 dark:from-amber-950/30 via-orange-50 dark:via-orange-950/20 to-amber-50 dark:to-amber-950/30 px-5 py-3">
-                    <div className="absolute left-0 top-0 h-full w-1 rounded-l-2xl bg-gradient-to-b from-amber-400 to-orange-400" />
-                    <div className="flex flex-col gap-y-0.5 pl-2">
-                      <p className="text-[11px] font-bold uppercase tracking-widest text-amber-400">Tour de révision</p>
-                      <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
-                        Les questions que tu as manquées — maîtrisons-les cette fois.
-                      </p>
-                    </div>
-                  </div>
-                )}
+              {isRetryRound && (
+  <div className="inline-flex self-start items-center gap-x-2">
+    <RefreshCw className="h-4 w-4 text-amber-400" strokeWidth={3} />
+    <p className="text-xs font-extrabold uppercase tracking-wide text-amber-400">
+      Ancienne erreur
+    </p>
+  </div>
+)}
 
                 {/* Titre */}
                 <h1 className="text-lg lg:text-2xl font-extrabold tracking-tight text-center lg:text-start">
