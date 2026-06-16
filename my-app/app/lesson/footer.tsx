@@ -49,7 +49,7 @@ export const Footer = ({
         {status === "correct" && (
           <div className="flex items-center gap-x-3">
             <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-green-700 flex items-center justify-center shrink-0 shadow-lg">
-              <CheckCircle className="h-4 w-4 lg:h-5 lg:w-5 text-white stroke-[2.7]" />
+              <CheckCircle className="h-4 w-4 lg:h-5 lg:w-5 text-green-500 stroke-[2.7]" />
             </div>
             <div>
               <p className="font-extrabold text-sm lg:text-base text-green-300 tracking-tight leading-none">
