@@ -28,7 +28,6 @@ type Props = {
   lessonChallengeCount?: number;
   unitTotalXP?: number;
   mascotGif?: string;
-  mascotSide?: "left" | "right";
 };
 
 // ─── Color map ────────────────────────────────────────────────────────────────
@@ -200,8 +199,6 @@ const TransitionScreen = ({ color, onNavigate, practiceContent }: TransitionScre
 const XP_PER_CHALLENGE = 10;
 
 // ─── Position zigzag ─────────────────────────────────────────────────────────
-// Exportée pour être réutilisée ailleurs (ex: Unit.tsx pour positionner les
-// mascottes décoratives exactement dans les creux du chemin).
 export const getZigzagOffset = (index: number): number => {
   const cycleLength = 8;
   const cycleIndex = index % cycleLength;
@@ -229,7 +226,6 @@ export const LessonButton = ({
   lessonChallengeCount = 5,
   unitTotalXP,
   mascotGif,
-  mascotSide,
 }: Props) => {
   const router = useRouter();
 
@@ -451,75 +447,10 @@ export const LessonButton = ({
 
     @keyframes mascotFloat {
       0%, 100% { transform: translateY(-50%) translateY(0px); }
-      50%       { transform: translateY(-50%) translateY(-10px); }
+      50%       { transform: translateY(-50%) translateY(-6px); }
     }
-    .mascot-float { animation: mascotFloat 3s ease-in-out infinite; }
+    .mascot-float { animation: mascotFloat 2.5s ease-in-out infinite; }
   `;
-
-  // ─── Mascotte dans le creux du zigzag ─────────────────────────────────────
-  //
-  // LOGIQUE DU CREUX :
-  // Le bouton de la leçon est décalé de `rightPosition` pixels vers la droite
-  // (via `right: rightPosition + "px"` sur le wrapper).
-  //
-  // Le creux se trouve du côté opposé au bouton suivant/précédent, c'est-à-dire
-  // là où le chemin "s'éloigne" du bouton courant.
-  //
-  // Pour placer la mascotte dans ce creux :
-  // - Le conteneur du bouton est décalé de `rightPosition` px vers la droite.
-  // - La mascotte doit être décalée du côté opposé au décalage du bouton,
-  //   soit vers la gauche si rightPosition > 0, et vers la droite si < 0.
-  // - On utilise un décalage additionnel de `-rightPosition * 2` pour
-  //   traverser le centre et atterrir dans le creux symétrique.
-  //
-  // Formule :
-  //   offsetMascot = -rightPosition * 2
-  //   Si mascotSide === "left"  → left  = -(buttonSize/2) + offsetMascot
-  //   Si mascotSide === "right" → right = -(buttonSize/2) - offsetMascot
-  //
-  // La taille du bouton normal est ~60px, donc buttonSize/2 = 30px.
-  // On ajoute un gap visuel de ~12px entre le bord du bouton et la mascotte.
-
-  const BUTTON_HALF = 30;   // rayon du bouton en px
-  const MASCOT_GAP  = 12;   // espace entre le bord du bouton et la mascotte
-  const MASCOT_SIZE = 60;   // largeur de l'image mascotte
-
-  // Décalage supplémentaire dû à l'inverse du zigzag
-  const creux = -rightPosition * 2;
-
-  const mascotStyle: React.CSSProperties = {
-    position: "absolute",
-    top: "50%",
-    // translateY(-50%) centré verticalement géré par mascot-float keyframes
-    zIndex: 5,
-    width: MASCOT_SIZE,
-    height: MASCOT_SIZE,
-  };
-
-  if (mascotSide === "left") {
-    // Vers la gauche : on part du centre du bouton (left=50%), on recule de
-    // BUTTON_HALF + GAP + MASCOT_SIZE, puis on ajuste selon le creux.
-    mascotStyle.left = `calc(50% - ${BUTTON_HALF + MASCOT_GAP + MASCOT_SIZE}px + ${creux}px)`;
-  } else {
-    // Vers la droite : symétrique
-    mascotStyle.right = `calc(50% - ${BUTTON_HALF + MASCOT_GAP + MASCOT_SIZE}px - ${creux}px)`;
-  }
-
-  const Mascot = mascotGif ? (
-    <div
-      className="absolute pointer-events-none mascot-float"
-      style={mascotStyle}
-    >
-      <img
-        src={mascotGif}
-        alt=""
-        width={MASCOT_SIZE}
-        height={MASCOT_SIZE}
-        draggable={false}
-        style={{ display: "block" }}
-      />
-    </div>
-  ) : null;
 
   // ─── Contenu practice dans la transition ─────────────────────────────────
   const practiceButtons = showPracticeInTransition ? (
@@ -572,7 +503,7 @@ export const LessonButton = ({
             marginTop: 36,
             zIndex: showPopup ? 50 : "auto",
           }}
-          className="animate-in fade-in slide-in-from-bottom-4"
+          className="animate-in fade-in slide-in-from-bottom-4 flex justify-center w-full"
         >
           <style>{infiniteBounceAnimation}</style>
 
@@ -667,23 +598,57 @@ export const LessonButton = ({
           overflow: "visible",
           position: "relative",
           zIndex: showPopup ? 50 : "auto",
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
         }}
         className="animate-in fade-in slide-in-from-bottom-4"
       >
         <style>{infiniteBounceAnimation}</style>
 
+        {/* ── Mascotte dans le creux du zigzag ── */}
+        {/* La mascotte est positionnée par rapport au conteneur parent, pas par rapport au bouton qui bouge */}
+        {mascotGif && Math.abs(rightPosition) > 5 && (
+          <div
+            className="absolute mascot-float pointer-events-none"
+            style={{
+              top: "50%",
+              left: `calc(50% + ${-rightPosition}px)`,
+              width: 75,
+              height: 75,
+              zIndex: 10,
+              transform: `translate(${
+                rightPosition > 0 ? "-120%" : "20%"
+              }, -50%)`,
+              transition: "transform 0.2s ease-out",
+            }}
+          >
+            <img
+              src={mascotGif}
+              alt="Mascot"
+              width={75}
+              height={75}
+              draggable={false}
+              className={cn(
+                "object-contain w-full h-full",
+                locked && "brightness-[0.4] opacity-50"
+              )}
+            />
+          </div>
+        )}
+
+        {/* ── Conteneur du bouton avec le décalage zigzag ── */}
         <div
-          className="relative"
+          className="relative flex items-center justify-center"
           style={{
-            right: `${rightPosition}px`,
+            transform: `translateX(${-rightPosition}px)`,
             marginTop: isFirst && !isCompleted ? 45 : 18,
             overflow: "visible",
-            zIndex: showPopup ? 50 : "auto",
+            zIndex: showPopup ? 55 : 20,
+            width: current ? 88 : 60,
+            height: current ? 88 : 60,
           }}
         >
-          {/* ── Mascotte dans le creux du zigzag ── */}
-          {Mascot}
-
           {/* ── Popup de la leçon ── */}
           {showPopup && !locked && (
             <div
@@ -692,8 +657,8 @@ export const LessonButton = ({
                 "absolute w-[240px] rounded-2xl p-4 shadow-xl border-b-4",
                 colors.popup,
                 colors.popupBorder,
-                "top-[72px] left-1/2 -translate-x-1/2",
-                "transition-all duration-200 ease-out",
+                "top-[96px] left-1/2 -translate-x-1/2",
+                "transition-all duration-200 ease-out"
               )}
               style={{
                 zIndex: 999,
@@ -712,12 +677,17 @@ export const LessonButton = ({
                 }}
               />
               <button
-                onClick={(e) => { e.stopPropagation(); closePopup(); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  closePopup();
+                }}
                 className="absolute top-2 right-2 text-white/70 hover:text-white transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
-              <p className="text-white font-extrabold text-sm mb-1 pr-6">{title}</p>
+              <p className="text-white font-extrabold text-sm mb-1 pr-6">
+                {title}
+              </p>
               <p className="text-white/80 text-xs mb-4">
                 Leçon {index + 1} sur {totalCount}
               </p>
@@ -734,7 +704,7 @@ export const LessonButton = ({
                   "active:translate-y-[5px]",
                   "transition-all duration-100",
                   "hover:bg-gray-50",
-                  colors.popupButtonText,
+                  colors.popupButtonText
                 )}
                 style={{
                   transform: pressing ? "translateY(5px)" : "translateY(0px)",
@@ -748,57 +718,104 @@ export const LessonButton = ({
           {/* ── Bouton leçon courante (avec progression circulaire) ── */}
           {current ? (
             <div
-              className="h-[88px] w-[88px] relative"
-              onClick={() => { handleClick(); handleButtonPress(); }}
+              className="h-[88px] w-[88px] relative flex items-center justify-center"
+              onClick={() => {
+                handleClick();
+                handleButtonPress();
+              }}
             >
               <div
                 className={cn(
-                  "absolute -top-8 left-1/2 -translate-x-1/2 z-10",
+                  "absolute -top-10 left-1/2 -translate-x-1/2 z-10",
                   "px-4 py-2 rounded-xl",
                   "bg-background border-2 border-b-4 border-border",
                   "text-foreground text-xs font-extrabold uppercase tracking-widest",
                   "shadow-lg whitespace-nowrap",
                   "bounce-infinite",
-                  colors.popupButtonText,
+                  colors.popupButtonText
                 )}
               >
                 COMMENCER
-                <div className="absolute -bottom-[8px] left-1/2 -translate-x-1/2" style={{ width: 0, height: 0, borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: "6px solid hsl(var(--border))" }} />
-                <div className="absolute -bottom-[5px] left-1/2 -translate-x-1/2" style={{ width: 0, height: 0, borderLeft: "4px solid transparent", borderRight: "4px solid transparent", borderTop: "5px solid hsl(var(--background))" }} />
+                <div
+                  className="absolute -bottom-[8px] left-1/2 -translate-x-1/2"
+                  style={{
+                    width: 0,
+                    height: 0,
+                    borderLeft: "5px solid transparent",
+                    borderRight: "5px solid transparent",
+                    borderTop: "6px solid hsl(var(--border))",
+                  }}
+                />
+                <div
+                  className="absolute -bottom-[5px] left-1/2 -translate-x-1/2"
+                  style={{
+                    width: 0,
+                    height: 0,
+                    borderLeft: "4px solid transparent",
+                    borderRight: "4px solid transparent",
+                    borderTop: "5px solid hsl(var(--background))",
+                  }}
+                />
               </div>
 
               <CircularProgressbarWithChildren
                 value={Number.isNaN(percentage) ? 0 : percentage}
                 styles={{
-                  path: { stroke: "url(#progressGradient)", strokeLinecap: "round", strokeWidth: 8 },
+                  path: {
+                    stroke: "url(#progressGradient)",
+                    strokeLinecap: "round",
+                    strokeWidth: 8,
+                  },
                   trail: { stroke: "#e8e8f0", strokeWidth: 8 },
                 }}
               >
                 <svg style={{ height: 0, width: 0, position: "absolute" }}>
                   <defs>
-                    <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <linearGradient
+                      id="progressGradient"
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="0%"
+                    >
                       <stop offset="0%" stopColor={colors.progress[0]} />
                       <stop offset="100%" stopColor={colors.progress[1]} />
                     </linearGradient>
                   </defs>
                 </svg>
-                <DuoButton bgHex={colors.bgHex} borderHex={colors.borderHex} isLocked={locked}>
-                  <Icon className={cn("h-8 w-8 relative z-10", locked ? "fill-white text-white stroke-white opacity-60" : "fill-white text-white drop-shadow-sm", isCompleted && !isGolden && "fill-none stroke-white stroke-[4]")} />
+                <DuoButton
+                  bgHex={colors.bgHex}
+                  borderHex={colors.borderHex}
+                  isLocked={locked}
+                >
+                  <Icon
+                    className={cn(
+                      "h-8 w-8 relative z-10",
+                      locked
+                        ? "fill-white text-white stroke-white opacity-60"
+                        : "fill-white text-white drop-shadow-sm",
+                      isCompleted && !isGolden && "fill-none stroke-white stroke-[4]"
+                    )}
+                  />
                 </DuoButton>
               </CircularProgressbarWithChildren>
             </div>
-
           ) : (
             // ── Bouton leçon normale (complétée ou à venir) ──
             <div
-              className="relative"
-              onClick={() => { handleClick(); handleButtonPress(); }}
+              className="relative w-[60px] h-[60px] flex items-center justify-center"
+              onClick={() => {
+                handleClick();
+                handleButtonPress();
+              }}
             >
               {!locked && (
-                <div className={cn(
-                  "absolute inset-0 rounded-full blur-md scale-125 opacity-0 hover:opacity-100 transition-all duration-500",
-                  isGolden ? "bg-yellow-300/50" : colors.glow,
-                )} />
+                <div
+                  className={cn(
+                    "absolute inset-0 rounded-full blur-md scale-125 opacity-0 hover:opacity-100 transition-all duration-500",
+                    isGolden ? "bg-yellow-300/50" : colors.glow
+                  )}
+                />
               )}
 
               {isPerfect && !isGolden && (
@@ -813,7 +830,15 @@ export const LessonButton = ({
                 isLocked={locked}
                 isGoldenBtn={isGolden && !locked}
               >
-                <Icon className={cn("h-8 w-8 relative z-10", locked ? "fill-white text-white stroke-white opacity-60" : "fill-white text-white drop-shadow-sm", isCompleted && !isGolden && "fill-none stroke-white stroke-[4]")} />
+                <Icon
+                  className={cn(
+                    "h-8 w-8 relative z-10",
+                    locked
+                      ? "fill-white text-white stroke-white opacity-60"
+                      : "fill-white text-white drop-shadow-sm",
+                    isCompleted && !isGolden && "fill-none stroke-white stroke-[4]"
+                  )}
+                />
               </DuoButton>
             </div>
           )}
