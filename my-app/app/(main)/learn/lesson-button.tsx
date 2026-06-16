@@ -281,10 +281,9 @@ export const LessonButton = ({
     return () => document.removeEventListener("mousedown", handler);
   }, [showPopup]);
 
-  // FIX iOS : setTimeout(0) au lieu du double requestAnimationFrame
   const openPopup = () => {
     setShowPopup(true);
-    setTimeout(() => setPopupVisible(true), 0);
+    requestAnimationFrame(() => requestAnimationFrame(() => setPopupVisible(true)));
   };
 
   const closePopup = () => {
@@ -292,23 +291,8 @@ export const LessonButton = ({
     setTimeout(() => setShowPopup(false), 200);
   };
 
-  // FIX iOS : guard pour éviter le double déclenchement onClick + onTouchStart
-  const touchFiredRef = useRef(false);
-
   const handleClick = () => {
     if (locked) return;
-    if (touchFiredRef.current) {
-      touchFiredRef.current = false;
-      return;
-    }
-    playBouton();
-    if (showPopup) closePopup();
-    else openPopup();
-  };
-
-  const handleTouchStart = () => {
-    if (locked) return;
-    touchFiredRef.current = true;
     playBouton();
     if (showPopup) closePopup();
     else openPopup();
@@ -477,12 +461,7 @@ export const LessonButton = ({
         >
           <style>{infiniteBounceAnimation}</style>
 
-          {/* FIX iOS : onTouchStart ajouté sur le coffre */}
-          <div
-            className="relative"
-            onClick={() => { handleClick(); handleButtonPress(); }}
-            onTouchStart={() => { handleTouchStart(); handleButtonPress(); }}
-          >
+          <div className="relative" onClick={() => { handleClick(); handleButtonPress(); }}>
             {chestCompleted ? (
               <div className="chest-open">
                 <img
@@ -625,26 +604,26 @@ export const LessonButton = ({
                 Leçon {index + 1} sur {totalCount}
               </p>
               <Button
-                variant="default"
-                onMouseDown={handleButtonPress}
-                onClick={handleStart}
-                className={cn(
-                  "w-full py-2.5 text-sm font-extrabold",
-                  "border-0",
-                  "bg-white text-black",
-                  "shadow-[0_6px_0_0_#d4d4d4]",
-                  "active:shadow-[0_1px_0_0_#d4d4d4]",
-                  "active:translate-y-[5px]",
-                  "transition-all duration-100",
-                  "hover:bg-gray-50",
-                  colors.popupButtonText,
-                )}
-                style={{
-                  transform: pressing ? "translateY(5px)" : "translateY(0px)",
-                }}
-              >
-                {isCompleted ? "Pratiquer" : `Commencer +${lessonXP} XP`}
-              </Button>
+  variant="default"
+  onMouseDown={handleButtonPress}
+  onClick={handleStart}
+  className={cn(
+    "w-full py-2.5 text-sm font-extrabold",
+    "border-0",
+    "bg-white text-black", // Fond blanc, texte noir
+    "shadow-[0_6px_0_0_#d4d4d4]", // Ombre gris clair pour contraste
+    "active:shadow-[0_1px_0_0_#d4d4d4]",
+    "active:translate-y-[5px]",
+    "transition-all duration-100",
+    "hover:bg-gray-50", // Effet hover subtil
+    colors.popupButtonText,
+  )}
+  style={{
+    transform: pressing ? "translateY(5px)" : "translateY(0px)",
+  }}
+>
+  {isCompleted ? "Pratiquer" : `Commencer +${lessonXP} XP`}
+</Button>
             </div>
           )}
 
@@ -653,7 +632,6 @@ export const LessonButton = ({
             <div
               className="h-[115px] w-[115px] relative"
               onClick={() => { handleClick(); handleButtonPress(); }}
-              onTouchStart={() => { handleTouchStart(); handleButtonPress(); }}
             >
               <div
                 className={cn(
@@ -663,7 +641,7 @@ export const LessonButton = ({
                   "text-foreground text-xs font-extrabold uppercase tracking-widest",
                   "shadow-lg whitespace-nowrap",
                   "bounce-infinite",
-                  colors.popupButtonText,
+                   colors.popupButtonText,
                 )}
               >
                 COMMENCER
@@ -694,11 +672,9 @@ export const LessonButton = ({
 
           ) : (
             // ── Bouton leçon normale (complétée ou à venir) ──
-            // FIX iOS : onTouchStart ajouté ici
             <div
               className="relative"
               onClick={() => { handleClick(); handleButtonPress(); }}
-              onTouchStart={() => { handleTouchStart(); handleButtonPress(); }}
             >
               {!locked && (
                 <div className={cn(
