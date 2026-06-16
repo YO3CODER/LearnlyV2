@@ -28,7 +28,6 @@ type Props = {
   lessonChallengeCount?: number;
   unitTotalXP?: number;
   mascotGif?: string;
-  isQuest?: boolean; // Nouvelle prop pour identifier les quêtes
 };
 
 // ─── Color map ────────────────────────────────────────────────────────────────
@@ -227,7 +226,6 @@ export const LessonButton = ({
   lessonChallengeCount = 5,
   unitTotalXP,
   mascotGif,
-  isQuest = false,
 }: Props) => {
   const router = useRouter();
 
@@ -452,12 +450,6 @@ export const LessonButton = ({
       50%       { transform: translateY(-50%) translateY(-6px); }
     }
     .mascot-float { animation: mascotFloat 2.5s ease-in-out infinite; }
-
-    @keyframes questPulse {
-      0%, 100% { transform: translateY(-50%) scale(1); }
-      50% { transform: translateY(-50%) scale(1.1); }
-    }
-    .quest-pulse { animation: questPulse 2s ease-in-out infinite; }
   `;
 
   // ─── Contenu practice dans la transition ─────────────────────────────────
@@ -609,63 +601,45 @@ export const LessonButton = ({
           display: "flex",
           justifyContent: "center",
           width: "100%",
-          minHeight: 100,
         }}
         className="animate-in fade-in slide-in-from-bottom-4"
       >
         <style>{infiniteBounceAnimation}</style>
 
-        {/* ── Icône de Quête (quest.svg) ── */}
-        {/* La quête apparaît à la place d'une leçon, sur le chemin */}
-        {isQuest ? (
+        {/* ── Mascotte dans le creux du zigzag ── */}
+        {/* 
+          CORRECTION : La mascotte est en position ABSOLUE par rapport au parent (le div avec display:flex)
+          Elle ne subit PAS le transform: translateX du bouton
+        */}
+        {mascotGif && Math.abs(rightPosition) > 5 && (
           <div
-            className="absolute quest-pulse pointer-events-none"
+            className="absolute mascot-float pointer-events-none"
             style={{
               top: "50%",
-              left: `calc(50% + ${rightPosition}px)`,
-              width: 70,
-              height: 70,
+              left: "50%",
+              width: 75,
+              height: 75,
               zIndex: 10,
-              transform: "translateY(-50%)",
+              transform: `translate(${
+                rightPosition > 0 
+                  ? `calc(-50% - 80px + ${rightPosition}px)` 
+                  : `calc(-50% + 80px + ${rightPosition}px)`
+              }, -50%)`,
+              transition: "transform 0.2s ease-out",
             }}
           >
             <img
-              src="/quest.svg"
-              alt="Quête"
-              width={70}
-              height={70}
+              src={mascotGif}
+              alt="Mascot"
+              width={75}
+              height={75}
               draggable={false}
-              className="object-contain w-full h-full"
+              className={cn(
+                "object-contain w-full h-full",
+                locked && "brightness-[0.4] opacity-50"
+              )}
             />
           </div>
-        ) : (
-          /* ── Mascotte dans le creux du zigzag ── */
-          mascotGif && Math.abs(rightPosition) > 5 && (
-            <div
-              className="absolute mascot-float pointer-events-none"
-              style={{
-                top: "50%",
-                left: `calc(50% + ${rightPosition}px)`,
-                width: 75,
-                height: 75,
-                zIndex: 10,
-                transform: `translate(${rightPosition > 0 ? "-135%" : "135%"}, -50%)`,
-                transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
-              }}
-            >
-              <img
-                src={mascotGif}
-                alt="Mascot"
-                width={75}
-                height={75}
-                draggable={false}
-                className={cn(
-                  "object-contain w-full h-full",
-                  locked && "brightness-[0.4] opacity-50"
-                )}
-              />
-            </div>
-          )
         )}
 
         {/* ── Conteneur du bouton avec le décalage zigzag ── */}
@@ -681,7 +655,7 @@ export const LessonButton = ({
           }}
         >
           {/* ── Popup de la leçon ── */}
-          {showPopup && !locked && !isQuest && (
+          {showPopup && !locked && (
             <div
               ref={popupRef}
               className={cn(
@@ -840,7 +814,7 @@ export const LessonButton = ({
                 handleButtonPress();
               }}
             >
-              {!locked && !isQuest && (
+              {!locked && (
                 <div
                   className={cn(
                     "absolute inset-0 rounded-full blur-md scale-125 opacity-0 hover:opacity-100 transition-all duration-500",
@@ -849,55 +823,28 @@ export const LessonButton = ({
                 />
               )}
 
-              {isPerfect && !isGolden && !isQuest && (
+              {isPerfect && !isGolden && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 px-2 py-0.5 rounded-full bg-gradient-to-r from-yellow-400 to-amber-400 text-white text-[9px] font-extrabold uppercase tracking-wider shadow-sm whitespace-nowrap">
                   Parfait
                 </div>
               )}
 
-              {/* Si c'est une quête, on affiche un bouton spécial */}
-              {isQuest ? (
-                <div
-                  style={{
-                    width: 60,
-                    height: 60,
-                    borderRadius: "50%",
-                    backgroundColor: "#f59e0b",
-                    borderBottom: pressing ? "2px solid #b45309" : "4px solid #b45309",
-                    cursor: "pointer",
-                    position: "relative",
-                    overflow: "hidden",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    transition: "transform 0.1s ease, border-bottom 0.1s ease",
-                    transform: pressing ? "translateY(4px)" : "translateY(0px)",
-                    boxShadow: pressing ? "none" : "0 5px 12px #f59e0b66",
-                    outline: "2px solid #b4530930",
-                    outlineOffset: "3px",
-                  }}
-                  className={cn(!pressing && "hover:translate-y-[2px] hover:border-b-[3px]")}
-                >
-                  <Star className="h-8 w-8 fill-white text-white drop-shadow-sm" />
-                </div>
-              ) : (
-                <DuoButton
-                  bgHex={isGolden ? "#f59e0b" : colors.bgHex}
-                  borderHex={isGolden ? "#b45309" : colors.borderHex}
-                  isLocked={locked}
-                  isGoldenBtn={isGolden && !locked}
-                >
-                  <Icon
-                    className={cn(
-                      "h-8 w-8 relative z-10",
-                      locked
-                        ? "fill-white text-white stroke-white opacity-60"
-                        : "fill-white text-white drop-shadow-sm",
-                      isCompleted && !isGolden && "fill-none stroke-white stroke-[4]"
-                    )}
-                  />
-                </DuoButton>
-              )}
+              <DuoButton
+                bgHex={isGolden ? "#f59e0b" : colors.bgHex}
+                borderHex={isGolden ? "#b45309" : colors.borderHex}
+                isLocked={locked}
+                isGoldenBtn={isGolden && !locked}
+              >
+                <Icon
+                  className={cn(
+                    "h-8 w-8 relative z-10",
+                    locked
+                      ? "fill-white text-white stroke-white opacity-60"
+                      : "fill-white text-white drop-shadow-sm",
+                    isCompleted && !isGolden && "fill-none stroke-white stroke-[4]"
+                  )}
+                />
+              </DuoButton>
             </div>
           )}
         </div>
