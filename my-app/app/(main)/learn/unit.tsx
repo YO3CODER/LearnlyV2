@@ -89,15 +89,6 @@ const findGifPositions = (lessonCount: number) => {
   return positions;
 };
 
-// Trouve la position de la quête (au milieu)
-const findQuestPosition = (lessonCount: number) => {
-  if (lessonCount < 3) return -1; // Pas de quête si trop peu de leçons
-  
-  // La quête est placée au milieu (environ à 40-50% du parcours)
-  const questIndex = Math.floor(lessonCount * 0.45);
-  return questIndex;
-};
-
 export const Unit = ({
   id,
   order,
@@ -120,27 +111,12 @@ export const Unit = ({
 
   // Calcule les positions des creux pour cette unité
   const gifPositions = findGifPositions(lessons.length);
-  
-  // Trouve la position de la quête
-  const questIndex = findQuestPosition(lessons.length);
-  const hasQuest = questIndex >= 0 && questIndex < lessons.length;
-
-  // Calcule la position exacte de la quête
-  const getTopOffset = (i: number) => {
-    const BUTTON_HEIGHT = 104;
-    const FIRST_MARGIN = 60;
-    if (i === 0) return FIRST_MARGIN + 40;
-    return FIRST_MARGIN + 40 + i * BUTTON_HEIGHT;
-  };
 
   return (
     <div id={`unit-${index}`} style={{ position: "relative", overflow: "visible" }}>
 
       {/* GIFs dans les creux du zigzag */}
       {gifPositions.map((pos, gifIdx) => {
-        // Ne pas afficher de GIF à la position de la quête
-        if (hasQuest && pos.lessonIndex === questIndex) return null;
-        
         const gifSrc = GIFS[(id + gifIdx) % GIFS.length];
         return (
           <div
@@ -168,40 +144,6 @@ export const Unit = ({
         );
       })}
 
-      {/* ── Icône de Quête (quest.svg) au milieu ── */}
-      {hasQuest && (
-        <div
-          className="absolute z-10 pointer-events-none animate-[quest-pulse_2s_ease-in-out_infinite]"
-          style={{
-            top: `${getTopOffset(questIndex)}px`,
-            left: `calc(50% + ${getCycleIndentation(questIndex)}px)`,
-            transform: "translateY(-50%) translateX(-50%)",
-            width: 80,
-            height: 80,
-          }}
-        >
-          <Image
-            src="/quest.svg"
-            alt="Quête"
-            width={80}
-            height={80}
-            className="object-contain w-full h-full drop-shadow-lg"
-          />
-        </div>
-      )}
-
-      {/* Ajout des animations CSS */}
-      <style>{`
-        @keyframes mascot-float {
-          0%, 100% { transform: translateY(-50%) translateY(0px); }
-          50% { transform: translateY(-50%) translateY(-6px); }
-        }
-        @keyframes quest-pulse {
-          0%, 100% { transform: translateY(-50%) translateX(-50%) scale(1); }
-          50% { transform: translateY(-50%) translateX(-50%) scale(1.1) rotate(-3deg); }
-        }
-      `}</style>
-
       <div
         className="flex items-center flex-col relative"
         style={{ overflow: "visible", zIndex: 0 }}
@@ -210,9 +152,6 @@ export const Unit = ({
           const isCurrent = lesson.id === activeLesson?.id;
           const isLocked = !lesson.completed && !isCurrent;
           const isLastLesson = lessonIndex === lessons.length - 1;
-          
-          // Si c'est la position de la quête, on affiche un bouton spécial
-          const isQuest = hasQuest && lessonIndex === questIndex;
 
           return (
             <LessonButton
@@ -227,10 +166,9 @@ export const Unit = ({
               isLastLesson={isLastLesson}
               isChest={false}
               unitId={id}
-              title={isQuest ? "Quête" : lesson.title}
+              title={lesson.title}
               lessonChallengeCount={lesson.challengeCount ?? 5}
               unitTotalXP={unitTotalXP}
-              isQuest={isQuest}
             />
           );
         })}
