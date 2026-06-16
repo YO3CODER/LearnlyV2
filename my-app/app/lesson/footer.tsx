@@ -33,14 +33,12 @@ export const Footer = ({
   return (
     <footer
       className={cn(
-        "lg:h-[140px] h-[100px] transition-colors duration-300 border-t-2",
+        "lg:h-[80px] h-[70px] transition-colors duration-300 border-t-2",
         status === "none" && "bg-background border-border",
-
         status === "correct" &&
-        "bg-green-950/80 border-green-600 shadow-[0_-4px_20px_rgba(34,197,94,0.25)]",
-
+          "bg-green-950/80 border-green-600 shadow-[0_-4px_20px_rgba(34,197,94,0.25)]",
         status === "wrong" &&
-        "bg-rose-950/80 border-rose-600 shadow-[0_-4px_20px_rgba(244,63,94,0.20)]",
+          "bg-rose-950/80 border-rose-600 shadow-[0_-4px_20px_rgba(244,63,94,0.20)]",
         status === "completed" && "bg-background border-border"
       )}
     >
@@ -49,16 +47,14 @@ export const Footer = ({
         {/* Correct */}
         {status === "correct" && (
           <div className="flex items-center gap-x-3">
-            <div className="w-10 h-10 lg:w-14 lg:h-14 rounded-2xl bg-green-700 flex items-center justify-center shrink-0 shadow-lg">
-              <CheckCircle className="h-5 w-5 lg:h-7 lg:w-7 text-white stroke-[2.7]" />
+            <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-green-700 flex items-center justify-center shrink-0 shadow-lg">
+              <CheckCircle className="h-4 w-4 lg:h-5 lg:w-5 text-white stroke-[2.7]" />
             </div>
-
             <div>
-              <p className="font-extrabold text-base lg:text-xl text-green-300 tracking-tight">
+              <p className="font-extrabold text-sm lg:text-base text-green-300 tracking-tight leading-none">
                 Bravo !
               </p>
-
-              <p className="text-xs lg:text-sm font-medium text-green-200">
+              <p className="text-xs font-medium text-green-200 mt-0.5">
                 Continue comme ça 🔥
               </p>
             </div>
@@ -68,16 +64,14 @@ export const Footer = ({
         {/* Wrong */}
         {status === "wrong" && (
           <div className="flex items-center gap-x-3">
-            <div className="w-10 h-10 lg:w-14 lg:h-14 rounded-2xl bg-[#5a2e2e] flex items-center justify-center shrink-0">
-              <XCircle className="h-5 w-5 lg:h-7 lg:w-7 text-red-400 stroke-[2.5]" />
+            <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-[#5a2e2e] flex items-center justify-center shrink-0">
+              <XCircle className="h-4 w-4 lg:h-5 lg:w-5 text-red-400 stroke-[2.5]" />
             </div>
-
             <div>
-              <p className="font-extrabold text-base lg:text-xl text-red-400 tracking-tight">
+              <p className="font-extrabold text-sm lg:text-base text-red-400 tracking-tight leading-none">
                 Réessaie.
               </p>
-
-              <p className="text-xs lg:text-sm font-medium text-red-300">
+              <p className="text-xs font-medium text-red-300 mt-0.5">
                 {label ?? "Tu peux le faire ! 💪"}
               </p>
             </div>
@@ -88,7 +82,7 @@ export const Footer = ({
         {status === "completed" && (
           <Button
             variant="default"
-            size={isMobile ? "sm" : "lg"}
+            size={isMobile ? "sm" : "sm"}
             onClick={() => (window.location.href = `/lesson/${lessonId}`)}
             className="rounded-xl font-bold border-2 border-b-4 border-slate-600 bg-slate-700 hover:bg-slate-600 text-white"
           >
@@ -100,21 +94,18 @@ export const Footer = ({
         <Button
           disabled={disabled}
           onClick={onCheck}
-          size={isMobile ? "sm" : "lg"}
+          size={isMobile ? "sm" : "sm"}
           variant="secondary"
           className={cn(
             "ml-auto rounded-xl font-bold tracking-wide transition-all duration-200 border-2 border-b-4",
             status === "none" &&
-            "bg-green-500 hover:bg-green-600 text-white border-green-600",
-
+              "bg-green-500 hover:bg-green-600 text-white border-green-600",
             status === "correct" &&
-            "bg-green-500 hover:bg-green-600 text-white border-green-700 scale-105",
-
+              "bg-green-500 hover:bg-green-600 text-white border-green-700 scale-105",
             status === "wrong" &&
-            "bg-red-400 hover:bg-red-500 text-white opacity-70 border-red-600",
-
+              "bg-red-400 hover:bg-red-500 text-white opacity-70 border-red-600",
             status === "completed" &&
-            "bg-green-500 hover:bg-green-600 text-white border-green-600"
+              "bg-green-500 hover:bg-green-600 text-white border-green-600"
           )}
         >
           {buttonLabel()}
