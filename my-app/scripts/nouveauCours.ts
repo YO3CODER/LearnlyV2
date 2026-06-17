@@ -8,20 +8,20 @@ const sql = neon(process.env.DATABASE_URL!);
 // @ts-ignore
 const db = drizzle(sql, { schema });
 
-const fixToSelectChallenge = async () => {
+const fixChallenge4FillBlankWithChoices = async () => {
   try {
-    console.log("🔧 TRANSFORMATION DU CHALLENGE EN SELECT (choix multiples)...\n");
+    console.log("🔧 CORRECTION DU CHALLENGE N°4 (FILL_BLANK AVEC OPTIONS DE CHOIX)...\n");
     console.log("=".repeat(70));
 
-    // 1. Trouver le challenge
-    const targetQuestion = "10⁵ = 1 suivi de ___ zéros";
+    // 1. Trouver le challenge par son ID
+    const challengeId = 1963;
     
     const challenge = await db.query.challenges.findFirst({
-      where: (challenges, { eq }) => eq(challenges.question, targetQuestion)
+      where: (challenges, { eq }) => eq(challenges.id, challengeId)
     });
 
     if (!challenge) {
-      console.log(`❌ Challenge non trouvé: "${targetQuestion}"`);
+      console.log(`❌ Challenge ${challengeId} non trouvé !`);
       return;
     }
 
@@ -29,56 +29,67 @@ const fixToSelectChallenge = async () => {
     console.log(`   Type actuel: ${challenge.type}`);
     console.log(`   Question: ${challenge.question}`);
 
-    // 2. Modifier le type de FILL_BLANK à SELECT
-    await db.update(schema.challenges)
-      .set({ type: "SELECT" })
-      .where(eq(schema.challenges.id, challenge.id));
-
-    console.log(`\n✅ Type modifié: FILL_BLANK → SELECT`);
+    // 2. Garder le type FILL_BLANK
+    if (challenge.type !== "FILL_BLANK") {
+      await db.update(schema.challenges)
+        .set({ type: "FILL_BLANK" })
+        .where(eq(schema.challenges.id, challenge.id));
+      console.log(`   ✅ Type modifié en FILL_BLANK`);
+    }
 
     // 3. Supprimer les anciennes options
     await db.delete(schema.challengeOptions).where(eq(schema.challengeOptions.challengeId, challenge.id));
     console.log(`   Anciennes options supprimées`);
 
-    // 4. Créer 6 options (1 bonne + 5 mauvaises)
-    const correctAnswer = "5";
-    const wrongAnswers = ["3", "4", "6", "7", "8"];
-    const allOptions = [correctAnswer, ...wrongAnswers];
-    
-    // 5. Mélanger les options pour que la bonne réponse ne soit pas toujours à la même place
-    for (let i = allOptions.length - 1; i > 0; i--) {
+    // 4. Créer 6 options (1 bonne + 5 mauvaises) toutes avec blank: 0
+    // Cela permet à l'interface de les afficher comme des choix possibles
+    const options = [
+      { text: "exposants", correct: true, blank: 0 },
+      { text: "coefficients", correct: false, blank: 0 },
+      { text: "signes", correct: false, blank: 0 },
+      { text: "virgules", correct: false, blank: 0 },
+      { text: "chiffres", correct: false, blank: 0 },
+      { text: "décimales", correct: false, blank: 0 }
+    ];
+
+    // 5. Mélanger les options
+    for (let i = options.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [allOptions[i], allOptions[j]] = [allOptions[j], allOptions[i]];
+      [options[i], options[j]] = [options[j], options[i]];
     }
-    
+
     // 6. Insérer les nouvelles options
-    for (let i = 0; i < allOptions.length; i++) {
+    for (let i = 0; i < options.length; i++) {
       await db.insert(schema.challengeOptions).values({
         challengeId: challenge.id,
-        text: allOptions[i],
-        correct: allOptions[i] === correctAnswer,
+        text: options[i].text,
+        correct: options[i].correct,
+        blank: options[i].blank,
         order: i
       });
     }
 
-    console.log(`   Nouvelles options ajoutées:`);
-    for (const opt of allOptions) {
-      console.log(`      ${opt === correctAnswer ? "✅" : "❌"} ${opt}`);
+    console.log(`   ✅ Nouvelles options ajoutées (6 options de choix):`);
+    for (const opt of options) {
+      console.log(`      ${opt.correct ? "✅ BONNE" : "❌ MAUVAISE"} - "${opt.text}" (blank: ${opt.blank})`);
     }
 
     // 7. Vérifier
-    const options = await db.query.challengeOptions.findMany({
-      where: (options, { eq }) => eq(options.challengeId, challenge.id)
+    const resultOptions = await db.query.challengeOptions.findMany({
+      where: (options, { eq }) => eq(options.challengeId, challenge.id),
+      orderBy: (options, { asc }) => [asc(options.order)]
     });
 
     console.log("\n📊 VÉRIFICATION FINALE:");
-    console.log(`   Type du challenge: SELECT`);
-    console.log(`   Nombre d'options: ${options.length}`);
-    console.log(`   Bonne réponse: ${options.find(o => o.correct)?.text}`);
+    console.log(`   Type du challenge: FILL_BLANK`);
+    console.log(`   Nombre d'options: ${resultOptions.length}`);
+    console.log(`   Bonne réponse: "${resultOptions.find(o => o.correct)?.text}"`);
+    console.log(`   Toutes les options ont blank: 0`);
 
     console.log("\n" + "=".repeat(70));
-    console.log("🎉 Challenge transformé en SELECT avec 6 options !");
-    console.log("   L'utilisateur peut maintenant choisir la bonne réponse parmi 6 propositions.");
+    console.log("🎉 Challenge FILL_BLANK corrigé avec 6 options de choix !");
+    console.log("   L'utilisateur voit un champ de saisie avec des bulles/suggestions.");
+    console.log("   La bonne réponse est 'exposants'.");
 
   } catch (error) {
     console.error("❌ Erreur:", error);
@@ -86,4 +97,4 @@ const fixToSelectChallenge = async () => {
 };
 
 // Exécuter
-fixToSelectChallenge();
+fixChallenge4FillBlankWithChoices();

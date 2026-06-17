@@ -10,7 +10,6 @@ import { POINTS_TO_REFILL } from "@/constants";
 import { getCourseById, getUserProgress, getUserSubscription } from "@/db/queries";
 import { challengeProgress, challenges, userProgress } from "@/db/schema";
 
-// Helper pour calculer le streak
 const updateStreak = (lastActivityDate: string, currentStreak: number) => {
   const today = new Date().toISOString().split("T")[0];
   const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
@@ -39,8 +38,7 @@ export const upsertUserProgress = async (courseId: number) => {
   if (existingUserProgress) {
     await db.update(userProgress).set({
       activeCourseId: courseId,
-      userName: user.firstName || "User",
-      userImageSrc: user.imageUrl || "/mascot.svg",
+      // userName et userImageSrc non écrasés volontairement
     }).where(eq(userProgress.userId, userId));
 
     revalidatePath("/courses");
@@ -110,7 +108,6 @@ export const reduceHearts = async (challengeId: number) => {
   if (userSubscription?.isActive) return { error: "subscription" };
   if (currentUserProgress.hearts === 0) return { error: "hearts" };
 
-  // Incrémenter challengesCompleted
   const { streak, lastActivityDate } = updateStreak(
     currentUserProgress.lastActivityDate ?? "",
     currentUserProgress.streak ?? 0
