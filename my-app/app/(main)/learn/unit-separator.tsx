@@ -58,7 +58,7 @@ export const UnitSeparator = ({ nextUnitTitle, unitIndex }: Props) => {
       <div className="flex-1 h-[2px] rounded-full bg-border" style={{ borderBottom: "2px solid hsl(var(--border))" }} />
 
       {/* Texte au centre */}
-      <span className="text-muted-foreground text-sm lg:text-xl tracking-wide whitespace-nowrap">
+      <span className="text-muted-foreground font-bold text-sm lg:text-xl tracking-wide whitespace-nowrap">
         {nextUnitTitle}
       </span>
 
