@@ -18,6 +18,9 @@ type Props = {
   activeCourseId?: typeof userProgress.$inferSelect.activeCourseId;
 };
 
+// Délai long-press avant d'activer le drag sur mobile (ms)
+const LONG_PRESS_DELAY = 400;
+
 export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -28,12 +31,20 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
   const [draggingId, setDraggingId] = useState<number | null>(null);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
 
-  // ── Refs pour le touch drag ───────────────────────────────────
+  // ── Refs touch ────────────────────────────────────────────────
   const touchDraggingId = useRef<number | null>(null);
   const touchClone = useRef<HTMLElement | null>(null);
   const touchOffsetX = useRef(0);
   const touchOffsetY = useRef(0);
-  const gridRef = useRef<HTMLDivElement>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Position initiale du doigt pour détecter si c'est un tap ou un glissement
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  // Indique si le long-press a été validé (drag actif)
+  const isDragActive = useRef(false);
+  // Ref vers l'élément touché pour créer le clone au bon moment
+  const touchTargetEl = useRef<HTMLElement | null>(null);
+  const touchStartId = useRef<number | null>(null);
 
   // ── Recherche ─────────────────────────────────────────────────
   const isSearching = search.trim().length > 0;
@@ -69,7 +80,7 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
     });
   }, []);
 
-  // ── Drag & Drop Desktop (mouse) ───────────────────────────────
+  // ── Drag & Drop Desktop ───────────────────────────────────────
   const handleDragStart = useCallback((id: number) => {
     setDraggingId(id);
   }, []);
@@ -97,60 +108,113 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
     setDragOverId(null);
   }, []);
 
-  // ── Drag & Drop Mobile (touch) ────────────────────────────────
+  // ── Helpers touch ─────────────────────────────────────────────
   const getCardIdAtPoint = useCallback((x: number, y: number): number | null => {
-    // On masque temporairement le clone pour pouvoir hitter les vraies cartes
     if (touchClone.current) touchClone.current.style.display = "none";
     const el = document.elementFromPoint(x, y);
     if (touchClone.current) touchClone.current.style.display = "";
-
     if (!el) return null;
     const card = el.closest("[data-card-id]") as HTMLElement | null;
     return card ? parseInt(card.dataset.cardId!, 10) : null;
   }, []);
 
+  const cancelLongPress = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
+
+  const cleanupTouchDrag = useCallback(() => {
+    if (touchClone.current) {
+      touchClone.current.remove();
+      touchClone.current = null;
+    }
+    isDragActive.current = false;
+    touchDraggingId.current = null;
+    touchTargetEl.current = null;
+    touchStartId.current = null;
+    setDraggingId(null);
+    setDragOverId(null);
+  }, []);
+
+  // ── Activer le drag après long-press ─────────────────────────
+  const activateDrag = useCallback((id: number, el: HTMLElement, clientX: number, clientY: number) => {
+    const rect = el.getBoundingClientRect();
+    touchDraggingId.current = id;
+    touchOffsetX.current = clientX - rect.left;
+    touchOffsetY.current = clientY - rect.top;
+    isDragActive.current = true;
+
+    // Vibration haptique si disponible
+    if (navigator.vibrate) navigator.vibrate(40);
+
+    // Créer le clone fantôme
+    const clone = el.cloneNode(true) as HTMLElement;
+    clone.style.cssText = `
+      position: fixed;
+      top: ${rect.top}px;
+      left: ${rect.left}px;
+      width: ${rect.width}px;
+      height: ${rect.height}px;
+      opacity: 0.88;
+      pointer-events: none;
+      z-index: 9999;
+      transform: scale(1.06) rotate(2deg);
+      border-radius: 12px;
+      box-shadow: 0 20px 48px rgba(0,0,0,0.22);
+      transition: transform 0.15s;
+    `;
+    document.body.appendChild(clone);
+    touchClone.current = clone;
+
+    setDraggingId(id);
+  }, []);
+
+  // ── Handlers touch ────────────────────────────────────────────
   const handleTouchStart = useCallback(
     (e: React.TouchEvent, id: number) => {
       if (pending || isSearching) return;
 
       const touch = e.touches[0];
-      const target = e.currentTarget as HTMLElement;
-      const rect = target.getBoundingClientRect();
+      touchStartX.current = touch.clientX;
+      touchStartY.current = touch.clientY;
+      touchStartId.current = id;
+      touchTargetEl.current = e.currentTarget as HTMLElement;
+      isDragActive.current = false;
 
-      touchDraggingId.current = id;
-      touchOffsetX.current = touch.clientX - rect.left;
-      touchOffsetY.current = touch.clientY - rect.top;
-
-      // Créer un clone fantôme
-      const clone = target.cloneNode(true) as HTMLElement;
-      clone.style.cssText = `
-        position: fixed;
-        top: ${rect.top}px;
-        left: ${rect.left}px;
-        width: ${rect.width}px;
-        height: ${rect.height}px;
-        opacity: 0.85;
-        pointer-events: none;
-        z-index: 9999;
-        transform: scale(1.05) rotate(2deg);
-        transition: transform 0.1s;
-        border-radius: 12px;
-        box-shadow: 0 16px 40px rgba(0,0,0,0.2);
-      `;
-      document.body.appendChild(clone);
-      touchClone.current = clone;
-
-      setDraggingId(id);
+      // Démarrer le timer long-press
+      longPressTimer.current = setTimeout(() => {
+        if (touchTargetEl.current && touchStartId.current !== null) {
+          activateDrag(
+            touchStartId.current,
+            touchTargetEl.current,
+            touchStartX.current,
+            touchStartY.current
+          );
+        }
+      }, LONG_PRESS_DELAY);
     },
-    [pending, isSearching]
+    [pending, isSearching, activateDrag]
   );
 
   const handleTouchMove = useCallback(
     (e: React.TouchEvent) => {
-      if (touchDraggingId.current === null || !touchClone.current) return;
-      e.preventDefault(); // bloque le scroll pendant le drag
-
       const touch = e.touches[0];
+      const dx = touch.clientX - touchStartX.current;
+      const dy = touch.clientY - touchStartY.current;
+      const moved = Math.sqrt(dx * dx + dy * dy);
+
+      // Si le doigt bouge trop avant le long-press → annuler (c'est un scroll)
+      if (!isDragActive.current) {
+        if (moved > 8) cancelLongPress();
+        return;
+      }
+
+      // Drag actif → bloquer le scroll
+      e.preventDefault();
+
+      if (!touchClone.current || touchDraggingId.current === null) return;
 
       // Déplacer le clone
       touchClone.current.style.left = `${touch.clientX - touchOffsetX.current}px`;
@@ -160,35 +224,37 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
       const overId = getCardIdAtPoint(touch.clientX, touch.clientY);
       if (overId !== null && overId !== touchDraggingId.current) {
         setDragOverId(overId);
-      } else if (overId === null || overId === touchDraggingId.current) {
+      } else {
         setDragOverId(null);
       }
     },
-    [getCardIdAtPoint]
+    [cancelLongPress, getCardIdAtPoint]
   );
 
   const handleTouchEnd = useCallback(
     (e: React.TouchEvent) => {
-      if (touchDraggingId.current === null) return;
+      cancelLongPress();
+
+      if (!isDragActive.current) {
+        // Simple tap → laisser le onClick de Card s'exécuter normalement
+        cleanupTouchDrag();
+        return;
+      }
 
       const touch = e.changedTouches[0];
       const overId = getCardIdAtPoint(touch.clientX, touch.clientY);
 
-      if (overId !== null && overId !== touchDraggingId.current) {
+      if (
+        touchDraggingId.current !== null &&
+        overId !== null &&
+        overId !== touchDraggingId.current
+      ) {
         reorder(touchDraggingId.current, overId);
       }
 
-      // Nettoyer le clone
-      if (touchClone.current) {
-        touchClone.current.remove();
-        touchClone.current = null;
-      }
-
-      touchDraggingId.current = null;
-      setDraggingId(null);
-      setDragOverId(null);
+      cleanupTouchDrag();
     },
-    [getCardIdAtPoint, reorder]
+    [cancelLongPress, cleanupTouchDrag, getCardIdAtPoint, reorder]
   );
 
   // ── Render ────────────────────────────────────────────────────
@@ -226,17 +292,14 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
       {!isSearching && (
         <p className="text-xs text-muted-foreground flex items-center gap-1.5 select-none">
           <GripVertical className="h-3.5 w-3.5 shrink-0" />
-          Maintiens et glisse pour réorganiser
+          Maintiens une carte pour la déplacer
         </p>
       )}
 
       {/* Grille */}
       {filtered.length > 0 ? (
         <>
-          <div
-            ref={gridRef}
-            className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-          >
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {filtered.map((course, index) => {
               const isDragging = draggingId === course.id;
               const isDragOver = !isSearching && dragOverId === course.id;
@@ -261,11 +324,11 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
                   style={{
                     animationDelay: `${index * 80}ms`,
                     animationFillMode: "forwards",
-                    cursor: isSearching ? "default" : "grab",
-                    touchAction: isSearching ? "auto" : "none",
+                    // touchAction auto → le scroll fonctionne normalement
+                    // il sera bloqué via e.preventDefault() seulement quand drag actif
+                    touchAction: "auto",
                   }}
                 >
-                  {/* Indicateur drop */}
                   {isDragOver && (
                     <div className="absolute inset-0 z-10 rounded-xl border-2 border-dashed border-sky-400 bg-sky-400/10 pointer-events-none" />
                   )}
@@ -283,7 +346,6 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
             })}
           </div>
 
-          {/* Compteur résultats */}
           {isSearching && (
             <p className="text-xs text-muted-foreground text-right">
               {filtered.length} cours trouvé{filtered.length > 1 ? "s" : ""}
