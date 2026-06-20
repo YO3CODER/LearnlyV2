@@ -18,48 +18,47 @@ export const UnitBanner = ({
   order = 1,
   index = 0,
 }: Props) => {
-  const getBgColor = () => {
-    const colors: Record<string, string> = {
-      blue: "bg-sky-400",
-      purple: "bg-violet-400",
-      green: "bg-lime-400",
-      red: "bg-rose-400",
-      orange: "bg-amber-400",
-      pink: "bg-fuchsia-400",
-      indigo: "bg-indigo-400",
-      teal: "bg-teal-400",
-    };
-    return colors[color] || colors.blue;
+ const getBgColor = () => {
+  const colors: Record<string, string> = {
+    blue: "bg-[#1CB0F6]",
+    purple: "bg-violet-400",
+    green: "bg-lime-400",
+    red: "bg-rose-400",
+    orange: "bg-amber-400",
+    pink: "bg-fuchsia-400",
+    indigo: "bg-indigo-400",
+    teal: "bg-teal-400",
   };
+  return colors[color] || colors.blue;
+};
 
-  const getBorderColor = () => {
-    const colors: Record<string, string> = {
-      blue: "border-sky-500",
-      purple: "border-violet-500",
-      green: "border-lime-500",
-      red: "border-rose-500",
-      orange: "border-amber-500",
-      pink: "border-fuchsia-500",
-      indigo: "border-indigo-500",
-      teal: "border-teal-500",
-    };
-    return colors[color] || colors.blue;
+const getBorderColor = () => {
+  const colors: Record<string, string> = {
+    blue: "border-[#1899D6]",
+    purple: "border-violet-500",
+    green: "border-lime-500",
+    red: "border-rose-500",
+    orange: "border-amber-500",
+    pink: "border-fuchsia-500",
+    indigo: "border-indigo-500",
+    teal: "border-teal-500",
   };
+  return colors[color] || colors.blue;
+};
 
-  const getButtonColor = () => {
-    const colors: Record<string, string> = {
-      blue: "bg-sky-500 hover:bg-sky-600 border-sky-600",
-      purple: "bg-violet-500 hover:bg-violet-600 border-violet-600",
-      green: "bg-lime-500 hover:bg-lime-600 border-lime-600",
-      red: "bg-rose-500 hover:bg-rose-600 border-rose-600",
-      orange: "bg-amber-500 hover:bg-amber-600 border-amber-600",
-      pink: "bg-fuchsia-500 hover:bg-fuchsia-600 border-fuchsia-600",
-      indigo: "bg-indigo-500 hover:bg-indigo-600 border-indigo-600",
-      teal: "bg-teal-500 hover:bg-teal-600 border-teal-600",
-    };
-    return colors[color] || colors.blue;
+const getButtonColor = () => {
+  const colors: Record<string, string> = {
+    blue: "bg-[#1CB0F6] hover:bg-[#0E9FE3] border-[#1899D6]",
+    purple: "bg-violet-500 hover:bg-violet-600 border-violet-600",
+    green: "bg-lime-500 hover:bg-lime-600 border-lime-600",
+    red: "bg-rose-500 hover:bg-rose-600 border-rose-600",
+    orange: "bg-amber-500 hover:bg-amber-600 border-amber-600",
+    pink: "bg-fuchsia-500 hover:bg-fuchsia-600 border-fuchsia-600",
+    indigo: "bg-indigo-500 hover:bg-indigo-600 border-indigo-600",
+    teal: "bg-teal-500 hover:bg-teal-600 border-teal-600",
   };
-
+  return colors[color] || colors.blue;
+};
   return (
     <div className={`
       w-full min-w-0 overflow-hidden
