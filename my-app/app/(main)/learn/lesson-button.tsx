@@ -723,7 +723,7 @@ export const LessonButton = ({
           {/* ── Bouton leçon courante (avec progression circulaire) ── */}
           {current ? (
             <div
-              className="h-[88px] w-[88px] relative flex items-center justify-center"
+              className="h-[104px] w-[104px] relative flex items-center justify-center"
               onClick={() => {
                 handleClick();
                 handleButtonPress();
@@ -808,7 +808,7 @@ export const LessonButton = ({
           ) : (
             // ── Bouton leçon normale (complétée ou à venir) ──
             <div
-              className="relative w-[60px] h-[60px] flex items-center justify-center"
+              className="relative w-[72px] h-[72px] flex items-center justify-center"
               onClick={() => {
                 handleClick();
                 handleButtonPress();
