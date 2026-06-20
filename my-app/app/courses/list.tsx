@@ -18,9 +18,6 @@ type Props = {
   activeCourseId?: typeof userProgress.$inferSelect.activeCourseId;
 };
 
-// Délai long-press avant d'activer le drag sur mobile (ms)
-const LONG_PRESS_DELAY = 400;
-
 export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -31,20 +28,13 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
   const [draggingId, setDraggingId] = useState<number | null>(null);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
 
-  // ── Refs touch ────────────────────────────────────────────────
+  // ── Refs touch (drag via grip uniquement) ─────────────────────
   const touchDraggingId = useRef<number | null>(null);
   const touchClone = useRef<HTMLElement | null>(null);
   const touchOffsetX = useRef(0);
   const touchOffsetY = useRef(0);
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Position initiale du doigt pour détecter si c'est un tap ou un glissement
-  const touchStartX = useRef(0);
-  const touchStartY = useRef(0);
-  // Indique si le long-press a été validé (drag actif)
-  const isDragActive = useRef(false);
-  // Ref vers l'élément touché pour créer le clone au bon moment
-  const touchTargetEl = useRef<HTMLElement | null>(null);
-  const touchStartId = useRef<number | null>(null);
+  // true uniquement si le touch a commencé sur le grip
+  const gripTouchActive = useRef(false);
 
   // ── Recherche ─────────────────────────────────────────────────
   const isSearching = search.trim().length > 0;
@@ -66,7 +56,7 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
     [pending, activeCourseId, router]
   );
 
-  // ── Réordonnancement partagé ──────────────────────────────────
+  // ── Réordonnancement ──────────────────────────────────────────
   const reorder = useCallback((fromId: number, toId: number) => {
     if (fromId === toId) return;
     setOrdered((prev) => {
@@ -81,6 +71,7 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
   }, []);
 
   // ── Drag & Drop Desktop ───────────────────────────────────────
+  // Le draggable est sur le grip uniquement via onMouseDown qui le set
   const handleDragStart = useCallback((id: number) => {
     setDraggingId(id);
   }, []);
@@ -118,109 +109,67 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
     return card ? parseInt(card.dataset.cardId!, 10) : null;
   }, []);
 
-  const cancelLongPress = useCallback(() => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-  }, []);
-
   const cleanupTouchDrag = useCallback(() => {
     if (touchClone.current) {
       touchClone.current.remove();
       touchClone.current = null;
     }
-    isDragActive.current = false;
+    gripTouchActive.current = false;
     touchDraggingId.current = null;
-    touchTargetEl.current = null;
-    touchStartId.current = null;
     setDraggingId(null);
     setDragOverId(null);
   }, []);
 
-  // ── Activer le drag après long-press ─────────────────────────
-  const activateDrag = useCallback((id: number, el: HTMLElement, clientX: number, clientY: number) => {
-    const rect = el.getBoundingClientRect();
-    touchDraggingId.current = id;
-    touchOffsetX.current = clientX - rect.left;
-    touchOffsetY.current = clientY - rect.top;
-    isDragActive.current = true;
-
-    // Vibration haptique si disponible
-    if (navigator.vibrate) navigator.vibrate(40);
-
-    // Créer le clone fantôme
-    const clone = el.cloneNode(true) as HTMLElement;
-    clone.style.cssText = `
-      position: fixed;
-      top: ${rect.top}px;
-      left: ${rect.left}px;
-      width: ${rect.width}px;
-      height: ${rect.height}px;
-      opacity: 0.88;
-      pointer-events: none;
-      z-index: 9999;
-      transform: scale(1.06) rotate(2deg);
-      border-radius: 12px;
-      box-shadow: 0 20px 48px rgba(0,0,0,0.22);
-      transition: transform 0.15s;
-    `;
-    document.body.appendChild(clone);
-    touchClone.current = clone;
-
-    setDraggingId(id);
-  }, []);
-
-  // ── Handlers touch ────────────────────────────────────────────
-  const handleTouchStart = useCallback(
-    (e: React.TouchEvent, id: number) => {
+  // ── Touch sur le grip : démarre le drag immédiatement ────────
+  const handleGripTouchStart = useCallback(
+    (e: React.TouchEvent, id: number, cardEl: HTMLElement) => {
       if (pending || isSearching) return;
+      e.stopPropagation(); // ne pas remonter vers la carte
 
       const touch = e.touches[0];
-      touchStartX.current = touch.clientX;
-      touchStartY.current = touch.clientY;
-      touchStartId.current = id;
-      touchTargetEl.current = e.currentTarget as HTMLElement;
-      isDragActive.current = false;
+      const rect = cardEl.getBoundingClientRect();
 
-      // Démarrer le timer long-press
-      longPressTimer.current = setTimeout(() => {
-        if (touchTargetEl.current && touchStartId.current !== null) {
-          activateDrag(
-            touchStartId.current,
-            touchTargetEl.current,
-            touchStartX.current,
-            touchStartY.current
-          );
-        }
-      }, LONG_PRESS_DELAY);
+      gripTouchActive.current = true;
+      touchDraggingId.current = id;
+      touchOffsetX.current = touch.clientX - rect.left;
+      touchOffsetY.current = touch.clientY - rect.top;
+
+      // Vibration haptique
+      if (navigator.vibrate) navigator.vibrate(30);
+
+      // Clone fantôme
+      const clone = cardEl.cloneNode(true) as HTMLElement;
+      clone.style.cssText = `
+        position: fixed;
+        top: ${rect.top}px;
+        left: ${rect.left}px;
+        width: ${rect.width}px;
+        height: ${rect.height}px;
+        opacity: 0.88;
+        pointer-events: none;
+        z-index: 9999;
+        transform: scale(1.06) rotate(2deg);
+        border-radius: 12px;
+        box-shadow: 0 20px 48px rgba(0,0,0,0.22);
+      `;
+      document.body.appendChild(clone);
+      touchClone.current = clone;
+
+      setDraggingId(id);
     },
-    [pending, isSearching, activateDrag]
+    [pending, isSearching]
   );
 
-  const handleTouchMove = useCallback(
+  // ── Touch move / end sur le wrapper (actif seulement si grip) ─
+  const handleWrapperTouchMove = useCallback(
     (e: React.TouchEvent) => {
-      const touch = e.touches[0];
-      const dx = touch.clientX - touchStartX.current;
-      const dy = touch.clientY - touchStartY.current;
-      const moved = Math.sqrt(dx * dx + dy * dy);
-
-      // Si le doigt bouge trop avant le long-press → annuler (c'est un scroll)
-      if (!isDragActive.current) {
-        if (moved > 8) cancelLongPress();
-        return;
-      }
-
-      // Drag actif → bloquer le scroll
+      if (!gripTouchActive.current || !touchClone.current) return;
       e.preventDefault();
 
-      if (!touchClone.current || touchDraggingId.current === null) return;
-
-      // Déplacer le clone
+      const touch = e.touches[0];
       touchClone.current.style.left = `${touch.clientX - touchOffsetX.current}px`;
       touchClone.current.style.top = `${touch.clientY - touchOffsetY.current}px`;
 
-      // Détecter la carte sous le doigt
       const overId = getCardIdAtPoint(touch.clientX, touch.clientY);
       if (overId !== null && overId !== touchDraggingId.current) {
         setDragOverId(overId);
@@ -228,18 +177,12 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
         setDragOverId(null);
       }
     },
-    [cancelLongPress, getCardIdAtPoint]
+    [getCardIdAtPoint]
   );
 
-  const handleTouchEnd = useCallback(
+  const handleWrapperTouchEnd = useCallback(
     (e: React.TouchEvent) => {
-      cancelLongPress();
-
-      if (!isDragActive.current) {
-        // Simple tap → laisser le onClick de Card s'exécuter normalement
-        cleanupTouchDrag();
-        return;
-      }
+      if (!gripTouchActive.current) return;
 
       const touch = e.changedTouches[0];
       const overId = getCardIdAtPoint(touch.clientX, touch.clientY);
@@ -254,7 +197,7 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
 
       cleanupTouchDrag();
     },
-    [cancelLongPress, cleanupTouchDrag, getCardIdAtPoint, reorder]
+    [getCardIdAtPoint, reorder, cleanupTouchDrag]
   );
 
   // ── Render ────────────────────────────────────────────────────
@@ -288,11 +231,11 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
         )}
       </div>
 
-      {/* Hint drag */}
+      {/* Hint */}
       {!isSearching && (
         <p className="text-xs text-muted-foreground flex items-center gap-1.5 select-none">
           <GripVertical className="h-3.5 w-3.5 shrink-0" />
-          Maintiens une carte pour la déplacer
+          Glisse l'icône <GripVertical className="inline h-3 w-3 mx-0.5" /> pour réorganiser
         </p>
       )}
 
@@ -308,14 +251,15 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
                 <div
                   key={course.id}
                   data-card-id={course.id}
-                  draggable={!pending && !isSearching}
+                  // desktop : drag activé par onMouseDown sur le grip (draggable mis à true depuis le grip)
+                  draggable={false}
                   onDragStart={() => handleDragStart(course.id)}
                   onDragOver={(e) => handleDragOver(e, course.id)}
                   onDrop={() => handleDrop(course.id)}
                   onDragEnd={handleDragEnd}
-                  onTouchStart={(e) => handleTouchStart(e, course.id)}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEnd}
+                  // mobile : move/end gérés ici, mais start uniquement depuis le grip
+                  onTouchMove={handleWrapperTouchMove}
+                  onTouchEnd={handleWrapperTouchEnd}
                   className={cn(
                     "relative opacity-0 animate-fade-in-up rounded-xl transition-all duration-200",
                     isDragging && "opacity-30 scale-95",
@@ -324,11 +268,46 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
                   style={{
                     animationDelay: `${index * 80}ms`,
                     animationFillMode: "forwards",
-                    // touchAction auto → le scroll fonctionne normalement
-                    // il sera bloqué via e.preventDefault() seulement quand drag actif
                     touchAction: "auto",
                   }}
                 >
+                  {/* ── Grip handle ── */}
+                  {!isSearching && (
+                    <div
+                      data-grip
+                      title="Déplacer ce cours"
+                      // Desktop : rend le wrapper draggable le temps du drag
+                      onMouseDown={(e) => {
+                        e.stopPropagation();
+                        const wrapper = (e.currentTarget as HTMLElement).closest("[data-card-id]") as HTMLElement;
+                        if (wrapper) wrapper.draggable = true;
+                      }}
+                      onMouseUp={(e) => {
+                        const wrapper = (e.currentTarget as HTMLElement).closest("[data-card-id]") as HTMLElement;
+                        if (wrapper) wrapper.draggable = false;
+                      }}
+                      // Mobile : démarre le drag immédiatement depuis le grip
+                      onTouchStart={(e) => {
+                        const wrapper = (e.currentTarget as HTMLElement).closest("[data-card-id]") as HTMLElement;
+                        if (wrapper) handleGripTouchStart(e, course.id, wrapper);
+                      }}
+                      className={cn(
+                        "absolute top-2 right-2 z-20",
+                        "flex items-center justify-center",
+                        "w-6 h-6 rounded-md",
+                        "bg-black/5 dark:bg-white/10",
+                        "hover:bg-black/15 dark:hover:bg-white/20",
+                        "active:bg-sky-100 dark:active:bg-sky-900/40",
+                        "transition-colors duration-150",
+                        "cursor-grab active:cursor-grabbing",
+                        "touch-none select-none"
+                      )}
+                    >
+                      <GripVertical className="h-3.5 w-3.5 text-muted-foreground" />
+                    </div>
+                  )}
+
+                  {/* Indicateur drop */}
                   {isDragOver && (
                     <div className="absolute inset-0 z-10 rounded-xl border-2 border-dashed border-sky-400 bg-sky-400/10 pointer-events-none" />
                   )}
