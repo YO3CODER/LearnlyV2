@@ -20,42 +20,42 @@ export const UnitBanner = ({
 }: Props) => {
   const getBgColor = () => {
     const colors: Record<string, string> = {
-      blue: "bg-blue-500",
-      purple: "bg-purple-500",
-      green: "bg-green-500",
-      red: "bg-red-500",
-      orange: "bg-orange-500",
-      pink: "bg-pink-500",
-      indigo: "bg-indigo-500",
-      teal: "bg-teal-500",
+      blue: "bg-sky-400",
+      purple: "bg-violet-400",
+      green: "bg-lime-400",
+      red: "bg-rose-400",
+      orange: "bg-amber-400",
+      pink: "bg-fuchsia-400",
+      indigo: "bg-indigo-400",
+      teal: "bg-teal-400",
     };
     return colors[color] || colors.blue;
   };
 
   const getBorderColor = () => {
     const colors: Record<string, string> = {
-      blue: "border-blue-700",
-      purple: "border-purple-700",
-      green: "border-green-700",
-      red: "border-red-700",
-      orange: "border-orange-700",
-      pink: "border-pink-700",
-      indigo: "border-indigo-700",
-      teal: "border-teal-700",
+      blue: "border-sky-500",
+      purple: "border-violet-500",
+      green: "border-lime-500",
+      red: "border-rose-500",
+      orange: "border-amber-500",
+      pink: "border-fuchsia-500",
+      indigo: "border-indigo-500",
+      teal: "border-teal-500",
     };
     return colors[color] || colors.blue;
   };
 
   const getButtonColor = () => {
     const colors: Record<string, string> = {
-      blue: "bg-blue-600 hover:bg-blue-700 border-blue-800",
-      purple: "bg-purple-600 hover:bg-purple-700 border-purple-800",
-      green: "bg-green-600 hover:bg-green-700 border-green-800",
-      red: "bg-red-600 hover:bg-red-700 border-red-800",
-      orange: "bg-orange-600 hover:bg-orange-700 border-orange-800",
-      pink: "bg-pink-600 hover:bg-pink-700 border-pink-800",
-      indigo: "bg-indigo-600 hover:bg-indigo-700 border-indigo-800",
-      teal: "bg-teal-600 hover:bg-teal-700 border-teal-800",
+      blue: "bg-sky-500 hover:bg-sky-600 border-sky-600",
+      purple: "bg-violet-500 hover:bg-violet-600 border-violet-600",
+      green: "bg-lime-500 hover:bg-lime-600 border-lime-600",
+      red: "bg-rose-500 hover:bg-rose-600 border-rose-600",
+      orange: "bg-amber-500 hover:bg-amber-600 border-amber-600",
+      pink: "bg-fuchsia-500 hover:bg-fuchsia-600 border-fuchsia-600",
+      indigo: "bg-indigo-500 hover:bg-indigo-600 border-indigo-600",
+      teal: "bg-teal-500 hover:bg-teal-600 border-teal-600",
     };
     return colors[color] || colors.blue;
   };
