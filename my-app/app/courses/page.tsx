@@ -42,7 +42,10 @@ const CoursesPage = async () => {
               className="opacity-0 animate-slide-down text-4xl font-extrabold tracking-tight text-gray-800 dark:text-white"
             >
               Salut{" "}
-              <span className="text-sky-400 text-5xl ml-2">
+              <span
+                style={{ fontFamily: "'Fredoka', sans-serif" }}
+                className="text-sky-400 text-3xl ml-2"
+              >
                 {firstName}
               </span>
             </h1>
