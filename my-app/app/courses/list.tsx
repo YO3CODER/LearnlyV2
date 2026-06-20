@@ -23,7 +23,32 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
   const [pending, startTransition] = useTransition();
 
   // ── État local ────────────────────────────────────────────────
-  const [ordered, setOrdered] = useState<Course[]>(initialCourses);
+  const STORAGE_KEY = "learnly:courses-order";
+
+  const getInitialOrder = (): Course[] => {
+    if (typeof window === "undefined") return initialCourses;
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (!raw) return initialCourses;
+      const savedIds: number[] = JSON.parse(raw);
+      const byId = new Map(initialCourses.map((c) => [c.id, c]));
+      const restored: Course[] = [];
+      savedIds.forEach((id) => {
+        const c = byId.get(id);
+        if (c) {
+          restored.push(c);
+          byId.delete(id);
+        }
+      });
+      // Ajoute les nouveaux cours (absents du localStorage) à la fin
+      byId.forEach((c) => restored.push(c));
+      return restored.length === initialCourses.length ? restored : initialCourses;
+    } catch {
+      return initialCourses;
+    }
+  };
+
+  const [ordered, setOrdered] = useState<Course[]>(getInitialOrder);
   const [search, setSearch] = useState("");
   const [draggingId, setDraggingId] = useState<number | null>(null);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
@@ -66,6 +91,14 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
       if (fromIdx === -1 || toIdx === -1) return prev;
       const [moved] = next.splice(fromIdx, 1);
       next.splice(toIdx, 0, moved);
+      try {
+        window.localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify(next.map((c) => c.id))
+        );
+      } catch {
+        // localStorage indisponible (mode privé, quota...) → on ignore silencieusement
+      }
       return next;
     });
   }, []);
@@ -212,7 +245,7 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Rechercher un cours…"
           className={cn(
-            "w-full pl-9 pr-9 py-2.5 rounded-xl text-sm",
+            "w-full pl-9 pr-9 py-2.5 rounded-xl text-base sm:text-sm",
             "bg-white dark:bg-card",
             "border border-gray-200 dark:border-border",
             "text-gray-800 dark:text-foreground",
@@ -271,7 +304,7 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
                     touchAction: "auto",
                   }}
                 >
-                  {/* ── Grip handle ── */}
+                  {/* ── Grip handle (placé à GAUCHE pour ne pas chevaucher le check actif à droite) ── */}
                   {!isSearching && (
                     <div
                       data-grip
@@ -292,7 +325,7 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
                         if (wrapper) handleGripTouchStart(e, course.id, wrapper);
                       }}
                       className={cn(
-                        "absolute top-2 right-2 z-20",
+                        "absolute top-2 left-2 z-20",
                         "flex items-center justify-center",
                         "w-6 h-6 rounded-md",
                         "bg-black/5 dark:bg-white/10",
