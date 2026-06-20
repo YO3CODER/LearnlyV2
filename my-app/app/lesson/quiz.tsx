@@ -411,13 +411,26 @@ export const Quiz = ({
           className="fixed inset-0 z-50 flex items-center justify-center bg-white/95 backdrop-blur-sm"
           style={{ opacity: showStreak ? 1 : 0, transition: "opacity 0.3s ease" }}
         >
+          <style>{`
+            @keyframes streak-gradient-shift {
+              0%   { background-position: 0% 50%; }
+              50%  { background-position: 100% 50%; }
+              100% { background-position: 0% 50%; }
+            }
+          `}</style>
           <div className="flex flex-col items-center gap-6">
             <motion.div initial={{ scale: 0, rotate: -20 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 200, damping: 12 }}>
               <Image src={streakGif} alt="Streak" width={200} height={200} className="drop-shadow-lg" unoptimized />
             </motion.div>
             <motion.p
-              className="text-3xl lg:text-4xl font-extrabold text-gray-800 text-center"
-              style={{ fontFamily: "'Fredoka', sans-serif" }}
+              className="text-3xl lg:text-4xl font-extrabold text-center bg-clip-text text-transparent"
+              style={{
+                fontFamily: "'Fredoka', sans-serif",
+                backgroundImage:
+                  "linear-gradient(90deg, #f43f5e, #f59e0b, #eab308, #22c55e, #38bdf8, #a78bfa, #f43f5e)",
+                backgroundSize: "300% 100%",
+                animation: "streak-gradient-shift 1.6s linear infinite",
+              }}
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: [0, 1.15, 0.95, 1.08, 1] }}
               transition={{ duration: 0.8, delay: 0.3, scale: { type: "spring", stiffness: 150, damping: 12 } }}
