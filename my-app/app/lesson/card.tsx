@@ -18,6 +18,16 @@ type Props = {
   type: typeof challenges.$inferSelect["type"];
 };
 
+// ── Bordures colorées par option (état par défaut, non sélectionné) ──
+const OPTION_BORDER_COLORS = [
+  "border-sky-300 dark:border-sky-700",
+  "border-violet-300 dark:border-violet-700",
+  "border-amber-300 dark:border-amber-700",
+  "border-pink-300 dark:border-pink-700",
+  "border-emerald-300 dark:border-emerald-700",
+  "border-orange-300 dark:border-orange-700",
+];
+
 export const Card = ({
   id,
   imageSrc,
@@ -30,6 +40,7 @@ export const Card = ({
   disabled,
   type,
 }: Props) => {
+  const optionBorderColor = OPTION_BORDER_COLORS[id % OPTION_BORDER_COLORS.length];
 
   const playAudio = useCallback(() => {
     if (!audioSrc) return;
@@ -49,7 +60,9 @@ export const Card = ({
     <div
       onClick={handleClick}
       className={cn(
-        "h-full border-2 rounded-xl border-b-4 hover:bg-black/5 dark:hover:bg-background/5 p-4 lg:p-6 cursor-pointer active:border-b-2 dark:border-border-700 dark:bg-background-800",
+        "h-full border-2 rounded-xl border-b-4 hover:bg-black/5 dark:hover:bg-background/5 p-4 lg:p-6 cursor-pointer active:border-b-2 dark:bg-background-800",
+        // Bordure colorée par défaut (différente selon l'option), tant que rien n'est sélectionné
+        !selected && optionBorderColor,
         selected && "border-sky-300 bg-sky-100 hover:bg-sky-100 dark:bg-sky-900/30 dark:border-sky-500 dark:hover:bg-sky-900/30",
         selected && status === "correct" &&
           "border-green-300 bg-green-100 hover:bg-green-100 dark:bg-green-900/30 dark:border-green-500 dark:hover:bg-green-900/30",
