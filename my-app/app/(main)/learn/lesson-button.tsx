@@ -62,10 +62,110 @@ const colorMap: Record<string, {
 const GIFS = ["/1.gif", "/2.gif", "/3.gif"];
 const DURATIONS = [2000, 3000, 5000];
 const TRANSITION_LABELS = [
-  { headline: "Prépare-toi", sub: "La leçon commence dans un instant" },
-  { headline: "Concentre-toi", sub: "Quelques secondes et c'est parti" },
-  { headline: "Allez, on y va !", sub: "La leçon se charge pour toi" },
+  {
+    headline: "Prépare-toi",
+    sub: "La leçon commence dans un instant",
+    headlineColors: ["#FFD700", "#FF8C00", "#FF4500", "#FF8C00", "#FFD700", "#FFFFFF", "#FFD700", "#FF8C00", "#FF4500"],
+    subColor: "#FFE599",
+    effect: "wave" as const,
+  },
+  {
+    headline: "Concentre-toi",
+    sub: "Quelques secondes et c'est parti",
+    headlineColors: ["#00FFFF", "#00BFFF", "#1E90FF", "#00BFFF", "#00FFFF", "#FFFFFF", "#00FFFF", "#00BFFF", "#1E90FF", "#FFFFFF", "#00FFFF", "#00BFFF"],
+    subColor: "#B0E8FF",
+    effect: "pulse" as const,
+  },
+  {
+    headline: "Allez, on y va !",
+    sub: "La leçon se charge pour toi",
+    headlineColors: ["#FF69B4", "#FF1493", "#FF69B4", "#FFFFFF", "#7FFF00", "#00FF7F", "#FFFFFF", "#FF69B4", "#FF1493", "#FF69B4", "#FFFFFF", "#7FFF00", "#00FF7F", "#FFFFFF", "#FF69B4", "#FF1493"],
+    subColor: "#CCFFCC",
+    effect: "bounce" as const,
+  },
 ];
+
+// ─── AnimatedText ─────────────────────────────────────────────────────────────
+
+const ANIMATED_TEXT_STYLES = `
+  @keyframes letterWave {
+    0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 1; }
+    25%       { transform: translateY(-10px) rotate(-3deg); opacity: 0.8; }
+    50%       { transform: translateY(-16px) rotate(0deg); opacity: 1; }
+    75%       { transform: translateY(-10px) rotate(3deg); opacity: 0.8; }
+  }
+  @keyframes letterPulse {
+    0%, 100% { transform: scale(1); opacity: 1; text-shadow: 0 0 8px currentColor; }
+    50%       { transform: scale(1.25); opacity: 0.85; text-shadow: 0 0 20px currentColor, 0 0 40px currentColor; }
+  }
+  @keyframes letterBounce {
+    0%, 100% { transform: translateY(0) scaleY(1); }
+    30%       { transform: translateY(-12px) scaleY(1.1); }
+    60%       { transform: translateY(3px) scaleY(0.92); }
+    80%       { transform: translateY(-5px) scaleY(1.04); }
+  }
+  @keyframes headlineSlideIn {
+    0%   { opacity: 0; transform: translateY(28px) scale(0.85); filter: blur(6px); }
+    60%  { opacity: 1; transform: translateY(-4px) scale(1.04); filter: blur(0px); }
+    100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); }
+  }
+  @keyframes subFadeUp {
+    0%   { opacity: 0; transform: translateY(14px); letter-spacing: 0.15em; }
+    100% { opacity: 1; transform: translateY(0); letter-spacing: 0.02em; }
+  }
+  .headline-anim { animation: headlineSlideIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+  .sub-anim      { animation: subFadeUp 0.5s ease-out 0.25s both; }
+`;
+
+type AnimEffect = "wave" | "pulse" | "bounce";
+
+const AnimatedText = ({
+  text,
+  colors,
+  effect,
+  baseDelay = 0,
+}: {
+  text: string;
+  colors: string[];
+  effect: AnimEffect;
+  baseDelay?: number;
+}) => {
+  const animName =
+    effect === "wave" ? "letterWave" :
+    effect === "pulse" ? "letterPulse" :
+    "letterBounce";
+
+  const duration =
+    effect === "wave" ? "1.4s" :
+    effect === "pulse" ? "1.0s" :
+    "0.9s";
+
+  const chars = text.split("");
+
+  return (
+    <span style={{ display: "inline-block" }}>
+      {chars.map((char, i) => {
+        const color = colors[i % colors.length];
+        const delay = baseDelay + i * 0.055;
+        return (
+          <span
+            key={i}
+            style={{
+              display: char === " " ? "inline" : "inline-block",
+              color,
+              animation: char !== " " ? `${animName} ${duration} ease-in-out ${delay}s infinite` : undefined,
+              textShadow: char !== " " ? `0 0 12px ${color}88, 0 2px 8px rgba(0,0,0,0.3)` : undefined,
+              willChange: "transform",
+              fontWeight: 900,
+            }}
+          >
+            {char === " " ? "\u00A0" : char}
+          </span>
+        );
+      })}
+    </span>
+  );
+};
 
 // ─── TransitionScreen ─────────────────────────────────────────────────────────
 
@@ -174,11 +274,39 @@ const TransitionScreen = ({ color, onNavigate, practiceContent }: TransitionScre
               draggable={false}
               style={{ width: 160, height: 160, objectFit: "contain", display: "block" }}
             />
+            <style>{ANIMATED_TEXT_STYLES}</style>
             <div style={{ textAlign: "center" }}>
-              <p style={{ fontSize: 22, fontWeight: 800, color: "#ffffff", margin: 0, letterSpacing: "-0.3px", lineHeight: 1.2 }}>
-                {label.headline}
+              <p
+                className="headline-anim"
+                style={{
+                  fontSize: 26,
+                  fontWeight: 900,
+                  margin: 0,
+                  letterSpacing: "-0.5px",
+                  lineHeight: 1.2,
+                  userSelect: "none",
+                }}
+              >
+                <AnimatedText
+                  text={label.headline}
+                  colors={label.headlineColors}
+                  effect={label.effect}
+                  baseDelay={0.08}
+                />
               </p>
-              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.75)", margin: "8px 0 0", fontWeight: 500, lineHeight: 1.5 }}>
+              <p
+                className="sub-anim"
+                style={{
+                  fontSize: 14,
+                  color: label.subColor,
+                  margin: "10px 0 0",
+                  fontWeight: 600,
+                  lineHeight: 1.5,
+                  textShadow: `0 0 14px ${label.subColor}66`,
+                  letterSpacing: "0.02em",
+                  userSelect: "none",
+                }}
+              >
                 {label.sub}
               </p>
             </div>
