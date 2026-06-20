@@ -109,6 +109,12 @@ export const Quiz = ({
   const [slideState, setSlideState] = useState<"idle" | "exit" | "enter">("idle");
   const slideTimeoutRef             = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // ── Compteurs animés (écran de fin) ────────────────────────────
+  const [animatedPoints, setAnimatedPoints] = useState(0);
+  const [animatedHearts, setAnimatedHearts] = useState(0);
+  const pointsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const heartsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const challenge = challenges[activeIndex];
   const options   = challenge?.challengeOptions ?? [];
 
@@ -121,6 +127,42 @@ export const Quiz = ({
         completeLesson().catch(() => console.error("Failed to complete lesson"));
       });
     }
+  }, [isFinished]);
+
+  // ── Lance le décompte XP + coeurs quand l'écran de fin apparaît ─
+  useEffect(() => {
+    if (!isFinished) return;
+
+    const totalPoints = totalChallenges * 10;
+
+    setAnimatedPoints(0);
+    setAnimatedHearts(0);
+
+    let currentPoints = 0;
+    pointsIntervalRef.current = setInterval(() => {
+      currentPoints += 10;
+      if (currentPoints >= totalPoints) {
+        currentPoints = totalPoints;
+        if (pointsIntervalRef.current) clearInterval(pointsIntervalRef.current);
+      }
+      setAnimatedPoints(currentPoints);
+    }, 90);
+
+    let currentHearts = 0;
+    heartsIntervalRef.current = setInterval(() => {
+      currentHearts += 1;
+      if (currentHearts >= hearts) {
+        currentHearts = hearts;
+        if (heartsIntervalRef.current) clearInterval(heartsIntervalRef.current);
+      }
+      setAnimatedHearts(currentHearts);
+    }, 220);
+
+    return () => {
+      if (pointsIntervalRef.current) clearInterval(pointsIntervalRef.current);
+      if (heartsIntervalRef.current) clearInterval(heartsIntervalRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFinished]);
 
   const resetAnswerState = () => {
@@ -147,6 +189,8 @@ export const Quiz = ({
       if (slideTimeoutRef.current)  clearTimeout(slideTimeoutRef.current);
       if (streakTimeoutRef.current) clearTimeout(streakTimeoutRef.current);
       if (countdownRef.current)     clearTimeout(countdownRef.current);
+      if (pointsIntervalRef.current) clearInterval(pointsIntervalRef.current);
+      if (heartsIntervalRef.current) clearInterval(heartsIntervalRef.current);
     };
   }, []);
 
@@ -343,12 +387,50 @@ export const Quiz = ({
               </span>
             </motion.h1>
           </motion.div>
-          <motion.div className="flex items-center gap-x-4 w-full" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-            <motion.div initial={{ opacity: 0, scale: 0.8, x: -20 }} animate={{ opacity: 1, scale: [0.8, 1.05, 0.95, 1.02, 1], x: 0 }} transition={{ delay: 0.7, duration: 0.7, scale: { type: "spring", stiffness: 150, damping: 12 } }}>
-              <ResultCard variant="points" value={totalChallenges * 10} />
+
+          {/* ── Cartes XP / Coeurs animées comme dans un jeu ── */}
+          <motion.div
+            className="flex items-center gap-x-4 w-full"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.3, x: -40, rotate: -15 }}
+              animate={{
+                opacity: 1,
+                scale: [0.3, 1.25, 0.9, 1.1, 1],
+                x: 0,
+                rotate: [-15, 8, -4, 2, 0],
+                y: [0, -10, 0, -4, 0],
+              }}
+              transition={{
+                delay: 0.7,
+                duration: 0.9,
+                scale: { type: "spring", stiffness: 260, damping: 10 },
+              }}
+              whileHover={{ scale: 1.05, rotate: -2 }}
+            >
+              <ResultCard variant="points" value={animatedPoints} />
             </motion.div>
-            <motion.div initial={{ opacity: 0, scale: 0.8, x: 20 }} animate={{ opacity: 1, scale: [0.8, 1.05, 0.95, 1.02, 1], x: 0 }} transition={{ delay: 0.8, duration: 0.7, scale: { type: "spring", stiffness: 150, damping: 12 } }}>
-              <ResultCard variant="hearts" value={hearts} />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.3, x: 40, rotate: 15 }}
+              animate={{
+                opacity: 1,
+                scale: [0.3, 1.25, 0.9, 1.1, 1],
+                x: 0,
+                rotate: [15, -8, 4, -2, 0],
+                y: [0, -10, 0, -4, 0],
+              }}
+              transition={{
+                delay: 0.85,
+                duration: 0.9,
+                scale: { type: "spring", stiffness: 260, damping: 10 },
+              }}
+              whileHover={{ scale: 1.05, rotate: 2 }}
+            >
+              <ResultCard variant="hearts" value={animatedHearts} />
             </motion.div>
           </motion.div>
         </div>
