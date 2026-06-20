@@ -22,7 +22,7 @@ export const UnitBanner = ({
   const colors: Record<string, string> = {
     blue: "bg-[#1CB0F6]",
     purple: "bg-violet-400",
-    green: "bg-lime-400",
+    green: "bg-[#58CC02]",
     red: "bg-rose-400",
     orange: "bg-amber-400",
     pink: "bg-fuchsia-400",
@@ -36,7 +36,7 @@ const getBorderColor = () => {
   const colors: Record<string, string> = {
     blue: "border-[#1899D6]",
     purple: "border-violet-500",
-    green: "border-lime-500",
+    green: "border-[#58A700]",
     red: "border-rose-500",
     orange: "border-amber-500",
     pink: "border-fuchsia-500",
@@ -50,7 +50,7 @@ const getButtonColor = () => {
   const colors: Record<string, string> = {
     blue: "bg-[#1CB0F6] hover:bg-[#0E9FE3] border-[#1899D6]",
     purple: "bg-violet-500 hover:bg-violet-600 border-violet-600",
-    green: "bg-lime-500 hover:bg-lime-600 border-lime-600",
+    green: "bg-[#58CC02] hover:bg-[#4CAF00] border-[#58A700]",
     red: "bg-rose-500 hover:bg-rose-600 border-rose-600",
     orange: "bg-amber-500 hover:bg-amber-600 border-amber-600",
     pink: "bg-fuchsia-500 hover:bg-fuchsia-600 border-fuchsia-600",
