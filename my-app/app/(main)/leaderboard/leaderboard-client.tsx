@@ -71,6 +71,51 @@ const medalImages = ["/first.svg", "/seconds.svg", "/troisieme.svg"];
 
 type Tab = "alltime" | "weekly";
 
+// ─── Couleurs par rang ────────────────────────────────────────────────────────
+
+const RANK_TIER_COLORS: Record<number, { gradientFrom: string; gradientTo: string; glow: string; overlayTint: string }> = {
+  1: { gradientFrom: "#FFE066", gradientTo: "#FFA500", glow: "#FFD700", overlayTint: "rgba(120,72,0,0.55)" },
+  2: { gradientFrom: "#F1F5F9", gradientTo: "#94A3B8", glow: "#CBD5E1", overlayTint: "rgba(51,65,85,0.55)" },
+  3: { gradientFrom: "#E8A05C", gradientTo: "#92400E", glow: "#CD7F32", overlayTint: "rgba(67,33,10,0.55)" },
+};
+
+const DIVISION_HEX: Record<string, { from: string; to: string; glow: string; overlay: string }> = {
+  "Légendaire": { from: "#FDE68A", to: "#FB923C", glow: "#FBBF24", overlay: "rgba(120,72,0,0.45)" },
+  "Diamant":    { from: "#67E8F9", to: "#60A5FA", glow: "#22D3EE", overlay: "rgba(8,51,68,0.5)" },
+  "Platine":    { from: "#CBD5E1", to: "#64748B", glow: "#94A3B8", overlay: "rgba(15,23,42,0.5)" },
+  "Or":         { from: "#FDE047", to: "#EAB308", glow: "#FACC15", overlay: "rgba(66,32,6,0.5)" },
+};
+
+const getRankTier = (rank: number, divisionName: string) => {
+  if (rank <= 3) return RANK_TIER_COLORS[rank];
+  return DIVISION_HEX[divisionName] ?? DIVISION_HEX["Or"];
+};
+
+// ─── Compteur animé ───────────────────────────────────────────────────────────
+
+const useCountUp = (target: number, duration: number, start: boolean) => {
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    if (!start) return;
+    let raf: number;
+    const startTime = performance.now();
+
+    const tick = (now: number) => {
+      const elapsed = now - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+      setValue(Math.round(eased * target));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration, start]);
+
+  return value;
+};
+
 // ─── Weekly countdown ─────────────────────────────────────────────────────────
 
 const useWeeklyCountdown = () => {
@@ -138,6 +183,8 @@ const RankSpotlight = ({
   const [visible, setVisible] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const division = getDivision(entry.points);
+  const tier = getRankTier(rank, division.name);
+  const countedRank = useCountUp(rank, 900, visible);
 
   useEffect(() => {
     const raf = requestAnimationFrame(() =>
@@ -160,13 +207,26 @@ const RankSpotlight = ({
       style={{
         position: "fixed", inset: 0, zIndex: 99999,
         display: "flex", alignItems: "center", justifyContent: "center",
-        backgroundColor: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)",
+        backgroundColor: tier.overlayTint, backdropFilter: "blur(6px)",
         opacity: leaving ? 0 : visible ? 1 : 0,
-        transition: leaving ? "opacity 0.4s ease" : "opacity 0.35s ease",
+        transition: leaving
+          ? "opacity 0.4s ease"
+          : "opacity 0.35s ease, background-color 0.6s ease",
         pointerEvents: leaving ? "none" : "all",
+        colorScheme: "dark",
       }}
       onClick={() => { setLeaving(true); setTimeout(onDone, 400); }}
     >
+      <style>{`
+        @keyframes rankPop {
+          0%   { transform: scale(0.3) rotate(-8deg); opacity: 0; }
+          45%  { transform: scale(1.25) rotate(4deg); opacity: 1; }
+          70%  { transform: scale(0.92) rotate(-2deg); }
+          100% { transform: scale(1) rotate(0deg); }
+        }
+        .rank-pop { animation: rankPop 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+      `}</style>
+
       <div
         style={{
           display: "flex", flexDirection: "column", alignItems: "center", gap: 20,
@@ -181,14 +241,33 @@ const RankSpotlight = ({
         <div style={{ fontSize: 13, fontWeight: 800, color: "rgba(255,255,255,0.7)", letterSpacing: "0.15em", textTransform: "uppercase" }}>
           Votre classement
         </div>
-        <div style={{ fontSize: 96, fontWeight: 900, color: "#ffffff", lineHeight: 1, letterSpacing: "-4px", textShadow: "0 4px 32px rgba(0,0,0,0.4)", fontVariantNumeric: "tabular-nums" }}>
-          #{rank}
+
+        <div
+          className="rank-pop"
+          style={{
+            fontSize: 96, fontWeight: 900, lineHeight: 1, letterSpacing: "-4px",
+            color: tier.gradientFrom,
+            textShadow: `0 0 30px ${tier.glow}, 0 0 60px ${tier.glow}66, 0 4px 12px rgba(0,0,0,0.4)`,
+            fontVariantNumeric: "tabular-nums",
+          }}
+        >
+          #{countedRank}
         </div>
+
         {isTop3 && (
-          <Image src={medalImages[rank - 1]} alt={`#${rank}`} width={56} height={56} className="drop-shadow-xl" />
+          <Image src={medalImages[rank - 1]} alt={`#${rank}`} width={56} height={56} className="drop-shadow-xl rank-pop" />
         )}
-        <div style={{ display: "flex", alignItems: "center", gap: 14, backgroundColor: "rgba(255,255,255,0.12)", border: "1.5px solid rgba(255,255,255,0.2)", borderRadius: 20, padding: "14px 22px", backdropFilter: "blur(8px)", minWidth: 240 }}>
-          <Avatar className="h-12 w-12 border-2 border-white/30 shadow-md">
+
+        <div
+          style={{
+            display: "flex", alignItems: "center", gap: 14,
+            backgroundColor: "rgba(255,255,255,0.12)",
+            border: `1.5px solid ${tier.glow}55`,
+            borderRadius: 20, padding: "14px 22px",
+            backdropFilter: "blur(8px)", minWidth: 240,
+          }}
+        >
+          <Avatar className="h-12 w-12 border-2 shadow-md" style={{ borderColor: `${tier.glow}80` }}>
             <AvatarImage className="object-cover" src={displayImage} alt={entry.userName} />
           </Avatar>
           <div>
@@ -201,6 +280,7 @@ const RankSpotlight = ({
             </div>
           </div>
         </div>
+
         <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, fontWeight: 500, marginTop: 4 }}>
           Appuie pour continuer
         </p>
