@@ -71,22 +71,31 @@ const medalImages = ["/first.svg", "/seconds.svg", "/troisieme.svg"];
 
 type Tab = "alltime" | "weekly";
 
-// ─── Couleurs par rang ────────────────────────────────────────────────────────
+// ─── Type unifié pour les couleurs de rang ────────────────────────────────────
 
-const RANK_TIER_COLORS: Record<number, { gradientFrom: string; gradientTo: string; glow: string; overlayTint: string }> = {
-  1: { gradientFrom: "#FFE066", gradientTo: "#FFA500", glow: "#FFD700", overlayTint: "rgba(120,72,0,0.55)" },
-  2: { gradientFrom: "#F1F5F9", gradientTo: "#94A3B8", glow: "#CBD5E1", overlayTint: "rgba(51,65,85,0.55)" },
-  3: { gradientFrom: "#E8A05C", gradientTo: "#92400E", glow: "#CD7F32", overlayTint: "rgba(67,33,10,0.55)" },
+type RankColors = {
+  from:    string;
+  to:      string;
+  glow:    string;
+  overlay: string;
 };
 
-const DIVISION_HEX: Record<string, { from: string; to: string; glow: string; overlay: string }> = {
+// ─── Couleurs par rang ────────────────────────────────────────────────────────
+
+const RANK_TIER_COLORS: Record<number, RankColors> = {
+  1: { from: "#FFE066", to: "#FFA500", glow: "#FFD700", overlay: "rgba(120,72,0,0.55)" },
+  2: { from: "#F1F5F9", to: "#94A3B8", glow: "#CBD5E1", overlay: "rgba(51,65,85,0.55)" },
+  3: { from: "#E8A05C", to: "#92400E", glow: "#CD7F32", overlay: "rgba(67,33,10,0.55)" },
+};
+
+const DIVISION_HEX: Record<string, RankColors> = {
   "Légendaire": { from: "#FDE68A", to: "#FB923C", glow: "#FBBF24", overlay: "rgba(120,72,0,0.45)" },
   "Diamant":    { from: "#67E8F9", to: "#60A5FA", glow: "#22D3EE", overlay: "rgba(8,51,68,0.5)" },
   "Platine":    { from: "#CBD5E1", to: "#64748B", glow: "#94A3B8", overlay: "rgba(15,23,42,0.5)" },
   "Or":         { from: "#FDE047", to: "#EAB308", glow: "#FACC15", overlay: "rgba(66,32,6,0.5)" },
 };
 
-const getRankTier = (rank: number, divisionName: string) => {
+const getRankTier = (rank: number, divisionName: string): RankColors => {
   if (rank <= 3) return RANK_TIER_COLORS[rank];
   return DIVISION_HEX[divisionName] ?? DIVISION_HEX["Or"];
 };
@@ -207,7 +216,8 @@ const RankSpotlight = ({
       style={{
         position: "fixed", inset: 0, zIndex: 99999,
         display: "flex", alignItems: "center", justifyContent: "center",
-        backgroundColor: tier.overlayTint, backdropFilter: "blur(6px)",
+        backgroundColor: tier.overlay,
+        backdropFilter: "blur(6px)",
         opacity: leaving ? 0 : visible ? 1 : 0,
         transition: leaving
           ? "opacity 0.4s ease"
@@ -246,7 +256,7 @@ const RankSpotlight = ({
           className="rank-pop"
           style={{
             fontSize: 96, fontWeight: 900, lineHeight: 1, letterSpacing: "-4px",
-            color: tier.gradientFrom,
+            color: tier.from,
             textShadow: `0 0 30px ${tier.glow}, 0 0 60px ${tier.glow}66, 0 4px 12px rgba(0,0,0,0.4)`,
             fontVariantNumeric: "tabular-nums",
           }}
