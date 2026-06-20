@@ -87,3 +87,16 @@
   60%  { opacity: 1; transform: translateY(-2px) scale(1.01); }
   100% { opacity: 1; transform: translateY(0)   scale(1);    }
 }
+
+/* ✅ AJOUT — Serpent animé sur la carte active */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes spin-border {
+  to {
+    --angle: 360deg;
+  }
+}

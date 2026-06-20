@@ -33,16 +33,24 @@ export const List = ({ courses, activeCourseId }: Props) => {
 
   return (
     <div className="pt-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      {courses.map((course) => (
-        <Card
+      {courses.map((course, index) => (
+        <div
           key={course.id}
-          id={course.id}
-          title={course.title}
-          imageSrc={course.imageSrc || "/placeholder.svg"}
-          onClick={onClick}
-          disabled={pending}
-          active={course.id === activeCourseId}
-        />
+          className="opacity-0 animate-fade-in-up"
+          style={{
+            animationDelay: `${index * 80}ms`,
+            animationFillMode: "forwards",
+          }}
+        >
+          <Card
+            id={course.id}
+            title={course.title}
+            imageSrc={course.imageSrc || "/placeholder.svg"}
+            onClick={onClick}
+            disabled={pending}
+            active={course.id === activeCourseId}
+          />
+        </div>
       ))}
     </div>
   );

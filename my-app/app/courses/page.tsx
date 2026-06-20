@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { currentUser } from "@clerk/nextjs/server";
 import { getCourses, getUserProgress } from "@/db/queries";
 import { List } from "./list";
 import { Sidebar } from "@/components/sidebar";
@@ -7,11 +8,15 @@ import { MobileNavbar } from "@/components/mobile-navbar";
 const CoursesPage = async () => {
   const coursesData = getCourses();
   const userProgressData = getUserProgress();
+  const userDataPromise = currentUser();
 
-  const [courses, userProgress] = await Promise.all([
+  const [courses, userProgress, user] = await Promise.all([
     coursesData,
     userProgressData,
+    userDataPromise,
   ]);
+
+  const firstName = user?.firstName?.toUpperCase() || "TOI";
 
   return (
     <div className="min-h-full bg-gray flex">
@@ -31,9 +36,23 @@ const CoursesPage = async () => {
               height={88}
               className="mx-auto mb-4 drop-shadow-md"
             />
-            <h1 style={{ fontFamily: "'Outfit', sans-serif" }} className="text-3xl font-extrabold text-white-500 tracking-tight">
-              Que veux-tu apprendre aujourd'hui ?
+
+            <h1
+              style={{ fontFamily: "'Outfit', sans-serif" }}
+              className="opacity-0 animate-slide-down text-4xl font-extrabold tracking-tight text-gray-800 dark:text-white"
+            >
+              Salut{" "}
+              <span className="text-sky-400 text-5xl ml-2">
+                {firstName}
+              </span>
             </h1>
+
+            <p
+              style={{ fontFamily: "'Outfit', sans-serif" }}
+              className="opacity-0 animate-slide-up text-xl text-gray-600 dark:text-white/70 mt-2"
+            >
+              Que veux-tu apprendre aujourd'hui ?
+            </p>
           </div>
 
           <List
@@ -43,7 +62,6 @@ const CoursesPage = async () => {
         </div>
       </div>
 
-      {/* Mobile Bottom Navbar */}
       <MobileNavbar />
     </div>
   );
