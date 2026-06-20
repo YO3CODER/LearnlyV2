@@ -1,7 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
-import { useTransition, useState, useCallback } from "react";
+import { useTransition, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X, GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -28,6 +28,13 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
   const [draggingId, setDraggingId] = useState<number | null>(null);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
 
+  // ── Refs pour le touch drag ───────────────────────────────────
+  const touchDraggingId = useRef<number | null>(null);
+  const touchClone = useRef<HTMLElement | null>(null);
+  const touchOffsetX = useRef(0);
+  const touchOffsetY = useRef(0);
+  const gridRef = useRef<HTMLDivElement>(null);
+
   // ── Recherche ─────────────────────────────────────────────────
   const isSearching = search.trim().length > 0;
   const filtered = isSearching
@@ -48,7 +55,21 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
     [pending, activeCourseId, router]
   );
 
-  // ── Drag & Drop ───────────────────────────────────────────────
+  // ── Réordonnancement partagé ──────────────────────────────────
+  const reorder = useCallback((fromId: number, toId: number) => {
+    if (fromId === toId) return;
+    setOrdered((prev) => {
+      const next = [...prev];
+      const fromIdx = next.findIndex((c) => c.id === fromId);
+      const toIdx = next.findIndex((c) => c.id === toId);
+      if (fromIdx === -1 || toIdx === -1) return prev;
+      const [moved] = next.splice(fromIdx, 1);
+      next.splice(toIdx, 0, moved);
+      return next;
+    });
+  }, []);
+
+  // ── Drag & Drop Desktop (mouse) ───────────────────────────────
   const handleDragStart = useCallback((id: number) => {
     setDraggingId(id);
   }, []);
@@ -63,26 +84,112 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
 
   const handleDrop = useCallback(
     (targetId: number) => {
-      if (draggingId === null || draggingId === targetId) return;
-      setOrdered((prev) => {
-        const next = [...prev];
-        const fromIdx = next.findIndex((c) => c.id === draggingId);
-        const toIdx = next.findIndex((c) => c.id === targetId);
-        if (fromIdx === -1 || toIdx === -1) return prev;
-        const [moved] = next.splice(fromIdx, 1);
-        next.splice(toIdx, 0, moved);
-        return next;
-      });
+      if (draggingId === null) return;
+      reorder(draggingId, targetId);
       setDraggingId(null);
       setDragOverId(null);
     },
-    [draggingId]
+    [draggingId, reorder]
   );
 
   const handleDragEnd = useCallback(() => {
     setDraggingId(null);
     setDragOverId(null);
   }, []);
+
+  // ── Drag & Drop Mobile (touch) ────────────────────────────────
+  const getCardIdAtPoint = useCallback((x: number, y: number): number | null => {
+    // On masque temporairement le clone pour pouvoir hitter les vraies cartes
+    if (touchClone.current) touchClone.current.style.display = "none";
+    const el = document.elementFromPoint(x, y);
+    if (touchClone.current) touchClone.current.style.display = "";
+
+    if (!el) return null;
+    const card = el.closest("[data-card-id]") as HTMLElement | null;
+    return card ? parseInt(card.dataset.cardId!, 10) : null;
+  }, []);
+
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent, id: number) => {
+      if (pending || isSearching) return;
+
+      const touch = e.touches[0];
+      const target = e.currentTarget as HTMLElement;
+      const rect = target.getBoundingClientRect();
+
+      touchDraggingId.current = id;
+      touchOffsetX.current = touch.clientX - rect.left;
+      touchOffsetY.current = touch.clientY - rect.top;
+
+      // Créer un clone fantôme
+      const clone = target.cloneNode(true) as HTMLElement;
+      clone.style.cssText = `
+        position: fixed;
+        top: ${rect.top}px;
+        left: ${rect.left}px;
+        width: ${rect.width}px;
+        height: ${rect.height}px;
+        opacity: 0.85;
+        pointer-events: none;
+        z-index: 9999;
+        transform: scale(1.05) rotate(2deg);
+        transition: transform 0.1s;
+        border-radius: 12px;
+        box-shadow: 0 16px 40px rgba(0,0,0,0.2);
+      `;
+      document.body.appendChild(clone);
+      touchClone.current = clone;
+
+      setDraggingId(id);
+    },
+    [pending, isSearching]
+  );
+
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (touchDraggingId.current === null || !touchClone.current) return;
+      e.preventDefault(); // bloque le scroll pendant le drag
+
+      const touch = e.touches[0];
+
+      // Déplacer le clone
+      touchClone.current.style.left = `${touch.clientX - touchOffsetX.current}px`;
+      touchClone.current.style.top = `${touch.clientY - touchOffsetY.current}px`;
+
+      // Détecter la carte sous le doigt
+      const overId = getCardIdAtPoint(touch.clientX, touch.clientY);
+      if (overId !== null && overId !== touchDraggingId.current) {
+        setDragOverId(overId);
+      } else if (overId === null || overId === touchDraggingId.current) {
+        setDragOverId(null);
+      }
+    },
+    [getCardIdAtPoint]
+  );
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      if (touchDraggingId.current === null) return;
+
+      const touch = e.changedTouches[0];
+      const overId = getCardIdAtPoint(touch.clientX, touch.clientY);
+
+      if (overId !== null && overId !== touchDraggingId.current) {
+        reorder(touchDraggingId.current, overId);
+      }
+
+      // Nettoyer le clone
+      if (touchClone.current) {
+        touchClone.current.remove();
+        touchClone.current = null;
+      }
+
+      touchDraggingId.current = null;
+      setDraggingId(null);
+      setDragOverId(null);
+    },
+    [getCardIdAtPoint, reorder]
+  );
 
   // ── Render ────────────────────────────────────────────────────
   return (
@@ -119,14 +226,17 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
       {!isSearching && (
         <p className="text-xs text-muted-foreground flex items-center gap-1.5 select-none">
           <GripVertical className="h-3.5 w-3.5 shrink-0" />
-          Glisse les cartes pour réorganiser
+          Maintiens et glisse pour réorganiser
         </p>
       )}
 
       {/* Grille */}
       {filtered.length > 0 ? (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div
+            ref={gridRef}
+            className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+          >
             {filtered.map((course, index) => {
               const isDragging = draggingId === course.id;
               const isDragOver = !isSearching && dragOverId === course.id;
@@ -134,24 +244,28 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
               return (
                 <div
                   key={course.id}
+                  data-card-id={course.id}
                   draggable={!pending && !isSearching}
                   onDragStart={() => handleDragStart(course.id)}
                   onDragOver={(e) => handleDragOver(e, course.id)}
                   onDrop={() => handleDrop(course.id)}
                   onDragEnd={handleDragEnd}
+                  onTouchStart={(e) => handleTouchStart(e, course.id)}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
                   className={cn(
-                    "opacity-0 animate-fade-in-up rounded-xl transition-all duration-200",
-                    isDragging && "opacity-40 scale-95 rotate-1",
-                    isDragOver &&
-                      "scale-105 -translate-y-1 ring-2 ring-sky-400 ring-offset-2"
+                    "relative opacity-0 animate-fade-in-up rounded-xl transition-all duration-200",
+                    isDragging && "opacity-30 scale-95",
+                    isDragOver && "scale-105 -translate-y-1 ring-2 ring-sky-400 ring-offset-2"
                   )}
                   style={{
                     animationDelay: `${index * 80}ms`,
                     animationFillMode: "forwards",
                     cursor: isSearching ? "default" : "grab",
+                    touchAction: isSearching ? "auto" : "none",
                   }}
                 >
-                  {/* Indicateur de survol drag */}
+                  {/* Indicateur drop */}
                   {isDragOver && (
                     <div className="absolute inset-0 z-10 rounded-xl border-2 border-dashed border-sky-400 bg-sky-400/10 pointer-events-none" />
                   )}
@@ -169,7 +283,7 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
             })}
           </div>
 
-          {/* Compteur résultats recherche */}
+          {/* Compteur résultats */}
           {isSearching && (
             <p className="text-xs text-muted-foreground text-right">
               {filtered.length} cours trouvé{filtered.length > 1 ? "s" : ""}
@@ -177,7 +291,6 @@ export const List = ({ courses: initialCourses, activeCourseId }: Props) => {
           )}
         </>
       ) : (
-        /* État vide */
         <div className="flex flex-col items-center justify-center py-16 gap-3 text-muted-foreground">
           <Search className="h-10 w-10 opacity-25" />
           <p className="text-sm font-medium text-gray-500 dark:text-muted-foreground">
