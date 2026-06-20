@@ -389,8 +389,8 @@ export const LessonButton = ({
   }) => (
     <div
       style={{
-        width: 60,
-        height: 60,
+        width: 70,
+        height: 70,
         borderRadius: "50%",
         backgroundColor: isGoldenBtn ? "#f59e0b" : isLocked ? "#d1d5db" : bgHex,
         borderBottom: pressing
@@ -513,8 +513,8 @@ export const LessonButton = ({
                 <img
                   src="/image1.svg"
                   alt="Coffre ouvert"
-                  width={60}
-                  height={60}
+                  width={70}
+                  height={70}
                   draggable={false}
                   style={{
                     display: "block",
@@ -528,8 +528,8 @@ export const LessonButton = ({
                 <img
                   src="/image2.svg"
                   alt="Coffre fermé"
-                  width={60}
-                  height={60}
+                  width={70}
+                  height={70}
                   draggable={false}
                   style={{
                     display: "block",
@@ -549,7 +549,7 @@ export const LessonButton = ({
                 "absolute rounded-2xl px-5 py-3 shadow-xl border-b-4",
                 colors.popup,
                 colors.popupBorder,
-                "top-[64px] left-1/2 -translate-x-1/2",
+                "top-[74px] left-1/2 -translate-x-1/2",
                 "transition-all duration-200 ease-out",
               )}
               style={{
@@ -607,10 +607,6 @@ export const LessonButton = ({
         <style>{infiniteBounceAnimation}</style>
 
         {/* ── Mascotte dans le creux du zigzag ── */}
-        {/* 
-          CORRECTION : La mascotte est en position ABSOLUE par rapport au parent (le div avec display:flex)
-          Elle ne subit PAS le transform: translateX du bouton
-        */}
         {mascotGif && Math.abs(rightPosition) > 5 && (
           <div
             className="absolute mascot-float pointer-events-none"
@@ -621,8 +617,8 @@ export const LessonButton = ({
               height: 75,
               zIndex: 10,
               transform: `translate(${
-                rightPosition > 0 
-                  ? `calc(-50% - 80px + ${rightPosition}px)` 
+                rightPosition > 0
+                  ? `calc(-50% - 80px + ${rightPosition}px)`
                   : `calc(-50% + 80px + ${rightPosition}px)`
               }, -50%)`,
               transition: "transform 0.2s ease-out",
@@ -650,8 +646,8 @@ export const LessonButton = ({
             marginTop: isFirst && !isCompleted ? 45 : 18,
             overflow: "visible",
             zIndex: showPopup ? 55 : 20,
-            width: current ? 88 : 60,
-            height: current ? 88 : 60,
+            width: current ? 100 : 70,
+            height: current ? 100 : 70,
           }}
         >
           {/* ── Popup de la leçon ── */}
@@ -662,7 +658,7 @@ export const LessonButton = ({
                 "absolute w-[240px] rounded-2xl p-4 shadow-xl border-b-4",
                 colors.popup,
                 colors.popupBorder,
-                "top-[96px] left-1/2 -translate-x-1/2",
+                "top-[108px] left-1/2 -translate-x-1/2",
                 "transition-all duration-200 ease-out"
               )}
               style={{
@@ -723,7 +719,7 @@ export const LessonButton = ({
           {/* ── Bouton leçon courante (avec progression circulaire) ── */}
           {current ? (
             <div
-              className="h-[104px] w-[104px] relative flex items-center justify-center"
+              className="h-[116px] w-[116px] relative flex items-center justify-center"
               onClick={() => {
                 handleClick();
                 handleButtonPress();
@@ -795,7 +791,7 @@ export const LessonButton = ({
                 >
                   <Icon
                     className={cn(
-                      "h-8 w-8 relative z-10",
+                      "h-9 w-9 relative z-10",
                       locked
                         ? "fill-white text-white stroke-white opacity-60"
                         : "fill-white text-white drop-shadow-sm",
@@ -808,7 +804,7 @@ export const LessonButton = ({
           ) : (
             // ── Bouton leçon normale (complétée ou à venir) ──
             <div
-              className="relative w-[72px] h-[72px] flex items-center justify-center"
+              className="relative w-[84px] h-[84px] flex items-center justify-center"
               onClick={() => {
                 handleClick();
                 handleButtonPress();
@@ -837,7 +833,7 @@ export const LessonButton = ({
               >
                 <Icon
                   className={cn(
-                    "h-8 w-8 relative z-10",
+                    "h-9 w-9 relative z-10",
                     locked
                       ? "fill-white text-white stroke-white opacity-60"
                       : "fill-white text-white drop-shadow-sm",
