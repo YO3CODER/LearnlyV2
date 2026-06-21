@@ -72,9 +72,9 @@ export const Quiz = ({
   const [streakAudio, , streakControls]         = useAudio({ src: "/affile.mp3",    autoPlay: false });
   const [pending, startTransition] = useTransition();
 
-  const [lessonId]      = useState(initialLessonId);
-  const [hearts, setHearts]       = useState(initialHearts);
-  const [percentage, setPercentage] = useState(() =>
+  const [lessonId]                              = useState(initialLessonId);
+  const [hearts, setHearts]                     = useState(initialHearts);
+  const [percentage, setPercentage]             = useState(() =>
     initialPercentage === 100 ? 0 : initialPercentage,
   );
 
@@ -95,10 +95,10 @@ export const Quiz = ({
   const [translateValue, setTranslateValue]                   = useState("");
   const [matchPairs, setMatchPairs]                           = useState<[number, number][]>([]);
   const [listenValue, setListenValue]                         = useState("");
-  const [status, setStatus] = useState<"correct" | "wrong" | "none">("none");
+  const [status, setStatus]                                   = useState<"correct" | "wrong" | "none">("none");
 
-  const [countdown, setCountdown]   = useState<number | null>(null);
-  const countdownRef                = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const countdownRef              = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [streak, setStreak]         = useState(0);
   const [showStreak, setShowStreak] = useState(false);
@@ -111,25 +111,36 @@ export const Quiz = ({
   const [slideState, setSlideState] = useState<"idle" | "exit" | "enter">("idle");
   const slideTimeoutRef             = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // ── Compteurs animés ─────────────────────────────────────────────────────────
   const [animatedPoints, setAnimatedPoints] = useState(0);
   const [animatedHearts, setAnimatedHearts] = useState(0);
+  const [animatedTime,   setAnimatedTime]   = useState(0);
   const pointsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const heartsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timeIntervalRef   = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // ── Chronomètre ──────────────────────────────────────────────────────────────
+  const startTimeRef    = useRef<number>(Date.now());
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   const challenge = challenges[activeIndex];
   const options   = challenge?.challengeOptions ?? [];
 
   const isFinished = !challenges[activeIndex] && failedChallenges.length === 0;
 
+  // Déclenche la fin de leçon + calcule le temps écoulé
   useEffect(() => {
     if (isFinished) {
       finishControls.play();
+      const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
+      setElapsedSeconds(elapsed);
       startTransition(() => {
         completeLesson().catch(() => console.error("Failed to complete lesson"));
       });
     }
   }, [isFinished]);
 
+  // Lance les 3 animations de compteurs quand la leçon est terminée
   useEffect(() => {
     if (!isFinished) return;
 
@@ -137,7 +148,9 @@ export const Quiz = ({
 
     setAnimatedPoints(0);
     setAnimatedHearts(0);
+    setAnimatedTime(0);
 
+    // XP : +10 toutes les 90ms
     let currentPoints = 0;
     pointsIntervalRef.current = setInterval(() => {
       currentPoints += 10;
@@ -148,6 +161,7 @@ export const Quiz = ({
       setAnimatedPoints(currentPoints);
     }, 90);
 
+    // Hearts : +1 toutes les 220ms
     let currentHearts = 0;
     heartsIntervalRef.current = setInterval(() => {
       currentHearts += 1;
@@ -158,9 +172,28 @@ export const Quiz = ({
       setAnimatedHearts(currentHearts);
     }, 220);
 
+    // Temps : remonte jusqu'à elapsedSeconds en ~2s
+    // On démarre après 600ms pour laisser la carte apparaître (delay 1.3s dans l'animation)
+    const timer = setTimeout(() => {
+      const step        = Math.max(1, Math.floor(elapsedSeconds / 40));
+      const tickMs      = elapsedSeconds > 0
+        ? Math.max(25, Math.floor(2000 / Math.ceil(elapsedSeconds / step)))
+        : 50;
+      let currentTime   = 0;
+      timeIntervalRef.current = setInterval(() => {
+        currentTime = Math.min(currentTime + step, elapsedSeconds);
+        setAnimatedTime(currentTime);
+        if (currentTime >= elapsedSeconds && timeIntervalRef.current) {
+          clearInterval(timeIntervalRef.current);
+        }
+      }, tickMs);
+    }, 600);
+
     return () => {
+      clearTimeout(timer);
       if (pointsIntervalRef.current) clearInterval(pointsIntervalRef.current);
       if (heartsIntervalRef.current) clearInterval(heartsIntervalRef.current);
+      if (timeIntervalRef.current)   clearInterval(timeIntervalRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFinished]);
@@ -186,11 +219,12 @@ export const Quiz = ({
 
   useEffect(() => {
     return () => {
-      if (slideTimeoutRef.current)  clearTimeout(slideTimeoutRef.current);
-      if (streakTimeoutRef.current) clearTimeout(streakTimeoutRef.current);
-      if (countdownRef.current)     clearTimeout(countdownRef.current);
+      if (slideTimeoutRef.current)   clearTimeout(slideTimeoutRef.current);
+      if (streakTimeoutRef.current)  clearTimeout(streakTimeoutRef.current);
+      if (countdownRef.current)      clearTimeout(countdownRef.current);
       if (pointsIntervalRef.current) clearInterval(pointsIntervalRef.current);
       if (heartsIntervalRef.current) clearInterval(heartsIntervalRef.current);
+      if (timeIntervalRef.current)   clearInterval(timeIntervalRef.current);
     };
   }, []);
 
@@ -218,7 +252,10 @@ export const Quiz = ({
       setCountdown(null);
       return;
     }
-    countdownRef.current = setTimeout(() => setCountdown((prev) => (prev !== null ? prev - 1 : null)), 1000);
+    countdownRef.current = setTimeout(
+      () => setCountdown((prev) => (prev !== null ? prev - 1 : null)),
+      1000,
+    );
     return () => { if (countdownRef.current) clearTimeout(countdownRef.current); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countdown]);
@@ -273,27 +310,40 @@ export const Quiz = ({
     str.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
   const isWordBankCorrect = () => {
-    const correctIds = [...options].filter((o) => o.correct).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)).map((o) => o.id);
-    return wordBankSelectedIds.length === correctIds.length && wordBankSelectedIds.every((id, i) => id === correctIds[i]);
+    const correctIds = [...options]
+      .filter((o) => o.correct)
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      .map((o) => o.id);
+    return (
+      wordBankSelectedIds.length === correctIds.length &&
+      wordBankSelectedIds.every((id, i) => id === correctIds[i])
+    );
   };
+
   const isFillBlankCorrect = () => {
     const blankCount = (challenge.question.match(/___/g) ?? []).length;
-    if (fillBlankSelectedBlanks.length !== blankCount || fillBlankSelectedBlanks.some((b) => b === null)) return false;
+    if (
+      fillBlankSelectedBlanks.length !== blankCount ||
+      fillBlankSelectedBlanks.some((b) => b === null)
+    ) return false;
     return fillBlankSelectedBlanks.every((selectedId, blankIndex) => {
       const option = options.find((o) => o.id === selectedId);
       return option?.correct && option?.blank === blankIndex;
     });
   };
+
   const isTranslateCorrect = () => {
     const correctOption = options.find((o) => o.correct);
     if (!correctOption) return false;
     return correctOption.text.split("|").map(normalize).includes(normalize(translateValue));
   };
+
   const isListenCorrect = () => {
     const correctOption = options.find((o) => o.correct);
     if (!correctOption) return false;
     return correctOption.text.split("|").map(normalize).includes(normalize(listenValue));
   };
+
   const isMatchCorrectByOrder = () => {
     const leftItems = options.filter((o) => !o.correct);
     if (matchPairs.length !== leftItems.length) return false;
@@ -353,12 +403,21 @@ export const Quiz = ({
     return null;
   }
 
+  // ── Écran de fin ─────────────────────────────────────────────────────────────
   if (!challenge) {
     return (
       <>
         {finishAudio}{correctAudio}{incorrectAudio}
-        <Confetti width={width} height={height} recycle={false} numberOfPieces={500} tweenDuration={10000} />
+        <Confetti
+          width={width}
+          height={height}
+          recycle={false}
+          numberOfPieces={500}
+          tweenDuration={10000}
+        />
         <div className="flex flex-col gap-y-6 lg:gap-y-10 max-w-lg mx-auto text-center items-center justify-center h-full px-6">
+
+          {/* Illustration */}
           <motion.div
             className="relative"
             initial={{ opacity: 0, scale: 0.5 }}
@@ -369,8 +428,20 @@ export const Quiz = ({
             <Image src="/finish.svg" alt="Finish" className="hidden lg:block relative drop-shadow-lg" height={110} width={110} />
             <Image src="/finish.svg" alt="Finish" className="block lg:hidden relative drop-shadow-lg" height={60} width={60} />
           </motion.div>
-          <motion.div className="space-y-2" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <motion.p className="text-xs font-semibold tracking-widest uppercase text-blue-400" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+
+          {/* Titre */}
+          <motion.div
+            className="space-y-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <motion.p
+              className="text-xs font-semibold tracking-widest uppercase text-blue-400"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
               Leçon terminée
             </motion.p>
             <motion.h1
@@ -378,7 +449,11 @@ export const Quiz = ({
               style={{ fontFamily: "'Fredoka', sans-serif" }}
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: [0, 1.15, 0.95, 1.08, 1] }}
-              transition={{ delay: 0.4, duration: 0.8, scale: { type: "spring", stiffness: 150, damping: 12 } }}
+              transition={{
+                delay: 0.4,
+                duration: 0.8,
+                scale: { type: "spring", stiffness: 150, damping: 12 },
+              }}
             >
               Bravo !<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-500">
@@ -387,14 +462,13 @@ export const Quiz = ({
             </motion.h1>
           </motion.div>
 
-          <motion.div
-            className="flex items-center gap-x-4 w-full"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-          >
+          {/* ── 3 cartes en cascade ── */}
+          <div className="flex items-center gap-x-3 w-full">
+
+            {/* Carte 1 : XP — apparaît en premier */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.3, x: -40, rotate: -15 }}
+              className="flex-1"
+              initial={{ opacity: 0, scale: 0.3, x: -50, rotate: -15 }}
               animate={{
                 opacity: 1,
                 scale: [0.3, 1.25, 0.9, 1.1, 1],
@@ -403,7 +477,7 @@ export const Quiz = ({
                 y: [0, -10, 0, -4, 0],
               }}
               transition={{
-                delay: 0.7,
+                delay: 0.65,
                 duration: 0.9,
                 scale: { type: "spring", stiffness: 260, damping: 10 },
               }}
@@ -412,8 +486,29 @@ export const Quiz = ({
               <ResultCard variant="points" value={animatedPoints} />
             </motion.div>
 
+            {/* Carte 2 : Hearts — apparaît en deuxième */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.3, x: 40, rotate: 15 }}
+              className="flex-1"
+              initial={{ opacity: 0, scale: 0.3, y: 50 }}
+              animate={{
+                opacity: 1,
+                scale: [0.3, 1.25, 0.9, 1.1, 1],
+                y: 0,
+              }}
+              transition={{
+                delay: 1.0,
+                duration: 0.9,
+                scale: { type: "spring", stiffness: 260, damping: 10 },
+              }}
+              whileHover={{ scale: 1.05 }}
+            >
+              <ResultCard variant="hearts" value={animatedHearts} />
+            </motion.div>
+
+            {/* Carte 3 : Temps — apparaît en dernier */}
+            <motion.div
+              className="flex-1"
+              initial={{ opacity: 0, scale: 0.3, x: 50, rotate: 15 }}
               animate={{
                 opacity: 1,
                 scale: [0.3, 1.25, 0.9, 1.1, 1],
@@ -422,21 +517,24 @@ export const Quiz = ({
                 y: [0, -10, 0, -4, 0],
               }}
               transition={{
-                delay: 0.85,
+                delay: 1.35,
                 duration: 0.9,
                 scale: { type: "spring", stiffness: 260, damping: 10 },
               }}
               whileHover={{ scale: 1.05, rotate: 2 }}
             >
-              <ResultCard variant="hearts" value={animatedHearts} />
+              <ResultCard variant="time" value={animatedTime} />
             </motion.div>
-          </motion.div>
+
+          </div>
         </div>
+
         <Footer lessonId={lessonId} status="completed" onCheck={() => router.push("/learn")} />
       </>
     );
   }
 
+  // ── Titre de la question ──────────────────────────────────────────────────────
   const title =
     challenge.type === "ASSIST"     ? "Sélectionne la bonne réponse" :
     challenge.type === "FILL_BLANK" ? "Complète les espaces vides"   :
@@ -460,10 +558,9 @@ export const Quiz = ({
       !selectedOption
     );
 
-  // ✅ CORRECTION : pour LISTEN, l'audio est dans challenge.question
   const listenAudioSrc = challenge.type === "LISTEN"
-  ? parseListenQuestion(challenge.question).url
-  : (options.find((o) => o.audioSrc)?.audioSrc ?? "");
+    ? parseListenQuestion(challenge.question).url
+    : (options.find((o) => o.audioSrc)?.audioSrc ?? "");
 
   const footerLabel = countdown !== null ? `Prochain dans ${countdown}s…` : undefined;
 
@@ -488,6 +585,7 @@ export const Quiz = ({
         total={totalChallenges}
       />
 
+      {/* Overlay streak */}
       {showStreak && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-white/95 backdrop-blur-sm"
@@ -501,8 +599,19 @@ export const Quiz = ({
             }
           `}</style>
           <div className="flex flex-col items-center gap-6">
-            <motion.div initial={{ scale: 0, rotate: -20 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 200, damping: 12 }}>
-              <Image src={streakGif} alt="Streak" width={200} height={200} className="drop-shadow-lg" unoptimized />
+            <motion.div
+              initial={{ scale: 0, rotate: -20 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 12 }}
+            >
+              <Image
+                src={streakGif}
+                alt="Streak"
+                width={200}
+                height={200}
+                className="drop-shadow-lg"
+                unoptimized
+              />
             </motion.div>
             <motion.p
               className="text-3xl lg:text-4xl font-extrabold text-center bg-clip-text text-transparent"
@@ -515,7 +624,11 @@ export const Quiz = ({
               }}
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: [0, 1.15, 0.95, 1.08, 1] }}
-              transition={{ duration: 0.8, delay: 0.3, scale: { type: "spring", stiffness: 150, damping: 12 } }}
+              transition={{
+                duration: 0.8,
+                delay: 0.3,
+                scale: { type: "spring", stiffness: 150, damping: 12 },
+              }}
             >
               {streak} {streakText}
             </motion.p>
@@ -543,9 +656,7 @@ export const Quiz = ({
                 </h1>
 
                 <div className="flex flex-col gap-y-4">
-                  {/* ✅ CORRECTION : LISTEN retiré — pas de QuestionBubble pour LISTEN */}
-                  {(challenge.type === "ASSIST" ||
-                    challenge.type === "TRANSLATE") && (
+                  {(challenge.type === "ASSIST" || challenge.type === "TRANSLATE") && (
                     <QuestionBubble question={challenge.question} />
                   )}
                   <Challenge
@@ -577,7 +688,12 @@ export const Quiz = ({
         </div>
       </div>
 
-      <Footer disabled={isFooterDisabled} status={status} onCheck={onContinue} label={footerLabel} />
+      <Footer
+        disabled={isFooterDisabled}
+        status={status}
+        onCheck={onContinue}
+        label={footerLabel}
+      />
     </>
   );
 };
