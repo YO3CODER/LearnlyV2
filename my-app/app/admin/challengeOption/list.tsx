@@ -10,25 +10,47 @@ type FieldProps = {
 
 const AudioPlayer = (_props: FieldProps) => {
   const record = useRecordContext();
+  const [show, setShow] = React.useState(false);
+
   if (!record?.audioSrc) return (
     <span style={{ color: "#9CA3AF", fontSize: 13 }}>—</span>
   );
-  return (
-    <audio controls style={{ height: 35, width: 220 }}>
+
+  // Ne charge l'audio qu'au clic
+  return show ? (
+    <audio controls style={{ height: 35, width: 180 }}>
       <source src={record.audioSrc} />
     </audio>
+  ) : (
+    <button
+      onClick={() => setShow(true)}
+      style={{
+        padding: "4px 10px",
+        fontSize: 12,
+        borderRadius: 4,
+        border: "1px solid #ccc",
+        cursor: "pointer",
+        background: "#f9fafb",
+      }}
+    >
+      ▶ Écouter
+    </button>
   );
 };
 
 const ImagePreview = (_props: FieldProps) => {
   const record = useRecordContext();
+
   if (!record?.imageSrc) return (
     <span style={{ color: "#9CA3AF", fontSize: 13 }}>—</span>
   );
+
+  // loading="lazy" : le navigateur ne charge l'image que quand elle est visible
   return (
     <img
       src={record.imageSrc}
       alt="option"
+      loading="lazy"
       style={{ width: 40, height: 40, objectFit: "contain", borderRadius: 6 }}
     />
   );
@@ -107,7 +129,8 @@ const FilteredDatagrid = () => {
 
 export const ChallengeOptionList = () => {
   return (
-    <List sort={{ field: "id", order: "ASC" }} perPage={25}>
+    // perPage réduit à 10 pour moins de médias simultanés
+    <List sort={{ field: "id", order: "ASC" }} perPage={10}>
       <FilteredDatagrid />
     </List>
   );
