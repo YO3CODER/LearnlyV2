@@ -1,9 +1,38 @@
 import {
-  SimpleForm, Create, TextInput, ReferenceInput,
-  required, BooleanInput, useNotify, NumberInput, SaveButton, Toolbar
+  SimpleForm, Create, TextInput,
+  required, BooleanInput, useNotify, NumberInput, SaveButton, Toolbar,
+  AutocompleteInput, useGetList
 } from "react-admin";
 import { useFormContext } from "react-hook-form";
 import { useState } from "react";
+
+// Affiche un libellé lisible pour chaque défi dans le sélecteur.
+const challengeOptionText = (record: any) => {
+  if (!record) return "";
+  return record.name || record.question || `#${record.id}`;
+};
+
+// Charge tous les défis une seule fois (pas de requête réseau supplémentaire
+// en tapant) ; le filtrage se fait ensuite 100% côté client par AutocompleteInput.
+const ChallengeSelector = () => {
+  const { data: challenges, isLoading } = useGetList("challenges", {
+    pagination: { page: 1, perPage: 1000 },
+    sort: { field: "id", order: "ASC" },
+  });
+
+  return (
+    <AutocompleteInput
+      source="challengeId"
+      label="Challenge"
+      choices={challenges}
+      optionText={challengeOptionText}
+      optionValue="id"
+      isLoading={isLoading}
+      validate={[required()]}
+      fullWidth
+    />
+  );
+};
 
 export const ChallengeOptionCreate = () => {
   const notify = useNotify();
@@ -46,7 +75,7 @@ export const ChallengeOptionCreate = () => {
           style={{ padding: "8px", border: "1px solid #D1D5DB", borderRadius: "8px", width: "100%" }}
         />
         {isUploading && (
-          <p style={{ color: "#6366F1", fontSize: 13, marginTop: 4 }}>⏳ Upload en cours...</p>
+          <p style={{ color: "#6366F1", fontSize: 13, marginTop: 4 }}>Upload en cours...</p>
         )}
       </div>
     );
@@ -88,7 +117,7 @@ export const ChallengeOptionCreate = () => {
           </audio>
         )}
         {isUploading && (
-          <p style={{ color: "#6366F1", fontSize: 13, marginTop: 4 }}>⏳ Upload en cours...</p>
+          <p style={{ color: "#6366F1", fontSize: 13, marginTop: 4 }}>Upload en cours...</p>
         )}
       </div>
     );
@@ -122,7 +151,7 @@ export const ChallengeOptionCreate = () => {
           blank: null,
         }}
       >
-        <ReferenceInput source="challengeId" reference="challenges" />
+        <ChallengeSelector />
         <TextInput source="text" validate={[required()]} label="text" fullWidth />
         <BooleanInput source="correct" label="Option correcte" />
         <NumberInput

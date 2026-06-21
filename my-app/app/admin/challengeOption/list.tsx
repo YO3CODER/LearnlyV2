@@ -3,7 +3,6 @@ import {
   Datagrid, List, TextField,
   NumberField, useListContext, useRecordContext
 } from "react-admin";
-import { parseListenQuestion } from "@/lib/listen-question";
 
 type FieldProps = {
   label?: string;
@@ -80,26 +79,19 @@ const CorrectBadge = (_props: FieldProps) => {
   );
 };
 
-// Affiche le nom décodé pour LISTEN ("Nom::URL" -> "Nom"), sinon la question brute
+// Affiche le nom du défi (challengeName) s'il existe, sinon la question brute
 const ChallengeQuestionField = (_props: FieldProps) => {
   const record = useRecordContext();
-  if (!record?.challengeQuestion) return (
+  const display = record?.challengeName || record?.challengeQuestion;
+  if (!display) return (
     <span style={{ color: "#9CA3AF", fontSize: 13 }}>—</span>
   );
-  if (record.challengeType !== "LISTEN") {
-    return <span>{record.challengeQuestion}</span>;
-  }
-  const { label, url } = parseListenQuestion(record.challengeQuestion);
-  return <span>{label || url}</span>;
+  return <span>{display}</span>;
 };
 
-// Texte utilisé pour matcher la recherche (nom si LISTEN, sinon question brute)
+// Texte utilisé pour matcher la recherche
 const getSearchableChallengeQuestion = (row: any) => {
-  if (row.challengeType === "LISTEN") {
-    const { label, url } = parseListenQuestion(row.challengeQuestion ?? "");
-    return label || url;
-  }
-  return row.challengeQuestion ?? "";
+  return row.challengeName || row.challengeQuestion || "";
 };
 
 const FilteredDatagrid = () => {
@@ -109,7 +101,7 @@ const FilteredDatagrid = () => {
   const [debouncedSearch, setDebouncedSearch] = React.useState("");
 
   React.useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 5000);
+    const timer = setTimeout(() => setDebouncedSearch(search), 300);
     return () => clearTimeout(timer);
   }, [search]);
 
@@ -121,13 +113,16 @@ const FilteredDatagrid = () => {
   const filtered = React.useMemo(() => {
     if (!debouncedSearch.trim() && !typeFilter) return [];
 
+    const query = debouncedSearch.toLowerCase();
+
     return data.filter((row) => {
       const matchText =
-        row.text?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        getSearchableChallengeQuestion(row)
-          ?.toLowerCase()
-          .includes(debouncedSearch.toLowerCase());
-      const matchType = typeFilter ? row.challengeType === typeFilter : true;
+        Boolean(row.text?.toLowerCase().includes(query)) ||
+        Boolean(getSearchableChallengeQuestion(row)?.toLowerCase().includes(query)) ||
+        Boolean(row.challengeType?.toLowerCase().includes(query));
+      const matchType = typeFilter
+        ? String(row.challengeType ?? "").trim().toUpperCase() === typeFilter.trim().toUpperCase()
+        : true;
       return matchText && matchType;
     });
   }, [data, debouncedSearch, typeFilter]);
@@ -139,7 +134,7 @@ const FilteredDatagrid = () => {
     <>
       <div style={{ display: "flex", gap: 16, padding: "12px 0" }}>
         <input
-          placeholder="Rechercher par texte ou défi..."
+          placeholder="Rechercher par texte, défi ou type..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{

@@ -3,9 +3,8 @@ import {
   NumberInput, required, SelectInput, SaveButton, Toolbar, useNotify
 } from "react-admin";
 import { useFormContext, useWatch } from "react-hook-form";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Headphones, Loader2 } from "lucide-react";
-import { parseListenQuestion, buildListenQuestion } from "@/lib/listen-question";
 
 const CHALLENGE_TYPES = [
   { id: "SELECT", name: "SELECT" },
@@ -26,9 +25,7 @@ const CustomToolbar = ({ isUploading }: { isUploading: boolean }) => (
 const AudioUploader = ({ isUploading, setIsUploading }: { isUploading: boolean, setIsUploading: (v: boolean) => void }) => {
   const { setValue } = useFormContext();
   const notify = useNotify();
-  const question = useWatch({ name: "question" }) ?? "";
-  const label = useWatch({ name: "questionLabel" }) ?? "";
-  const { url } = parseListenQuestion(question);
+  const url = useWatch({ name: "question" }) ?? "";
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -40,7 +37,7 @@ const AudioUploader = ({ isUploading, setIsUploading }: { isUploading: boolean, 
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       if (!res.ok) throw new Error();
       const data = await res.json();
-      setValue("question", buildListenQuestion(label, data.url), { shouldDirty: true, shouldTouch: true, shouldValidate: true });
+      setValue("question", data.url, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
       notify("Audio uploadé", { type: "success" });
     } catch {
       notify("Erreur upload audio", { type: "error" });
@@ -76,42 +73,6 @@ const AudioUploader = ({ isUploading, setIsUploading }: { isUploading: boolean, 
   );
 };
 
-// Champ "Nom" : pré-rempli depuis le `question` existant à l'ouverture, réécrit `question` quand modifié.
-const QuestionLabelInput = () => {
-  const { setValue, getValues } = useFormContext();
-  const label = useWatch({ name: "questionLabel" });
-  const [initialized, setInitialized] = useState(false);
-
-  useEffect(() => {
-    if (initialized) return;
-    const current = getValues("question") ?? "";
-    const { label: existingLabel } = parseListenQuestion(current);
-    if (existingLabel) {
-      setValue("questionLabel", existingLabel, { shouldDirty: false });
-    }
-    setInitialized(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (!initialized) return;
-    const question = getValues("question") ?? "";
-    const { url } = parseListenQuestion(question);
-    if (!url) return;
-    setValue("question", buildListenQuestion(label ?? "", url), { shouldDirty: true });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [label]);
-
-  return (
-    <TextInput
-      source="questionLabel"
-      label="Nom de la question (optionnel, repère admin)"
-      helperText="Visible uniquement dans la liste admin, pas dans l'app."
-      fullWidth
-    />
-  );
-};
-
 const ChallengeFormFields = ({ isUploading, setIsUploading }: { isUploading: boolean, setIsUploading: (v: boolean) => void }) => {
   const type = useWatch({ name: "type" });
   const isListen = type === "LISTEN";
@@ -124,12 +85,17 @@ const ChallengeFormFields = ({ isUploading, setIsUploading }: { isUploading: boo
         choices={CHALLENGE_TYPES}
         validate={[required()]}
       />
-      {isListen ? (
+      {isListen && (
         <>
+          <TextInput
+            source="name"
+            label="Nom de la question (optionnel, repère admin)"
+            helperText="Visible uniquement dans la liste admin, pas dans l'app."
+            fullWidth
+          />
           <AudioUploader isUploading={isUploading} setIsUploading={setIsUploading} />
-          <QuestionLabelInput />
         </>
-      ) : null}
+      )}
       <TextInput
         source="question"
         validate={[required()]}
