@@ -29,7 +29,7 @@ export const ListenInput = ({
     audio.onended = () => setIsPlaying(false);
   };
 
-  return (
+  return ( 
     <div className="flex flex-col gap-y-5 items-center w-full">
       {/* Bouton lecture audio */}
       <button

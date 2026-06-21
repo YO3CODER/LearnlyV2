@@ -21,6 +21,8 @@ import { Challenge } from "./challenge";
 import { ResultCard } from "./result-card";
 import { QuestionBubble } from "./question-bubble";
 
+import { parseListenQuestion } from "@/lib/listen-question";
+
 type Props = {
   initialPercentage: number;
   initialHearts: number;
@@ -109,7 +111,6 @@ export const Quiz = ({
   const [slideState, setSlideState] = useState<"idle" | "exit" | "enter">("idle");
   const slideTimeoutRef             = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // ── Compteurs animés (écran de fin) ────────────────────────────
   const [animatedPoints, setAnimatedPoints] = useState(0);
   const [animatedHearts, setAnimatedHearts] = useState(0);
   const pointsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -129,7 +130,6 @@ export const Quiz = ({
     }
   }, [isFinished]);
 
-  // ── Lance le décompte XP + coeurs quand l'écran de fin apparaît ─
   useEffect(() => {
     if (!isFinished) return;
 
@@ -353,7 +353,6 @@ export const Quiz = ({
     return null;
   }
 
-  // ── Écran de fin ──────────────────────────────────────────────────────────
   if (!challenge) {
     return (
       <>
@@ -388,7 +387,6 @@ export const Quiz = ({
             </motion.h1>
           </motion.div>
 
-          {/* ── Cartes XP / Coeurs animées comme dans un jeu ── */}
           <motion.div
             className="flex items-center gap-x-4 w-full"
             initial={{ opacity: 0, y: 20 }}
@@ -439,7 +437,6 @@ export const Quiz = ({
     );
   }
 
-  // ── Titre selon le type ───────────────────────────────────────────────────
   const title =
     challenge.type === "ASSIST"     ? "Sélectionne la bonne réponse" :
     challenge.type === "FILL_BLANK" ? "Complète les espaces vides"   :
@@ -463,8 +460,12 @@ export const Quiz = ({
       !selectedOption
     );
 
-  const listenAudioSrc = options.find((o) => o.audioSrc)?.audioSrc ?? "";
-  const footerLabel    = countdown !== null ? `Prochain dans ${countdown}s…` : undefined;
+  // ✅ CORRECTION : pour LISTEN, l'audio est dans challenge.question
+  const listenAudioSrc = challenge.type === "LISTEN"
+  ? parseListenQuestion(challenge.question).url
+  : (options.find((o) => o.audioSrc)?.audioSrc ?? "");
+
+  const footerLabel = countdown !== null ? `Prochain dans ${countdown}s…` : undefined;
 
   const slideClasses = [
     "transition-all duration-300 ease-in-out",
@@ -487,7 +488,6 @@ export const Quiz = ({
         total={totalChallenges}
       />
 
-      {/* Streak overlay */}
       {showStreak && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-white/95 backdrop-blur-sm"
@@ -523,33 +523,29 @@ export const Quiz = ({
         </div>
       )}
 
-      {/* ── FIX : suppression de min-h-full + items-center ── */}
       <div className="flex-1 overflow-y-auto pb-[90px] lg:pb-[100px]">
         <div className="flex justify-center py-6">
           <div className="w-full max-w-[560px] px-6 lg:px-0 overflow-hidden">
             <div className={slideClasses}>
               <div className="flex flex-col gap-y-6">
 
-                {/* Bannière tour de révision */}
-              {isRetryRound && (
-  <div className="inline-flex self-start items-center gap-x-2">
-    <RefreshCw className="h-4 w-4 text-amber-400" strokeWidth={3} />
-    <p className="text-xs font-extrabold uppercase tracking-wide text-amber-400">
-      Ancienne erreur
-    </p>
-  </div>
-)}
+                {isRetryRound && (
+                  <div className="inline-flex self-start items-center gap-x-2">
+                    <RefreshCw className="h-4 w-4 text-amber-400" strokeWidth={3} />
+                    <p className="text-xs font-extrabold uppercase tracking-wide text-amber-400">
+                      Ancienne erreur
+                    </p>
+                  </div>
+                )}
 
-                {/* Titre */}
                 <h1 className="text-lg lg:text-2xl font-extrabold tracking-tight text-center lg:text-start">
                   {title}
                 </h1>
 
-                {/* Question + Challenge */}
                 <div className="flex flex-col gap-y-4">
+                  {/* ✅ CORRECTION : LISTEN retiré — pas de QuestionBubble pour LISTEN */}
                   {(challenge.type === "ASSIST" ||
-                    challenge.type === "TRANSLATE" ||
-                    challenge.type === "LISTEN") && (
+                    challenge.type === "TRANSLATE") && (
                     <QuestionBubble question={challenge.question} />
                   )}
                   <Challenge

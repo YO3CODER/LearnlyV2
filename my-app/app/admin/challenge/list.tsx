@@ -7,6 +7,7 @@ import {
   SelectField,
   useListContext,
 } from "react-admin";
+import { parseListenQuestion } from "@/lib/listen-question";
 
 const CHALLENGE_TYPES = [
   { id: "SELECT", name: "SELECT" },
@@ -17,6 +18,23 @@ const CHALLENGE_TYPES = [
   { id: "MATCH", name: "MATCH" },
   { id: "LISTEN", name: "LISTEN" },
 ];
+
+// Affiche le nom (LISTEN) ou la question brute (autres types)
+const QuestionField = ({ record }: any) => {
+  if (!record) return null;
+  if (record.type !== "LISTEN") return <span>{record.question}</span>;
+  const { label, url } = parseListenQuestion(record.question);
+  return <span>{label || url}</span>;
+};
+
+// Texte utilisé pour matcher la recherche (nom si LISTEN, sinon question brute)
+const getSearchableText = (row: any) => {
+  if (row.type === "LISTEN") {
+    const { label, url } = parseListenQuestion(row.question ?? "");
+    return label || url;
+  }
+  return row.question ?? "";
+};
 
 const FilteredDatagrid = () => {
   const { data = [], isPending } = useListContext();
@@ -38,7 +56,7 @@ const FilteredDatagrid = () => {
     if (!debouncedSearch.trim() && !typeFilter) return [];
 
     return data.filter((row) => {
-      const matchQuestion = row.question
+      const matchQuestion = getSearchableText(row)
         ?.toLowerCase()
         .includes(debouncedSearch.toLowerCase());
       const matchType = typeFilter ? row.type === typeFilter : true;
@@ -103,7 +121,7 @@ const FilteredDatagrid = () => {
             data={isSearching ? filtered : recent}
           >
             <NumberField source="id" label="ID" />
-            <TextField source="question" label="Question" />
+            <QuestionField source="question" label="Question" />
             <SelectField source="type" choices={CHALLENGE_TYPES} label="Type" />
             <TextField source="lessonTitle" label="Leçon" />
             <NumberField source="order" label="Order" />
