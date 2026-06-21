@@ -72,9 +72,9 @@ export const Quiz = ({
   const [streakAudio, , streakControls]         = useAudio({ src: "/affile.mp3",    autoPlay: false });
   const [pending, startTransition] = useTransition();
 
-  const [lessonId]                              = useState(initialLessonId);
-  const [hearts, setHearts]                     = useState(initialHearts);
-  const [percentage, setPercentage]             = useState(() =>
+  const [lessonId]                  = useState(initialLessonId);
+  const [hearts, setHearts]         = useState(initialHearts);
+  const [percentage, setPercentage] = useState(() =>
     initialPercentage === 100 ? 0 : initialPercentage,
   );
 
@@ -119,28 +119,29 @@ export const Quiz = ({
   const heartsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timeIntervalRef   = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // ── Chronomètre ──────────────────────────────────────────────────────────────
-  const startTimeRef    = useRef<number>(Date.now());
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  // ── Chronomètre (ref pour éviter la closure stale) ───────────────────────────
+  const startTimeRef      = useRef<number>(Date.now());
+  const elapsedSecondsRef = useRef<number>(0);
 
   const challenge = challenges[activeIndex];
   const options   = challenge?.challengeOptions ?? [];
 
   const isFinished = !challenges[activeIndex] && failedChallenges.length === 0;
 
-  // Déclenche la fin de leçon + calcule le temps écoulé
+  // Déclenche la fin + calcule le temps via ref (synchrone, pas de closure stale)
   useEffect(() => {
     if (isFinished) {
       finishControls.play();
-      const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
-      setElapsedSeconds(elapsed);
+      elapsedSecondsRef.current = Math.floor(
+        (Date.now() - startTimeRef.current) / 1000,
+      );
       startTransition(() => {
         completeLesson().catch(() => console.error("Failed to complete lesson"));
       });
     }
   }, [isFinished]);
 
-  // Lance les 3 animations de compteurs quand la leçon est terminée
+  // Lance les 3 animations de compteurs
   useEffect(() => {
     if (!isFinished) return;
 
@@ -172,18 +173,20 @@ export const Quiz = ({
       setAnimatedHearts(currentHearts);
     }, 220);
 
-    // Temps : remonte jusqu'à elapsedSeconds en ~2s
-    // On démarre après 600ms pour laisser la carte apparaître (delay 1.3s dans l'animation)
+    // Temps : démarre après 600ms (laisse la carte entrer), remonte en ~2s
+    // ✅ Lu depuis le ref — valeur toujours à jour, pas de closure stale
     const timer = setTimeout(() => {
-      const step        = Math.max(1, Math.floor(elapsedSeconds / 40));
-      const tickMs      = elapsedSeconds > 0
-        ? Math.max(25, Math.floor(2000 / Math.ceil(elapsedSeconds / step)))
+      const elapsed = elapsedSecondsRef.current;
+      const step    = Math.max(1, Math.floor(elapsed / 40));
+      const tickMs  = elapsed > 0
+        ? Math.max(25, Math.floor(2000 / Math.ceil(elapsed / step)))
         : 50;
-      let currentTime   = 0;
+
+      let currentTime = 0;
       timeIntervalRef.current = setInterval(() => {
-        currentTime = Math.min(currentTime + step, elapsedSeconds);
+        currentTime = Math.min(currentTime + step, elapsed);
         setAnimatedTime(currentTime);
-        if (currentTime >= elapsedSeconds && timeIntervalRef.current) {
+        if (currentTime >= elapsed && timeIntervalRef.current) {
           clearInterval(timeIntervalRef.current);
         }
       }, tickMs);
@@ -233,9 +236,16 @@ export const Quiz = ({
   const onWordBankRemove  = (id: number) => { if (status !== "none") return; setWordBankSelectedIds((prev) => prev.filter((i) => i !== id)); };
   const onFillBlankSelect = (blankIndex: number, optionId: number | null) => {
     if (status !== "none") return;
-    setFillBlankSelectedBlanks((prev) => { const next = [...prev]; next[blankIndex] = optionId; return next; });
+    setFillBlankSelectedBlanks((prev) => {
+      const next = [...prev];
+      next[blankIndex] = optionId;
+      return next;
+    });
   };
-  const onMatch = (pairs: [number, number][]) => { if (status !== "none") return; setMatchPairs(pairs); };
+  const onMatch = (pairs: [number, number][]) => {
+    if (status !== "none") return;
+    setMatchPairs(pairs);
+  };
 
   const startWrongCountdown = () => setCountdown(3);
 
@@ -256,7 +266,9 @@ export const Quiz = ({
       () => setCountdown((prev) => (prev !== null ? prev - 1 : null)),
       1000,
     );
-    return () => { if (countdownRef.current) clearTimeout(countdownRef.current); };
+    return () => {
+      if (countdownRef.current) clearTimeout(countdownRef.current);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countdown]);
 
@@ -335,13 +347,19 @@ export const Quiz = ({
   const isTranslateCorrect = () => {
     const correctOption = options.find((o) => o.correct);
     if (!correctOption) return false;
-    return correctOption.text.split("|").map(normalize).includes(normalize(translateValue));
+    return correctOption.text
+      .split("|")
+      .map(normalize)
+      .includes(normalize(translateValue));
   };
 
   const isListenCorrect = () => {
     const correctOption = options.find((o) => o.correct);
     if (!correctOption) return false;
-    return correctOption.text.split("|").map(normalize).includes(normalize(listenValue));
+    return correctOption.text
+      .split("|")
+      .map(normalize)
+      .includes(normalize(listenValue));
   };
 
   const isMatchCorrectByOrder = () => {
@@ -415,6 +433,7 @@ export const Quiz = ({
           numberOfPieces={500}
           tweenDuration={10000}
         />
+
         <div className="flex flex-col gap-y-6 lg:gap-y-10 max-w-lg mx-auto text-center items-center justify-center h-full px-6">
 
           {/* Illustration */}
@@ -425,8 +444,20 @@ export const Quiz = ({
             transition={{ type: "spring", stiffness: 200, damping: 12 }}
           >
             <div className="absolute inset-0 bg-blue-200/40 dark:bg-blue-800/20 rounded-full blur-2xl scale-150" />
-            <Image src="/finish.svg" alt="Finish" className="hidden lg:block relative drop-shadow-lg" height={110} width={110} />
-            <Image src="/finish.svg" alt="Finish" className="block lg:hidden relative drop-shadow-lg" height={60} width={60} />
+            <Image
+              src="/finish.svg"
+              alt="Finish"
+              className="hidden lg:block relative drop-shadow-lg"
+              height={110}
+              width={110}
+            />
+            <Image
+              src="/finish.svg"
+              alt="Finish"
+              className="block lg:hidden relative drop-shadow-lg"
+              height={60}
+              width={60}
+            />
           </motion.div>
 
           {/* Titre */}
@@ -465,7 +496,7 @@ export const Quiz = ({
           {/* ── 3 cartes en cascade ── */}
           <div className="flex items-center gap-x-3 w-full">
 
-            {/* Carte 1 : XP — apparaît en premier */}
+            {/* Carte 1 : XP — depuis la gauche */}
             <motion.div
               className="flex-1"
               initial={{ opacity: 0, scale: 0.3, x: -50, rotate: -15 }}
@@ -486,7 +517,7 @@ export const Quiz = ({
               <ResultCard variant="points" value={animatedPoints} />
             </motion.div>
 
-            {/* Carte 2 : Hearts — apparaît en deuxième */}
+            {/* Carte 2 : Hearts — depuis le bas */}
             <motion.div
               className="flex-1"
               initial={{ opacity: 0, scale: 0.3, y: 50 }}
@@ -505,7 +536,7 @@ export const Quiz = ({
               <ResultCard variant="hearts" value={animatedHearts} />
             </motion.div>
 
-            {/* Carte 3 : Temps — apparaît en dernier */}
+            {/* Carte 3 : Temps — depuis la droite */}
             <motion.div
               className="flex-1"
               initial={{ opacity: 0, scale: 0.3, x: 50, rotate: 15 }}
@@ -529,12 +560,16 @@ export const Quiz = ({
           </div>
         </div>
 
-        <Footer lessonId={lessonId} status="completed" onCheck={() => router.push("/learn")} />
+        <Footer
+          lessonId={lessonId}
+          status="completed"
+          onCheck={() => router.push("/learn")}
+        />
       </>
     );
   }
 
-  // ── Titre de la question ──────────────────────────────────────────────────────
+  // ── Question active ───────────────────────────────────────────────────────────
   const title =
     challenge.type === "ASSIST"     ? "Sélectionne la bonne réponse" :
     challenge.type === "FILL_BLANK" ? "Complète les espaces vides"   :

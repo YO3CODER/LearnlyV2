@@ -35,7 +35,7 @@ export const ResultCard = ({ value, variant }: Props) => {
         variant === "time"   && "bg-sky-500    border-sky-500",
       )}
     >
-      {/* ── En-tête coloré ── */}
+      {/* En-tête */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -52,7 +52,7 @@ export const ResultCard = ({ value, variant }: Props) => {
         {variant === "time"   && "Temps"}
       </motion.div>
 
-      {/* ── Corps ── */}
+      {/* Corps */}
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
