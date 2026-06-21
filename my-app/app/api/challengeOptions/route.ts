@@ -12,7 +12,7 @@ export const GET = async () => {
     const data = await db.query.challengeOptions.findMany({
       with: {
         challenge: {
-          columns: { question: true },
+          columns: { question: true, type: true }, // ⬅️ ajouté
         },
       },
     });
@@ -20,6 +20,7 @@ export const GET = async () => {
     const result = data.map((option) => ({
       ...option,
       challengeQuestion: option.challenge?.question ?? "—",
+      challengeType: option.challenge?.type ?? null, // ⬅️ ajouté
     }));
 
     return new NextResponse(JSON.stringify(result), {
