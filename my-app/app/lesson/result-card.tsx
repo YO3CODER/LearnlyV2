@@ -64,7 +64,6 @@ export const ResultCard = ({ value, variant }: Props) => {
           variant === "time"   && "text-sky-500",
         )}
       >
-        {/* Icône */}
         <motion.div
           animate={{ rotate: [0, -10, 10, -5, 5, 0] }}
           transition={{ delay: 0.5, duration: 0.6, ease: "easeInOut" }}
@@ -77,7 +76,6 @@ export const ResultCard = ({ value, variant }: Props) => {
           )}
         </motion.div>
 
-        {/* Valeur */}
         <motion.span
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}

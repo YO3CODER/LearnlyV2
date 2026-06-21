@@ -49,6 +49,8 @@ const STREAK_TEXTS = [
   "foudroyant !",
 ];
 
+const RESULT_GIFS = ["/1.gif", "/2.gif", "/3.gif", "/4.gif"];
+
 export const Quiz = ({
   initialPercentage,
   initialHearts,
@@ -119,16 +121,20 @@ export const Quiz = ({
   const heartsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timeIntervalRef   = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // ── Chronomètre (ref pour éviter la closure stale) ───────────────────────────
+  // ── Chronomètre ──────────────────────────────────────────────────────────────
   const startTimeRef      = useRef<number>(Date.now());
   const elapsedSecondsRef = useRef<number>(0);
+
+  // ── GIF aléatoire choisi une seule fois à la fin ──────────────────────────────
+  const [resultGif] = useState<string>(
+    () => RESULT_GIFS[Math.floor(Math.random() * RESULT_GIFS.length)],
+  );
 
   const challenge = challenges[activeIndex];
   const options   = challenge?.challengeOptions ?? [];
 
   const isFinished = !challenges[activeIndex] && failedChallenges.length === 0;
 
-  // Déclenche la fin + calcule le temps via ref (synchrone, pas de closure stale)
   useEffect(() => {
     if (isFinished) {
       finishControls.play();
@@ -141,7 +147,6 @@ export const Quiz = ({
     }
   }, [isFinished]);
 
-  // Lance les 3 animations de compteurs
   useEffect(() => {
     if (!isFinished) return;
 
@@ -151,7 +156,7 @@ export const Quiz = ({
     setAnimatedHearts(0);
     setAnimatedTime(0);
 
-    // XP : +10 toutes les 90ms
+    // XP
     let currentPoints = 0;
     pointsIntervalRef.current = setInterval(() => {
       currentPoints += 10;
@@ -162,7 +167,7 @@ export const Quiz = ({
       setAnimatedPoints(currentPoints);
     }, 90);
 
-    // Hearts : +1 toutes les 220ms
+    // Hearts
     let currentHearts = 0;
     heartsIntervalRef.current = setInterval(() => {
       currentHearts += 1;
@@ -173,8 +178,7 @@ export const Quiz = ({
       setAnimatedHearts(currentHearts);
     }, 220);
 
-    // Temps : démarre après 600ms (laisse la carte entrer), remonte en ~2s
-    // ✅ Lu depuis le ref — valeur toujours à jour, pas de closure stale
+    // Temps
     const timer = setTimeout(() => {
       const elapsed = elapsedSecondsRef.current;
       const step    = Math.max(1, Math.floor(elapsed / 40));
@@ -434,9 +438,9 @@ export const Quiz = ({
           tweenDuration={10000}
         />
 
-        <div className="flex flex-col gap-y-6 lg:gap-y-10 max-w-lg mx-auto text-center items-center justify-center h-full px-6">
+        <div className="flex flex-col gap-y-4 max-w-lg mx-auto text-center items-center justify-center h-full px-6">
 
-          {/* Illustration */}
+          {/* Illustration finish */}
           <motion.div
             className="relative"
             initial={{ opacity: 0, scale: 0.5 }}
@@ -448,21 +452,21 @@ export const Quiz = ({
               src="/finish.svg"
               alt="Finish"
               className="hidden lg:block relative drop-shadow-lg"
-              height={110}
-              width={110}
+              height={100}
+              width={100}
             />
             <Image
               src="/finish.svg"
               alt="Finish"
               className="block lg:hidden relative drop-shadow-lg"
-              height={60}
-              width={60}
+              height={56}
+              width={56}
             />
           </motion.div>
 
           {/* Titre */}
           <motion.div
-            className="space-y-2"
+            className="space-y-1"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -493,8 +497,29 @@ export const Quiz = ({
             </motion.h1>
           </motion.div>
 
+          {/* ── GIF aléatoire centré au-dessus des cartes ── */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0, y: 20 }}
+            animate={{ opacity: 1, scale: [0, 1.2, 0.9, 1.05, 1], y: 0 }}
+            transition={{
+              delay: 0.55,
+              duration: 0.8,
+              scale: { type: "spring", stiffness: 200, damping: 12 },
+            }}
+            className="flex justify-center"
+          >
+            <Image
+              src={resultGif}
+              alt="Mascotte"
+              width={130}
+              height={130}
+              className="drop-shadow-lg lg:w-[160px] lg:h-[160px]"
+              unoptimized
+            />
+          </motion.div>
+
           {/* ── 3 cartes en cascade ── */}
-          <div className="flex items-center gap-x-3 w-full">
+          <div className="flex items-stretch gap-x-3 w-full mt-2">
 
             {/* Carte 1 : XP — depuis la gauche */}
             <motion.div
