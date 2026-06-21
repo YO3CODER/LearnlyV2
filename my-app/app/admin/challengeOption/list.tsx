@@ -79,8 +79,12 @@ const FilteredDatagrid = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
+  // 5 plus récents = les 5 derniers par ID
+  const recent = React.useMemo(() => {
+    return [...data].sort((a, b) => b.id - a.id).slice(0, 5);
+  }, [data]);
+
   const filtered = React.useMemo(() => {
-    // Liste vide si rien tapé
     if (!debouncedSearch.trim()) return [];
 
     return data.filter((row) =>
@@ -88,6 +92,9 @@ const FilteredDatagrid = () => {
       row.challengeQuestion?.toLowerCase().includes(debouncedSearch.toLowerCase())
     );
   }, [data, debouncedSearch]);
+
+  const isSearching = debouncedSearch.trim();
+  const showNoResult = isSearching && filtered.length === 0;
 
   return (
     <>
@@ -110,25 +117,31 @@ const FilteredDatagrid = () => {
         <div style={{ padding: 24, textAlign: "center", color: "#888" }}>
           Chargement...
         </div>
-      ) : !debouncedSearch.trim() ? (
-        <div style={{ padding: 24, textAlign: "center", color: "#888" }}>
-          Tapez pour rechercher une option de défi...
-        </div>
-      ) : filtered.length === 0 ? (
+      ) : showNoResult ? (
         <div style={{ padding: 24, textAlign: "center", color: "#888" }}>
           Aucun résultat pour "<strong>{debouncedSearch}</strong>"
         </div>
       ) : (
-        <Datagrid rowClick="edit" data={filtered}>
-          <NumberField source="id" label="ID" />
-          <TextField source="challengeQuestion" label="Défi" />
-          <TextField source="text" label="Texte" />
-          <CorrectBadge label="Statut" />
-          <NumberField source="order" label="Order" emptyText="—" />
-          <NumberField source="blank" label="Blank" emptyText="—" />
-          <ImagePreview label="Image" />
-          <AudioPlayer label="Audio" />
-        </Datagrid>
+        <>
+          {!isSearching && (
+            <p style={{ fontSize: 12, color: "#9CA3AF", margin: "0 0 4px 0" }}>
+              5 options les plus récentes
+            </p>
+          )}
+          <Datagrid
+            rowClick="edit"
+            data={isSearching ? filtered : recent}
+          >
+            <NumberField source="id" label="ID" />
+            <TextField source="challengeQuestion" label="Défi" />
+            <TextField source="text" label="Texte" />
+            <CorrectBadge label="Statut" />
+            <NumberField source="order" label="Order" emptyText="—" />
+            <NumberField source="blank" label="Blank" emptyText="—" />
+            <ImagePreview label="Image" />
+            <AudioPlayer label="Audio" />
+          </Datagrid>
+        </>
       )}
     </>
   );

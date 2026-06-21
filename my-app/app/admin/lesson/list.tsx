@@ -17,17 +17,27 @@ const FilteredDatagrid = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
+  // 5 plus récents = les 5 derniers par ID
+  const recent = React.useMemo(() => {
+    return [...data].sort((a, b) => b.id - a.id).slice(0, 5);
+  }, [data]);
+
   const filtered = React.useMemo(() => {
+    if (!debouncedSearch.trim()) return [];
+
     return data.filter((row) =>
-      row.title?.toLowerCase().includes(debouncedSearch.toLowerCase())
+      row.title?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      row.unitTitle?.toLowerCase().includes(debouncedSearch.toLowerCase())
     );
   }, [data, debouncedSearch]);
+
+  const showNoResult = debouncedSearch.trim() && filtered.length === 0;
 
   return (
     <>
       <div style={{ display: "flex", gap: 16, padding: "12px 0" }}>
         <input
-          placeholder="Rechercher une leçon..."
+          placeholder="Rechercher une leçon ou une unité..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{
@@ -44,13 +54,27 @@ const FilteredDatagrid = () => {
         <div style={{ padding: 24, textAlign: "center", color: "#888" }}>
           Chargement...
         </div>
+      ) : showNoResult ? (
+        <div style={{ padding: 24, textAlign: "center", color: "#888" }}>
+          Aucun résultat pour "<strong>{debouncedSearch}</strong>"
+        </div>
       ) : (
-        <Datagrid rowClick="edit" data={filtered}>
-          <TextField source="id" label="ID" />
-          <TextField source="title" label="Titre" />
-          <TextField source="unitTitle" label="Unité" />
-          <NumberField source="order" label="Order" />
-        </Datagrid>
+        <>
+          {!debouncedSearch.trim() && (
+            <p style={{ fontSize: 12, color: "#9CA3AF", margin: "0 0 4px 0" }}>
+              5 leçons les plus récentes
+            </p>
+          )}
+          <Datagrid
+            rowClick="edit"
+            data={debouncedSearch.trim() ? filtered : recent}
+          >
+            <TextField source="id" label="ID" />
+            <TextField source="title" label="Titre" />
+            <TextField source="unitTitle" label="Unité" />
+            <NumberField source="order" label="Order" />
+          </Datagrid>
+        </>
       )}
     </>
   );
@@ -58,7 +82,7 @@ const FilteredDatagrid = () => {
 
 export const LessonList = () => {
   return (
-    <List sort={{ field: "id", order: "ASC" }} perPage={25}>
+    <List sort={{ field: "id", order: "ASC" }} perPage={1000}>
       <FilteredDatagrid />
     </List>
   );

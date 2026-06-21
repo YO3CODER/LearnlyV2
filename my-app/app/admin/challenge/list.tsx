@@ -29,7 +29,14 @@ const FilteredDatagrid = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
+  // 5 plus récents = les 5 derniers par ID
+  const recent = React.useMemo(() => {
+    return [...data].sort((a, b) => b.id - a.id).slice(0, 5);
+  }, [data]);
+
   const filtered = React.useMemo(() => {
+    if (!debouncedSearch.trim() && !typeFilter) return [];
+
     return data.filter((row) => {
       const matchQuestion = row.question
         ?.toLowerCase()
@@ -38,6 +45,9 @@ const FilteredDatagrid = () => {
       return matchQuestion && matchType;
     });
   }, [data, debouncedSearch, typeFilter]);
+
+  const isSearching = debouncedSearch.trim() || typeFilter;
+  const showNoResult = isSearching && filtered.length === 0;
 
   return (
     <>
@@ -77,14 +87,28 @@ const FilteredDatagrid = () => {
         <div style={{ padding: 24, textAlign: "center", color: "#888" }}>
           Chargement...
         </div>
+      ) : showNoResult ? (
+        <div style={{ padding: 24, textAlign: "center", color: "#888" }}>
+          Aucun résultat pour "<strong>{debouncedSearch}</strong>"
+        </div>
       ) : (
-        <Datagrid rowClick="edit" data={filtered}>
-          <NumberField source="id" label="ID" />
-          <TextField source="question" label="Question" />
-          <SelectField source="type" choices={CHALLENGE_TYPES} label="Type" />
-          <TextField source="lessonTitle" label="Leçon" />
-          <NumberField source="order" label="Order" />
-        </Datagrid>
+        <>
+          {!isSearching && (
+            <p style={{ fontSize: 12, color: "#9CA3AF", margin: "0 0 4px 0" }}>
+              5 défis les plus récents
+            </p>
+          )}
+          <Datagrid
+            rowClick="edit"
+            data={isSearching ? filtered : recent}
+          >
+            <NumberField source="id" label="ID" />
+            <TextField source="question" label="Question" />
+            <SelectField source="type" choices={CHALLENGE_TYPES} label="Type" />
+            <TextField source="lessonTitle" label="Leçon" />
+            <NumberField source="order" label="Order" />
+          </Datagrid>
+        </>
       )}
     </>
   );
@@ -92,7 +116,7 @@ const FilteredDatagrid = () => {
 
 export const ChallengeList = () => {
   return (
-    <List sort={{ field: "id", order: "ASC" }} perPage={25}>
+    <List sort={{ field: "id", order: "ASC" }} perPage={1000}>
       <FilteredDatagrid />
     </List>
   );

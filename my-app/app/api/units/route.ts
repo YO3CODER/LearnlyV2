@@ -9,12 +9,25 @@ export const GET = async () => {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const data = await db.query.units.findMany();
+    const data = await db.query.units.findMany({
+      with: {
+        course: {
+          columns: {
+            title: true,
+          },
+        },
+      },
+    });
 
-    return new NextResponse(JSON.stringify(data), {
+    const result = data.map((unit) => ({
+      ...unit,
+      courseTitle: unit.course?.title ?? "—",
+    }));
+
+    return new NextResponse(JSON.stringify(result), {
       status: 200,
       headers: {
-        'Content-Range': `units 0-${data.length - 1}/${data.length}`,
+        'Content-Range': `units 0-${result.length - 1}/${result.length}`,
         'Access-Control-Expose-Headers': 'Content-Range',
       },
     });
@@ -31,10 +44,8 @@ export const POST = async (req: Request) => {
     }
 
     const body = await req.json();
-    
-    // Supprimer l'id s'il est présent
     const { id, ...cleanBody } = body;
-    
+
     const data = await db.insert(units).values(cleanBody).returning();
 
     return NextResponse.json(data[0]);
