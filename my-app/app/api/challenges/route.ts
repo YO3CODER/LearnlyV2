@@ -9,12 +9,26 @@ export const GET = async () => {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const data = await db.query.challenges.findMany();
+    const data = await db.query.challenges.findMany({
+      with: {
+        lesson: {
+          columns: {
+            title: true,
+          },
+        },
+      },
+    });
 
-    return new NextResponse(JSON.stringify(data), {
+    // Aplatir : ajouter lessonTitle directement sur chaque challenge
+    const result = data.map((challenge) => ({
+      ...challenge,
+      lessonTitle: challenge.lesson?.title ?? "—",
+    }));
+
+    return new NextResponse(JSON.stringify(result), {
       status: 200,
       headers: {
-        'Content-Range': `challenges 0-${data.length - 1}/${data.length}`,
+        'Content-Range': `challenges 0-${result.length - 1}/${result.length}`,
         'Access-Control-Expose-Headers': 'Content-Range',
       },
     });
@@ -32,7 +46,6 @@ export const POST = async (req: Request) => {
 
     const body = await req.json();
     
-    // SUPPRIMER L'ID - CRUCIAL !
     delete body.id;
     
     const data = await db.insert(challenges).values(body).returning();

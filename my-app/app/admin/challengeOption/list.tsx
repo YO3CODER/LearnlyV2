@@ -1,6 +1,7 @@
+import React from "react";
 import {
-  Datagrid, List, TextField, ReferenceField,
-  NumberField, BooleanField, ImageField, useRecordContext
+  Datagrid, List, TextField,
+  NumberField, useListContext, useRecordContext
 } from "react-admin";
 
 type FieldProps = {
@@ -50,19 +51,64 @@ const CorrectBadge = (_props: FieldProps) => {
   );
 };
 
+const FilteredDatagrid = () => {
+  const { data = [], isPending } = useListContext();
+  const [search, setSearch] = React.useState("");
+  const [debouncedSearch, setDebouncedSearch] = React.useState("");
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const filtered = React.useMemo(() => {
+    return data.filter((row) =>
+      row.text?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      row.challengeQuestion?.toLowerCase().includes(debouncedSearch.toLowerCase())
+    );
+  }, [data, debouncedSearch]);
+
+  return (
+    <>
+      <div style={{ display: "flex", gap: 16, padding: "12px 0" }}>
+        <input
+          placeholder="Rechercher par texte ou défi..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            padding: "8px 12px",
+            border: "1px solid #ccc",
+            borderRadius: 4,
+            width: 300,
+            fontSize: 14,
+          }}
+        />
+      </div>
+
+      {isPending ? (
+        <div style={{ padding: 24, textAlign: "center", color: "#888" }}>
+          Chargement...
+        </div>
+      ) : (
+        <Datagrid rowClick="edit" data={filtered}>
+          <NumberField source="id" label="ID" />
+          <TextField source="challengeQuestion" label="Défi" />
+          <TextField source="text" label="Texte" />
+          <CorrectBadge label="Statut" />
+          <NumberField source="order" label="Order" emptyText="—" />
+          <NumberField source="blank" label="Blank" emptyText="—" />
+          <ImagePreview label="Image" />
+          <AudioPlayer label="Audio" />
+        </Datagrid>
+      )}
+    </>
+  );
+};
+
 export const ChallengeOptionList = () => {
   return (
     <List sort={{ field: "id", order: "ASC" }} perPage={25}>
-      <Datagrid rowClick="edit">
-        <NumberField source="id" label="ID" />
-        <ReferenceField source="challengeId" reference="challenges" label="Défi" />
-        <TextField source="text" label="text" />
-        <CorrectBadge label="Statut" />
-        <NumberField source="order" label="Order" emptyText="—" />
-        <NumberField source="blank" label="Blank" emptyText="—" />
-        <ImagePreview label="Image" />
-        <AudioPlayer label="Audio" />
-      </Datagrid>
+      <FilteredDatagrid />
     </List>
   );
 };

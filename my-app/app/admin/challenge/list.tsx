@@ -82,7 +82,7 @@ const FilteredDatagrid = () => {
           <NumberField source="id" label="ID" />
           <TextField source="question" label="Question" />
           <SelectField source="type" choices={CHALLENGE_TYPES} label="Type" />
-          <NumberField source="lessonId" label="Leçon ID" />
+          <TextField source="lessonTitle" label="Leçon" />
           <NumberField source="order" label="Order" />
         </Datagrid>
       )}
