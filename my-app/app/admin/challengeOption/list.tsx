@@ -16,7 +16,6 @@ const AudioPlayer = (_props: FieldProps) => {
     <span style={{ color: "#9CA3AF", fontSize: 13 }}>—</span>
   );
 
-  // Ne charge l'audio qu'au clic
   return show ? (
     <audio controls style={{ height: 35, width: 180 }}>
       <source src={record.audioSrc} />
@@ -40,12 +39,9 @@ const AudioPlayer = (_props: FieldProps) => {
 
 const ImagePreview = (_props: FieldProps) => {
   const record = useRecordContext();
-
   if (!record?.imageSrc) return (
     <span style={{ color: "#9CA3AF", fontSize: 13 }}>—</span>
   );
-
-  // loading="lazy" : le navigateur ne charge l'image que quand elle est visible
   return (
     <img
       src={record.imageSrc}
@@ -84,6 +80,9 @@ const FilteredDatagrid = () => {
   }, [search]);
 
   const filtered = React.useMemo(() => {
+    // Liste vide si rien tapé
+    if (!debouncedSearch.trim()) return [];
+
     return data.filter((row) =>
       row.text?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
       row.challengeQuestion?.toLowerCase().includes(debouncedSearch.toLowerCase())
@@ -101,7 +100,7 @@ const FilteredDatagrid = () => {
             padding: "8px 12px",
             border: "1px solid #ccc",
             borderRadius: 4,
-            width: 300,
+            width: 320,
             fontSize: 14,
           }}
         />
@@ -110,6 +109,14 @@ const FilteredDatagrid = () => {
       {isPending ? (
         <div style={{ padding: 24, textAlign: "center", color: "#888" }}>
           Chargement...
+        </div>
+      ) : !debouncedSearch.trim() ? (
+        <div style={{ padding: 24, textAlign: "center", color: "#888" }}>
+          Tapez pour rechercher une option de défi...
+        </div>
+      ) : filtered.length === 0 ? (
+        <div style={{ padding: 24, textAlign: "center", color: "#888" }}>
+          Aucun résultat pour "<strong>{debouncedSearch}</strong>"
         </div>
       ) : (
         <Datagrid rowClick="edit" data={filtered}>
@@ -129,8 +136,7 @@ const FilteredDatagrid = () => {
 
 export const ChallengeOptionList = () => {
   return (
-    // perPage réduit à 10 pour moins de médias simultanés
-    <List sort={{ field: "id", order: "ASC" }} perPage={10}>
+    <List sort={{ field: "id", order: "ASC" }} perPage={1000}>
       <FilteredDatagrid />
     </List>
   );

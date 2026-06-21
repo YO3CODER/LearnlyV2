@@ -12,9 +12,7 @@ export const GET = async () => {
     const data = await db.query.challengeOptions.findMany({
       with: {
         challenge: {
-          columns: {
-            question: true,
-          },
+          columns: { question: true },
         },
       },
     });
