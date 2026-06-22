@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
 import { unstable_noStore as noStore } from "next/cache";
 import { clerkClient } from "@clerk/nextjs/server";
@@ -57,7 +57,6 @@ export const getUnits = cache(async () => {
     },
   });
 
-  // 👇 À L'INTÉRIEUR de getUnits
   const normalizedData = data.map((unit) => {
     const lessonsWithCompletedStatus = unit.lessons.map((lesson) => {
       if (lesson.challenges.length === 0) {
@@ -73,7 +72,7 @@ export const getUnits = cache(async () => {
       return {
         ...lesson,
         completed: allCompletedChallenges,
-        challengeCount: lesson.challenges.length, // 👈 vrai nombre de challenges
+        challengeCount: lesson.challenges.length,
       };
     });
 
@@ -229,13 +228,36 @@ export const getUserSubscription = async () => {
     isActive: !!isActive,
   };
 };
+
+// ── Helper : lundi courant en ISO date (YYYY-MM-DD) ───────────────────────────
+const getCurrentMondayISO = (): string => {
+  const now = new Date();
+  const day = now.getDay(); // 0=dim, 1=lun...
+  const diff = day === 0 ? -6 : 1 - day; // recule au lundi
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diff);
+  return monday.toISOString().split("T")[0];
+};
+
 export const getTopTenUsers = async () => {
   noStore();
 
   const { userId } = await auth();
-
   if (!userId) return [];
 
+  const currentMonday = getCurrentMondayISO();
+
+  // ── Réinitialise weeklyPoints pour TOUS les utilisateurs en retard ───────────
+  // Une seule requête SQL, indépendante de qui joue ou non.
+  // Dès que le lundi arrive et que quelqu'un charge le leaderboard → tout le monde à 0.
+  await db
+    .update(userProgress)
+    .set({ weeklyPoints: 0, weeklyResetDate: currentMonday })
+    .where(
+      sql`(${userProgress.weeklyResetDate} = '' OR ${userProgress.weeklyResetDate} != ${currentMonday})`
+    );
+
+  // ── Fetch le top 10 (données déjà à jour en base) ───────────────────────────
   const data = await db.query.userProgress.findMany({
     orderBy: (userProgress, { desc, asc }) => [
       desc(userProgress.points),
@@ -248,11 +270,10 @@ export const getTopTenUsers = async () => {
       points: true,
       weeklyPoints: true,
       weeklyResetDate: true,
-      // userImageSrc: true,  ← On ne le récupère plus d'ici
     },
   });
 
-  // Récupère les images à jour depuis Clerk
+  // ── Enrichit avec les images Clerk ──────────────────────────────────────────
   const client = await clerkClient();
   const usersFromClerk = await Promise.all(
     data.map(async (entry) => {
@@ -261,7 +282,7 @@ export const getTopTenUsers = async () => {
         return {
           userId: entry.userId,
           userName: entry.userName ?? "Anonymous",
-          userImageSrc: clerkUser.imageUrl ?? "/default-avatar.png", // ← À jour !
+          userImageSrc: clerkUser.imageUrl ?? "/default-avatar.png",
           points: entry.points ?? 0,
           weeklyPoints: entry.weeklyPoints ?? 0,
           weeklyResetDate: entry.weeklyResetDate ?? "",
@@ -280,4 +301,4 @@ export const getTopTenUsers = async () => {
   );
 
   return usersFromClerk;
-};   
+};

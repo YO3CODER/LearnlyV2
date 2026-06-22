@@ -38,7 +38,6 @@ export const upsertUserProgress = async (courseId: number) => {
   if (existingUserProgress) {
     await db.update(userProgress).set({
       activeCourseId: courseId,
-      // userName et userImageSrc non écrasés volontairement
     }).where(eq(userProgress.userId, userId));
 
     revalidatePath("/courses");
