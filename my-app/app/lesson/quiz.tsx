@@ -91,13 +91,21 @@ export const Quiz = ({
     return i === -1 ? 0 : i;
   });
 
-  const [selectedOption, setSelectedOption]                   = useState<number>();
-  const [wordBankSelectedIds, setWordBankSelectedIds]         = useState<number[]>([]);
-  const [fillBlankSelectedBlanks, setFillBlankSelectedBlanks] = useState<(number | null)[]>([]);
-  const [translateValue, setTranslateValue]                   = useState("");
-  const [matchPairs, setMatchPairs]                           = useState<[number, number][]>([]);
-  const [listenValue, setListenValue]                         = useState("");
-  const [status, setStatus]                                   = useState<"correct" | "wrong" | "none">("none");
+  const [selectedOption, setSelectedOption]         = useState<number>();
+  const [wordBankSelectedIds, setWordBankSelectedIds] = useState<number[]>([]);
+  const [translateValue, setTranslateValue]           = useState("");
+  const [matchPairs, setMatchPairs]                   = useState<[number, number][]>([]);
+  const [listenValue, setListenValue]                 = useState("");
+  const [status, setStatus]                           = useState<"correct" | "wrong" | "none">("none");
+
+  // ── fillBlankSelectedBlanks initialisé avec la bonne taille dès le départ ──
+  const [fillBlankSelectedBlanks, setFillBlankSelectedBlanks] = useState<(number | null)[]>(() => {
+    const firstChallenge = initialLessonChallenges.find((c) => !c.completed);
+    const blankCount = firstChallenge
+      ? (firstChallenge.question.match(/___/g) ?? []).length
+      : 0;
+    return Array(blankCount).fill(null);
+  });
 
   const [countdown, setCountdown] = useState<number | null>(null);
   const countdownRef              = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -125,7 +133,7 @@ export const Quiz = ({
   const startTimeRef      = useRef<number>(Date.now());
   const elapsedSecondsRef = useRef<number>(0);
 
-  // ── GIF aléatoire choisi une seule fois à la fin ──────────────────────────────
+  // ── GIF aléatoire choisi une seule fois à la fin ─────────────────────────────
   const [resultGif] = useState<string>(
     () => RESULT_GIFS[Math.floor(Math.random() * RESULT_GIFS.length)],
   );
@@ -134,6 +142,13 @@ export const Quiz = ({
   const options   = challenge?.challengeOptions ?? [];
 
   const isFinished = !challenges[activeIndex] && failedChallenges.length === 0;
+
+  // ── Initialiser fillBlankSelectedBlanks à chaque changement de challenge ─────
+  useEffect(() => {
+    if (!challenge) return;
+    const blankCount = (challenge.question.match(/___/g) ?? []).length;
+    setFillBlankSelectedBlanks(Array(blankCount).fill(null));
+  }, [activeIndex]);
 
   useEffect(() => {
     if (isFinished) {
@@ -208,10 +223,10 @@ export const Quiz = ({
   const resetAnswerState = () => {
     setSelectedOption(undefined);
     setWordBankSelectedIds([]);
-    setFillBlankSelectedBlanks([]);
     setTranslateValue("");
     setMatchPairs([]);
     setListenValue("");
+    // fillBlankSelectedBlanks est réinitialisé via le useEffect sur activeIndex
   };
 
   const onNext = () => {
@@ -238,6 +253,7 @@ export const Quiz = ({
   const onSelect          = (id: number) => { if (status !== "none") return; setSelectedOption(id); };
   const onWordBankSelect  = (id: number) => { if (status !== "none") return; setWordBankSelectedIds((prev) => [...prev, id]); };
   const onWordBankRemove  = (id: number) => { if (status !== "none") return; setWordBankSelectedIds((prev) => prev.filter((i) => i !== id)); };
+
   const onFillBlankSelect = (blankIndex: number, optionId: number | null) => {
     if (status !== "none") return;
     setFillBlankSelectedBlanks((prev) => {
@@ -246,6 +262,7 @@ export const Quiz = ({
       return next;
     });
   };
+
   const onMatch = (pairs: [number, number][]) => {
     if (status !== "none") return;
     setMatchPairs(pairs);
@@ -497,7 +514,7 @@ export const Quiz = ({
             </motion.h1>
           </motion.div>
 
-          {/* ── GIF aléatoire centré au-dessus des cartes ── */}
+          {/* GIF aléatoire */}
           <motion.div
             initial={{ opacity: 0, scale: 0, y: 20 }}
             animate={{ opacity: 1, scale: [0, 1.2, 0.9, 1.05, 1], y: 0 }}
@@ -518,10 +535,9 @@ export const Quiz = ({
             />
           </motion.div>
 
-          {/* ── 3 cartes en cascade ── */}
+          {/* 3 cartes en cascade */}
           <div className="flex items-stretch gap-x-3 w-full mt-2">
 
-            {/* Carte 1 : XP — depuis la gauche */}
             <motion.div
               className="flex-1"
               initial={{ opacity: 0, scale: 0.3, x: -50, rotate: -15 }}
@@ -542,7 +558,6 @@ export const Quiz = ({
               <ResultCard variant="points" value={animatedPoints} />
             </motion.div>
 
-            {/* Carte 2 : Hearts — depuis le bas */}
             <motion.div
               className="flex-1"
               initial={{ opacity: 0, scale: 0.3, y: 50 }}
@@ -561,7 +576,6 @@ export const Quiz = ({
               <ResultCard variant="hearts" value={animatedHearts} />
             </motion.div>
 
-            {/* Carte 3 : Temps — depuis la droite */}
             <motion.div
               className="flex-1"
               initial={{ opacity: 0, scale: 0.3, x: 50, rotate: 15 }}
