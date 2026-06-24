@@ -105,9 +105,6 @@ export default function PushAdminPage() {
             <Image src="/mascot.svg" alt="Mascot" width={38} height={38} />
             <span style={{ fontSize: 22, fontWeight: 900, color: "#4db6f5", letterSpacing: -0.5 }}>Learnly</span>
           </div>
-          <ul style={{ display: "flex", gap: 28, listStyle: "none", margin: 0, padding: 0 }}>
-            <li><a href="#" style={{ fontWeight: 700, color: "#374151", textDecoration: "none", fontSize: 15 }}>Notifications</a></li>
-          </ul>
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             <a href="https://learnlyv2.yosite.fun/" className="btn-bounce" style={{
               background: "#4db6f5", color: "#fff", fontWeight: 900, fontSize: 14,
