@@ -1,0 +1,1 @@
+self.addEventListener("push",n=>{let i=n.data?.json()??{},e=i.title||"Learnly",t=i.message||"Tu as un nouveau message";n.waitUntil(self.registration.showNotification(e,{body:t,icon:"/icons/icon-192x192.png",badge:"/icons/icon-192x192.png"}))}),self.addEventListener("notificationclick",n=>{n.notification.close(),n.waitUntil(self.clients.openWindow("/learn"))});
