@@ -13,6 +13,7 @@ import {
   getUserProgress,
   getUserSubscription
 } from "@/db/queries";
+import { PushSubscribeButton } from "@/components/PushSubscribeButton";
 
 import { Unit } from "./unit";
 import { Header } from "./header";
@@ -80,6 +81,11 @@ export default async function LearnPage() {
         {/* Banner mobile uniquement */}
         <StickyUnitBannerMobile units={mappedUnits} />
 
+        {/* Bouton notifications */}
+        <div className="flex justify-center py-4">
+          <PushSubscribeButton />
+        </div>
+
         {units.map((unit, index) => (
           <div key={unit.id}>
             <Unit
@@ -96,10 +102,10 @@ export default async function LearnPage() {
               isLast={index === units.length - 1}
             />
             {index !== units.length - 1 && (
-              <UnitSeparator
-                nextUnitTitle={units[index + 1]?.title}
-                unitIndex={index}
-              />
+             <UnitSeparator
+  nextUnitTitle={units[index + 1]?.title}
+  unitIndex={index}
+/>
             )}
           </div>
         ))}
