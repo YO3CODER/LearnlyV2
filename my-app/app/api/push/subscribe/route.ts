@@ -1,7 +1,6 @@
 import db from "@/db/drizzle";
 import { pushSubscriptions } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -22,11 +21,11 @@ export async function POST(req: Request) {
       auth: keys.auth,
     })
     .onConflictDoUpdate({
-      target: pushSubscriptions.userId,
+      target: pushSubscriptions.endpoint, // ← clé unique par appareil
       set: {
-        endpoint,
         p256dh: keys.p256dh,
         auth: keys.auth,
+        userId,
       },
     });
 
