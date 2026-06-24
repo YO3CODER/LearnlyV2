@@ -55,7 +55,6 @@ export const lessonsRelations = relations(lessons, ({ one, many }) => ({
   challenges: many(challenges),
 }));
 
-// 👇 FILL_BLANK ajouté
 export const challengesEnum = pgEnum("type", [
   "SELECT",
   "ASSIST",
@@ -73,7 +72,7 @@ export const challenges = pgTable("challenges", {
     .notNull(),
   type: challengesEnum("type").notNull(),
   question: text("question").notNull(),
-  name: text("name"), // Nom optionnel, repère admin (ex: libellé d'un défi LISTEN)
+  name: text("name"),
   order: integer("order").notNull(),
 });
 
@@ -95,8 +94,8 @@ export const challengeOptions = pgTable("challenge_options", {
   correct: boolean("correct").notNull(),
   imageSrc: text("image_src"),
   audioSrc: text("audio_src"),
-  order: integer("order"), // WORD_BANK — position du mot
-  blank: integer("blank"), // 👈 FILL_BLANK — index du blank que cette option remplit (0, 1, 2...)
+  order: integer("order"),
+  blank: integer("blank"),
 });
 
 export const challengeOptionsRelations = relations(
@@ -133,7 +132,7 @@ export const userProgress = pgTable("user_progress", {
   userName: text("user_name").notNull().default("User"),
   userImageSrc: text("user_image_src").notNull().default("/mascot.svg"),
   activeCourseId: integer("active_course_id").references(() => courses.id, {
-    onDelete: "set null", // ✅ était "cascade" — préserve hearts, XP, streak
+    onDelete: "set null",
   }),
   hearts: integer("hearts").notNull().default(5),
   points: integer("points").notNull().default(0),
@@ -163,8 +162,8 @@ export const userSubscription = pgTable("user_subscription", {
 
 export const pushSubscriptions = pgTable("push_subscriptions", {
   id: serial("id").primaryKey(),
-  userId: text("user_id").notNull().unique(),
-  endpoint: text("endpoint").notNull(),
+  userId: text("user_id").notNull(),
+  endpoint: text("endpoint").notNull().unique(),
   p256dh: text("p256dh").notNull(),
   auth: text("auth").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
