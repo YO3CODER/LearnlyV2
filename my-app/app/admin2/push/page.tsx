@@ -345,7 +345,7 @@ export default function PushAdminPage() {
               <Button
                 onClick={reset}
                 disabled={loading}
-                variant="outline"
+                variant="primary"
                 className="px-5 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2"
               >
                 <RotateCcw className="w-4 h-4" />
