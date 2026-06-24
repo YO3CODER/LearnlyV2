@@ -4,14 +4,8 @@ import withPWA from "@ducanh2912/next-pwa";
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "res.cloudinary.com",
-      },
-      {
-        protocol: "https",
-        hostname: "img.clerk.com",
-      },
+      { protocol: "https", hostname: "res.cloudinary.com" },
+      { protocol: "https", hostname: "img.clerk.com" },
     ],
   },
 };
@@ -25,6 +19,7 @@ export default withPWA({
   fallbacks: {
     document: "/offline",
   },
-  customWorkerSrc: "worker",
-  customWorkerDest: "worker",
+  workboxOptions: {
+    importScripts: ["/sw-push.js"],
+  },
 })(nextConfig);
