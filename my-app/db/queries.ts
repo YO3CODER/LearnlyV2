@@ -303,3 +303,36 @@ export const getTopTenUsers = async () => {
   return usersFromClerk;
 };
 
+export const getAllUsers = async () => {
+  noStore();
+
+  const data = await db.query.userProgress.findMany({
+    orderBy: (userProgress, { asc }) => [asc(userProgress.userName)],
+    columns: {
+      userId: true,
+      userName: true,
+    },
+  });
+
+  const client = await clerkClient();
+  const users = await Promise.all(
+    data.map(async (entry) => {
+      try {
+        const clerkUser = await client.users.getUser(entry.userId!);
+        return {
+          userId: entry.userId,
+          userName: entry.userName ?? "Anonymous",
+          userImageSrc: clerkUser.imageUrl ?? "/default-avatar.png",
+        };
+      } catch {
+        return {
+          userId: entry.userId,
+          userName: entry.userName ?? "Anonymous",
+          userImageSrc: "/default-avatar.png",
+        };
+      }
+    })
+  );
+
+  return users;
+};
