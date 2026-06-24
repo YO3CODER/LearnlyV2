@@ -3,6 +3,7 @@ import { pushSubscriptions } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import webpush from "web-push";
+import { inArray } from "drizzle-orm";
 
 webpush.setVapidDetails(
   process.env.VAPID_SUBJECT!,
@@ -17,9 +18,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
 
-  const { title, message } = await req.json();
+  const { title, message, userIds } = await req.json();
 
-  const subscriptions = await db.select().from(pushSubscriptions);
+  // Si userIds est fourni et non vide → filtre, sinon broadcast à tous
+  const subscriptions = userIds?.length
+    ? await db
+        .select()
+        .from(pushSubscriptions)
+        .where(inArray(pushSubscriptions.userId, userIds))
+    : await db.select().from(pushSubscriptions);
 
   const results = await Promise.allSettled(
     subscriptions.map((sub) =>

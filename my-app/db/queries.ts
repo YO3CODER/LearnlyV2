@@ -302,3 +302,4 @@ export const getTopTenUsers = async () => {
 
   return usersFromClerk;
 };
+
