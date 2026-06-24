@@ -1,17 +1,7 @@
 self.addEventListener("push", (event) => {
-  let title = "Learnly";
-  let message = "Tu as un nouveau message";
-
-  try {
-    if (event.data) {
-      const text = event.data.text();
-      const data = JSON.parse(text);
-      title = data.title || title;
-      message = data.message || message;
-    }
-  } catch (e) {
-    console.error("Push parse error:", e);
-  }
+  const data = event.data?.json() ?? {};
+  const title = data.title || "Learnly";
+  const message = data.message || "Tu as un nouveau message";
 
   event.waitUntil(
     self.registration.showNotification(title, {
