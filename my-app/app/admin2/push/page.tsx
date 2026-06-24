@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Check, Send, RotateCcw, Zap, Crown, Target } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 const TEMPLATES = [
   {
@@ -83,256 +83,391 @@ export default function PushAdminPage() {
   const charPercentage = Math.min((charCount / charLimit) * 100, 100);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-900/30 dark:to-indigo-900/30 p-4 sm:p-6">
-      <div className="w-full max-w-4xl mx-auto">
-        {/* Header avec mascotte */}
-        <div className="mb-8 sm:mb-12">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-8">
-            {/* Logo et titre */}
-            <div className="flex items-start gap-4 flex-1">
-              <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0">
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-2xl blur-lg opacity-50" />
-                <div className="relative w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                  <svg className="w-9 h-9 sm:w-11 sm:h-11 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                  </svg>
-                </div>
-              </div>
-              <div className="pt-1">
-                <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                  Notifi<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">cations</span>
-                </h1>
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">Reste connecte avec tes utilisateurs</p>
-              </div>
-            </div>
+    <div className="min-h-screen font-sans" style={{ background: "#f9fafb" }}>
+      {/* NAVBAR */}
+      <nav style={{ 
+        background: "#fff", 
+        borderBottom: "3px solid #e5e7eb", 
+        position: "sticky", 
+        top: 0, 
+        zIndex: 50 
+      }}>
+        <div style={{ 
+          maxWidth: 1200, 
+          margin: "0 auto", 
+          padding: "0 20px", 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "space-between", 
+          height: 64 
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <Image src="/mascot.svg" alt="Mascot" width={38} height={38} />
+            <span style={{ fontSize: 22, fontWeight: 900, color: "#4db6f5", letterSpacing: -0.5 }}>Learnly</span>
+          </div>
+          <ul style={{ display: "flex", gap: 28, listStyle: "none", margin: 0, padding: 0 }}>
+            <li><a href="#" style={{ fontWeight: 700, color: "#374151", textDecoration: "none", fontSize: 15 }}>Notifications</a></li>
+          </ul>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <a href="https://learnlyv2.yosite.fun/" className="btn-bounce" style={{
+              background: "#4db6f5", color: "#fff", fontWeight: 900, fontSize: 14,
+              padding: "11px 20px", borderRadius: 12, border: "none", cursor: "pointer",
+              textDecoration: "none", letterSpacing: 0.5, textTransform: "uppercase",
+              boxShadow: "0 4px 0 #2193d3", whiteSpace: "nowrap",
+            }}>
+              Commencer
+            </a>
+          </div>
+        </div>
+      </nav>
 
-            {/* Images decoratives */}
-            <div className="hidden lg:flex items-end justify-end gap-4">
-              <img
-                src="/quete3.svg"
-                alt="Quete"
-                className="w-20 h-20 object-contain opacity-70 hover:opacity-100 transition-opacity duration-300"
-              />
-              <img
-                src="/courses.svg"
-                alt="Courses"
-                className="w-20 h-20 object-contain opacity-70 hover:opacity-100 transition-opacity duration-300"
-              />
-              <img
-                src="/mascot.svg"
-                alt="Mascot"
-                className="w-24 h-24 object-contain opacity-80 hover:opacity-100 transition-opacity duration-300"
-              />
+      {/* MAIN CONTENT */}
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 20px" }}>
+        {/* Header */}
+        <div style={{ marginBottom: 40 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 8 }}>
+            <div style={{
+              width: 50, height: 50, borderRadius: 14,
+              background: "linear-gradient(135deg, #4db6f5, #2193d3)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              boxShadow: "0 4px 0 #1a7bb8"
+            }}>
+              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+            </div>
+            <div>
+              <h1 style={{ fontSize: 28, fontWeight: 900, color: "#1a1a1a", margin: 0, letterSpacing: -0.5 }}>
+                Notifications
+              </h1>
+              <p style={{ color: "#6b7280", fontSize: 15, margin: "4px 0 0" }}>
+                Envoie des notifications à tes utilisateurs
+              </p>
             </div>
           </div>
 
-          {/* Stats rapides */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-xl p-3 border border-white/40 dark:border-slate-700/40">
-              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Statut</p>
-              <p className="text-lg font-black text-emerald-600 dark:text-emerald-400">Actif</p>
+          {/* Stats */}
+          <div style={{ 
+            display: "grid", 
+            gridTemplateColumns: "repeat(3, 1fr)", 
+            gap: 16,
+            marginTop: 24
+          }}>
+            <div style={{ 
+              background: "#fff", 
+              borderRadius: 16, 
+              border: "2px solid #e5e7eb",
+              padding: "16px 20px"
+            }}>
+              <p style={{ fontSize: 11, fontWeight: 900, color: "#9ca3af", textTransform: "uppercase", letterSpacing: 1, margin: "0 0 4px" }}>Statut</p>
+              <p style={{ fontSize: 20, fontWeight: 900, color: "#4caf50", margin: 0 }}>Actif</p>
             </div>
-            <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-xl p-3 border border-white/40 dark:border-slate-700/40">
-              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Caracteres</p>
-              <p className="text-lg font-black text-indigo-600 dark:text-indigo-400">{charCount}/{charLimit}</p>
+            <div style={{ 
+              background: "#fff", 
+              borderRadius: 16, 
+              border: "2px solid #e5e7eb",
+              padding: "16px 20px"
+            }}>
+              <p style={{ fontSize: 11, fontWeight: 900, color: "#9ca3af", textTransform: "uppercase", letterSpacing: 1, margin: "0 0 4px" }}>Caracteres</p>
+              <p style={{ fontSize: 20, fontWeight: 900, color: "#4db6f5", margin: 0 }}>{charCount}/{charLimit}</p>
             </div>
-            <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-xl p-3 border border-white/40 dark:border-slate-700/40 col-span-2 sm:col-span-1">
-              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Mode</p>
-              <p className="text-lg font-black text-purple-600 dark:text-purple-400">Admin</p>
+            <div style={{ 
+              background: "#fff", 
+              borderRadius: 16, 
+              border: "2px solid #e5e7eb",
+              padding: "16px 20px"
+            }}>
+              <p style={{ fontSize: 11, fontWeight: 900, color: "#9ca3af", textTransform: "uppercase", letterSpacing: 1, margin: "0 0 4px" }}>Mode</p>
+              <p style={{ fontSize: 20, fontWeight: 900, color: "#9c27b0", margin: 0 }}>Admin</p>
             </div>
           </div>
         </div>
 
-        {/* Templates rapides avec cartes ameliorees */}
-        <div className="mb-8">
-          <h2 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-            <Zap className="w-4 h-4 text-amber-500" />
+        {/* Templates */}
+        <div style={{ marginBottom: 32 }}>
+          <h2 style={{ 
+            fontSize: 13, 
+            fontWeight: 900, 
+            color: "#9ca3af", 
+            textTransform: "uppercase", 
+            letterSpacing: 2,
+            margin: "0 0 16px",
+            display: "flex",
+            alignItems: "center",
+            gap: 8
+          }}>
+            <Zap className="w-4 h-4" style={{ color: "#f59e0b" }} />
             Modeles rapides
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
             {TEMPLATES.map((template) => (
               <button
                 key={template.id}
                 onClick={() => selectTemplate(template)}
                 onMouseEnter={() => setHoveredTemplate(template.id)}
                 onMouseLeave={() => setHoveredTemplate(null)}
-                className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:shadow-lg"
+                style={{
+                  position: "relative",
+                  overflow: "hidden",
+                  borderRadius: 16,
+                  border: `2px solid ${selectedTemplate === template.id ? "#4db6f5" : "#e5e7eb"}`,
+                  background: "#fff",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  padding: 0,
+                  transition: "all 0.3s ease",
+                  boxShadow: selectedTemplate === template.id ? "0 4px 0 #2193d3" : "none",
+                  transform: hoveredTemplate === template.id ? "translateY(-2px)" : "none",
+                }}
               >
-                {/* Background avec gradient */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${template.bgGradient} border ${template.borderColor}`} />
-
-                {/* Gradient anime au hover */}
-                <div
-                  className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                  style={{
-                    background: `linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%)`,
-                  }}
-                />
-
-                {/* Contenu */}
-                <div className="relative p-4 sm:p-5">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex flex-col items-start gap-2">
-                      {template.image && (
-                        <img
-                          src={template.image}
-                          alt={template.label}
-                          className="w-12 h-12 object-contain opacity-80"
-                        />
-                      )}
-                    </div>
+                <div style={{ padding: "20px 20px 18px" }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 12 }}>
+                    <Image
+                      src={template.image}
+                      alt={template.label}
+                      width={48}
+                      height={48}
+                      style={{ opacity: 0.8 }}
+                    />
                     {selectedTemplate === template.id && (
-                      <div className="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Check className="w-3 h-3 text-white" />
+                      <div style={{
+                        width: 24, height: 24, borderRadius: "50%",
+                        background: "#4caf50",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        flexShrink: 0
+                      }}>
+                        <Check className="w-4 h-4 text-white" />
                       </div>
                     )}
                   </div>
-                  <h3 className="text-sm font-bold text-slate-800 dark:text-white text-left mb-1">
+                  <h3 style={{ fontWeight: 900, fontSize: 15, color: "#1a1a1a", margin: "0 0 4px" }}>
                     {template.label}
                   </h3>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 text-left line-clamp-2">
+                  <p style={{ color: "#6b7280", fontSize: 13, margin: 0, lineHeight: 1.4 }}>
                     {template.title}
                   </p>
                 </div>
-
-                {/* Border gradient animation */}
-                <div
-                  className={`absolute inset-0 pointer-events-none transition-all duration-500 ${
-                    hoveredTemplate === template.id
-                      ? `shadow-[inset_0_0_20px_rgba(59,130,246,0.2)]`
-                      : ""
-                  }`}
-                />
               </button>
             ))}
           </div>
         </div>
 
-        {/* Formulaire principal */}
-        <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xl overflow-hidden">
-          <div className="p-6 sm:p-8 flex flex-col gap-6">
-            {/* Input Titre */}
-            <div className="flex flex-col gap-3">
-              <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
+        {/* Formulaire */}
+        <div style={{
+          background: "#fff",
+          borderRadius: 20,
+          border: "2px solid #e5e7eb",
+          overflow: "hidden"
+        }}>
+          <div style={{ padding: "32px" }}>
+            {/* Titre */}
+            <div style={{ marginBottom: 24 }}>
+              <label style={{
+                fontSize: 11,
+                fontWeight: 900,
+                color: "#9ca3af",
+                textTransform: "uppercase",
+                letterSpacing: 1,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                marginBottom: 8
+              }}>
                 <Target className="w-3.5 h-3.5" />
                 Titre
               </label>
-              <div className="relative">
+              <div style={{ position: "relative" }}>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Ex: Rappel du jour"
                   maxLength={60}
-                  className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/50 text-slate-800 dark:text-white text-sm font-medium focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 transition-all placeholder:text-slate-400"
+                  style={{
+                    width: "100%",
+                    padding: "14px 20px",
+                    borderRadius: 12,
+                    border: "2px solid #e5e7eb",
+                    background: "#f9fafb",
+                    fontSize: 15,
+                    fontWeight: 600,
+                    color: "#1a1a1a",
+                    outline: "none",
+                    transition: "all 0.2s",
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = "#4db6f5"}
+                  onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 dark:text-slate-500">
+                <span style={{
+                  position: "absolute",
+                  right: 16,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: "#9ca3af"
+                }}>
                   {title.length}/60
                 </span>
               </div>
             </div>
 
-            {/* Input Message */}
-            <div className="flex flex-col gap-3">
-              <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
+            {/* Message */}
+            <div style={{ marginBottom: 24 }}>
+              <label style={{
+                fontSize: 11,
+                fontWeight: 900,
+                color: "#9ca3af",
+                textTransform: "uppercase",
+                letterSpacing: 1,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                marginBottom: 8
+              }}>
                 <Crown className="w-3.5 h-3.5" />
                 Message
               </label>
-              <div className="relative">
+              <div style={{ position: "relative" }}>
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Ex: Tu n'as pas encore fait ta lecon aujourd'hui !"
-                  rows={5}
+                  rows={4}
                   maxLength={charLimit}
-                  className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/50 text-slate-800 dark:text-white text-sm font-medium focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 transition-all placeholder:text-slate-400 resize-none"
+                  style={{
+                    width: "100%",
+                    padding: "14px 20px",
+                    borderRadius: 12,
+                    border: "2px solid #e5e7eb",
+                    background: "#f9fafb",
+                    fontSize: 15,
+                    fontWeight: 600,
+                    color: "#1a1a1a",
+                    outline: "none",
+                    transition: "all 0.2s",
+                    resize: "none",
+                    fontFamily: "inherit"
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = "#4db6f5"}
+                  onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
                 />
-                <div className="absolute bottom-3 right-4 flex items-center gap-2">
-                  {charCount > charLimit * 0.8 && (
-                    <span className={`text-xs font-semibold ${charCount > charLimit * 0.9 ? "text-rose-500" : "text-amber-500"}`}>
-                      {charCount}/{charLimit}
-                    </span>
-                  )}
-                </div>
               </div>
 
               {/* Progress bar */}
-              <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div style={{ 
+                width: "100%", 
+                height: 6, 
+                background: "#e5e7eb", 
+                borderRadius: 4, 
+                overflow: "hidden",
+                marginTop: 12
+              }}>
                 <div
-                  className={`h-full transition-all duration-200 rounded-full ${
-                    charPercentage > 90
-                      ? "bg-gradient-to-r from-rose-400 to-rose-500"
-                      : charPercentage > 70
-                      ? "bg-gradient-to-r from-amber-400 to-amber-500"
-                      : "bg-gradient-to-r from-emerald-400 to-emerald-500"
-                  }`}
-                  style={{ width: `${charPercentage}%` }}
+                  style={{
+                    height: "100%",
+                    borderRadius: 4,
+                    width: `${charPercentage}%`,
+                    background: charPercentage > 90 
+                      ? "linear-gradient(to right, #fb7185, #f43f5e)" 
+                      : charPercentage > 70 
+                      ? "linear-gradient(to right, #fbbf24, #f59e0b)" 
+                      : "linear-gradient(to right, #4caf50, #2e7d32)",
+                    transition: "width 0.2s ease"
+                  }}
                 />
               </div>
-              <p className="text-xs text-slate-400 dark:text-slate-500 text-right">
+              <p style={{ 
+                textAlign: "right", 
+                fontSize: 12, 
+                color: "#9ca3af", 
+                fontWeight: 600,
+                margin: "6px 0 0"
+              }}>
                 {charLimit - charCount} caracteres restants
               </p>
             </div>
 
-            {/* Apercu de notification */}
+            {/* Aperçu */}
             {(title || message) && (
-              <div className="rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-800/50 p-5 flex gap-4 items-start overflow-hidden relative group">
-                {/* Gradient background au hover */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-indigo-500/5 to-purple-500/5" />
-
-                <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex-shrink-0 flex items-center justify-center shadow-lg">
+              <div style={{
+                borderRadius: 16,
+                border: "2px solid #e5e7eb",
+                background: "#f9fafb",
+                padding: "20px",
+                display: "flex",
+                gap: 16,
+                alignItems: "flex-start",
+                marginBottom: 24
+              }}>
+                <div style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 12,
+                  background: "linear-gradient(135deg, #4db6f5, #2193d3)",
+                  flexShrink: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 4px 0 #1a7bb8"
+                }}>
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                   </svg>
                 </div>
-                <div className="relative flex-1 min-w-0">
-                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontWeight: 800, fontSize: 14, color: "#1a1a1a", margin: "0 0 4px" }}>
                     {title || "Titre de la notification"}
                   </p>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1.5 line-clamp-2 leading-relaxed">
+                  <p style={{ color: "#6b7280", fontSize: 13, margin: 0, lineHeight: 1.5 }}>
                     {message || "Contenu du message..."}
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-500 mt-2">Learnly · a l'instant</p>
+                  <p style={{ color: "#9ca3af", fontSize: 12, margin: "8px 0 0" }}>Learnly · a l'instant</p>
                 </div>
               </div>
             )}
 
-            {/* Resultat succes/erreur */}
+            {/* Resultat */}
             {result && (
-              <div
-                className={`rounded-2xl p-5 border-2 flex items-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-300 ${
-                  result.failed === 0
-                    ? "bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-emerald-200 dark:border-emerald-700"
-                    : "bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-amber-200 dark:border-amber-700"
-                }`}
-              >
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    result.failed === 0
-                      ? "bg-emerald-100 dark:bg-emerald-800"
-                      : "bg-amber-100 dark:bg-amber-800"
-                  }`}
-                >
+              <div style={{
+                borderRadius: 16,
+                border: `2px solid ${result.failed === 0 ? "#4caf50" : "#f59e0b"}`,
+                background: result.failed === 0 ? "#f0fdf4" : "#fffbeb",
+                padding: "18px 20px",
+                display: "flex",
+                alignItems: "center",
+                gap: 16,
+                marginBottom: 24
+              }}>
+                <div style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
+                  background: result.failed === 0 ? "#4caf50" : "#f59e0b",
+                  flexShrink: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}>
                   {result.failed === 0 ? (
-                    <Check className={`w-5 h-5 text-emerald-600 dark:text-emerald-300`} />
+                    <Check className="w-5 h-5 text-white" />
                   ) : (
-                    <svg className="w-5 h-5 text-amber-600 dark:text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M12 3a9 9 0 110 18A9 9 0 0112 3z" />
                     </svg>
                   )}
                 </div>
-                <div className="flex-1">
-                  <p
-                    className={`text-sm font-bold ${
-                      result.failed === 0
-                        ? "text-emerald-700 dark:text-emerald-300"
-                        : "text-amber-700 dark:text-amber-300"
-                    }`}
-                  >
+                <div>
+                  <p style={{ 
+                    fontWeight: 800, 
+                    fontSize: 14, 
+                    color: result.failed === 0 ? "#15803d" : "#b45309",
+                    margin: "0 0 2px"
+                  }}>
                     {result.success} notification{result.success > 1 ? "s" : ""} envoyee{result.success > 1 ? "s" : ""} avec succes
                   </p>
                   {result.failed > 0 && (
-                    <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                    <p style={{ fontSize: 13, color: "#b45309", margin: 0 }}>
                       {result.failed} echouee{result.failed > 1 ? "s" : ""}
                     </p>
                   )}
@@ -340,22 +475,78 @@ export default function PushAdminPage() {
               </div>
             )}
 
-            {/* Boutons d'action */}
-            <div className="flex gap-3 pt-2">
-              <Button
+            {/* Boutons */}
+            <div style={{ display: "flex", gap: 12 }}>
+              <button
                 onClick={reset}
                 disabled={loading}
-                variant="primary"
-                className="px-5 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2"
+                style={{
+                  padding: "14px 24px",
+                  borderRadius: 12,
+                  fontSize: 14,
+                  fontWeight: 800,
+                  border: "2px solid #e5e7eb",
+                  background: "#fff",
+                  color: "#6b7280",
+                  cursor: loading ? "default" : "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  transition: "all 0.2s",
+                  opacity: loading ? 0.5 : 1
+                }}
+                onMouseEnter={(e) => {
+                  if (!loading) {
+                    e.currentTarget.style.background = "#f9fafb";
+                    e.currentTarget.style.borderColor = "#d1d5db";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "#fff";
+                  e.currentTarget.style.borderColor = "#e5e7eb";
+                }}
               >
                 <RotateCcw className="w-4 h-4" />
                 Reinitialiser
-              </Button>
-              <Button
+              </button>
+              <button
                 onClick={send}
                 disabled={loading || !title || !message}
-                variant="primary"
-                className="flex-1 px-6 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl disabled:shadow-none"
+                style={{
+                  flex: 1,
+                  padding: "14px 24px",
+                  borderRadius: 12,
+                  fontSize: 14,
+                  fontWeight: 800,
+                  border: "none",
+                  background: "linear-gradient(135deg, #4db6f5, #2193d3)",
+                  color: "#fff",
+                  cursor: (loading || !title || !message) ? "default" : "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                  boxShadow: "0 4px 0 #1a7bb8",
+                  transition: "all 0.2s",
+                  opacity: (loading || !title || !message) ? 0.5 : 1,
+                  transform: loading ? "none" : "translateY(0)"
+                }}
+                onMouseDown={(e) => {
+                  if (!loading && title && message) {
+                    e.currentTarget.style.transform = "translateY(4px)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }
+                }}
+                onMouseUp={(e) => {
+                  if (!loading && title && message) {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "0 4px 0 #1a7bb8";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "0 4px 0 #1a7bb8";
+                }}
               >
                 {loading ? (
                   <>
@@ -371,28 +562,38 @@ export default function PushAdminPage() {
                     <span>Envoyer</span>
                   </>
                 )}
-              </Button>
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Footer minimaliste */}
-        <div className="mt-12 text-center text-xs text-slate-500 dark:text-slate-400">
-          <p>Conseil : Les notifications courtes et pertinentes ont un taux d'engagement plus eleve</p>
+        {/* Footer */}
+        <div style={{ marginTop: 40, textAlign: "center" }}>
+          <p style={{ color: "#9ca3af", fontSize: 13 }}>
+            Conseil : Les notifications courtes et pertinentes ont un taux d'engagement plus eleve
+          </p>
         </div>
       </div>
 
-      {/* Style pour les animations */}
+      {/* STYLES */}
       <style>{`
-        @keyframes shimmer {
-          0% { background-position: -1000px 0; }
-          100% { background-position: 1000px 0; }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
-
-        .animate-shimmer {
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-          background-size: 1000px 100%;
-          animation: shimmer 2s infinite;
+        .animate-spin {
+          animation: spin 1s linear infinite;
+        }
+        .btn-bounce {
+          transition: all 0.2s ease;
+        }
+        .btn-bounce:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 0 #2193d3 !important;
+        }
+        .btn-bounce:active {
+          transform: translateY(4px);
+          box-shadow: none !important;
         }
       `}</style>
     </div>
