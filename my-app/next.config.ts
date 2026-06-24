@@ -25,4 +25,5 @@ export default withPWA({
   fallbacks: {
     document: "/offline",
   },
+  customWorkerSrc: "sw-push.js",
 })(nextConfig);
