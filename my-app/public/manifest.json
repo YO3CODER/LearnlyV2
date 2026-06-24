@@ -19,5 +19,43 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "Continuer la leçon",
+      "short_name": "Leçon",
+      "description": "Reprendre là où vous vous êtes arrêté",
+      "url": "/learn",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Classement",
+      "short_name": "Classement",
+      "description": "Voir le leaderboard",
+      "url": "/leaderboard",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Quêtes",
+      "short_name": "Quêtes",
+      "description": "Voir mes quêtes",
+      "url": "/quests",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
   ]
 }
