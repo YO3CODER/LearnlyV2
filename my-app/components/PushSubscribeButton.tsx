@@ -1,28 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export const PushSubscribeButton = () => {
-  const [subscribed, setSubscribed] = useState(false);
-
   useEffect(() => {
     const init = async () => {
       if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
 
-      // Enregistrer le SW s'il ne l'est pas encore
       let reg = await navigator.serviceWorker.getRegistration();
       if (!reg) {
         reg = await navigator.serviceWorker.register("/sw.js");
       }
 
-      // Attendre qu'il soit actif
       await navigator.serviceWorker.ready;
 
       const existing = await reg.pushManager.getSubscription();
-      if (existing) {
-        setSubscribed(true);
-        return;
-      }
+      if (existing) return;
 
       try {
         const sub = await reg.pushManager.subscribe({
@@ -39,8 +32,6 @@ export const PushSubscribeButton = () => {
             keys: json.keys,
           }),
         });
-
-        setSubscribed(true);
       } catch (err) {
         console.error("Subscribe error:", err);
       }
@@ -48,14 +39,6 @@ export const PushSubscribeButton = () => {
 
     init();
   }, []);
-
-  if (subscribed) {
-    return (
-      <p className="text-sm text-green-600 font-medium">
-        Notifications activées
-      </p>
-    );
-  }
 
   return null;
 };
