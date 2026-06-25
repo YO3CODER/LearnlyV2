@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
+import { PushSubscribeButton } from "@/components/PushSubscribeButton";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -46,6 +47,7 @@ export default function RootLayout({
         </head>
         <body className="min-h-full flex flex-col">
           <ThemeProvider>
+            <PushSubscribeButton />
             {children}
           </ThemeProvider>
         </body>
