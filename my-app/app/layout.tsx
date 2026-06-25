@@ -44,6 +44,15 @@ export default function RootLayout({
       >
         <head>
           <meta name="mobile-web-app-capable" content="yes" />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.register('/sw.js');
+                }
+              `,
+            }}
+          />
         </head>
         <body className="min-h-full flex flex-col">
           <ThemeProvider>
