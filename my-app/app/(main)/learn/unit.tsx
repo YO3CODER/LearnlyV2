@@ -27,11 +27,9 @@ const getUnitColor = (order: number) => {
   return colors[(order - 1) % colors.length];
 };
 
-const GIFS = ["/1.gif", "/2.gif", "/3.gif", "/4.gif"];
+const GIFS = ["/1.gif", "/2.gif", "/3.gif", "/4.gif", "/5.gif", "/6.gif"];
 const XP_PER_CHALLENGE = 10;
 
-// Reproduit exactement la logique de lesson-button.tsx
-// pour calculer rightPosition de chaque bouton
 const getCycleIndentation = (lessonIndex: number): number => {
   const cycleLength = 8;
   const cycleIndex = lessonIndex % cycleLength;
@@ -40,16 +38,12 @@ const getCycleIndentation = (lessonIndex: number): number => {
   else if (cycleIndex <= 4) indentationLevel = 4 - cycleIndex;
   else if (cycleIndex <= 6) indentationLevel = 4 - cycleIndex;
   else indentationLevel = cycleIndex - 8;
-  return indentationLevel * 40; // rightPosition en px
+  return indentationLevel * 40;
 };
 
-// Trouve les creux du zigzag :
-// - creux DROITE  : rightPosition pic positif (bouton décalé à droite → espace libre à gauche)
-// - creux GAUCHE  : rightPosition pic négatif (bouton décalé à gauche → espace libre à droite)
 const findGifPositions = (lessonCount: number) => {
   const positions: { lessonIndex: number; side: "left" | "right"; topOffset: number }[] = [];
 
-  // Hauteur approximative de chaque bouton (marginTop 24px + bouton ~80px)
   const BUTTON_HEIGHT = 104;
   const FIRST_MARGIN = 60;
 
@@ -63,7 +57,6 @@ const findGifPositions = (lessonCount: number) => {
     const prev = i > 0 ? getCycleIndentation(i - 1) : curr;
     const next = i < lessonCount - 1 ? getCycleIndentation(i + 1) : curr;
 
-    // Pic vers la droite (rightPosition élevé) → GIF à gauche dans le creux
     if (curr >= prev && curr >= next && curr > 0) {
       positions.push({
         lessonIndex: i,
@@ -71,7 +64,6 @@ const findGifPositions = (lessonCount: number) => {
         topOffset: getTopOffset(i),
       });
     }
-    // Pic vers la gauche (rightPosition négatif) → GIF à droite dans le creux
     if (curr <= prev && curr <= next && curr < 0) {
       positions.push({
         lessonIndex: i,
@@ -81,7 +73,6 @@ const findGifPositions = (lessonCount: number) => {
     }
   }
 
-  // Si aucun creux trouvé (unité courte), on met un GIF à droite en haut
   if (positions.length === 0 && lessonCount > 0) {
     positions.push({ lessonIndex: 0, side: "right", topOffset: getTopOffset(0) });
   }
@@ -109,19 +100,17 @@ export const Unit = ({
 
   const allLessonsCompleted = lessons.every(lesson => lesson.completed);
 
-  // Calcule les positions des creux pour cette unité
   const gifPositions = findGifPositions(lessons.length);
 
   return (
     <div id={`unit-${index}`} style={{ position: "relative", overflow: "visible" }}>
 
-      {/* GIFs dans les creux du zigzag */}
       {gifPositions.map((pos, gifIdx) => {
         const gifSrc = GIFS[(id + gifIdx) % GIFS.length];
         return (
           <div
             key={`gif-${gifIdx}`}
-            className="absolute z-10 pointer-events-none animate-[mascot-float_3s_ease-in-out_infinite]"
+            className="absolute pointer-events-none animate-[mascot-float_3s_ease-in-out_infinite]"
             style={{
               top: `${pos.topOffset}px`,
               ...(pos.side === "right"
@@ -130,6 +119,7 @@ export const Unit = ({
               ),
               transform: "translateY(-50%)",
               animationDelay: `${(index * 300) + (gifIdx * 500)}ms`,
+              zIndex: 0,
             }}
           >
             <Image
@@ -146,7 +136,7 @@ export const Unit = ({
 
       <div
         className="flex items-center flex-col relative"
-        style={{ overflow: "visible", zIndex: 0 }}
+        style={{ overflow: "visible", zIndex: 1 }}
       >
         {lessons.map((lesson, lessonIndex) => {
           const isCurrent = lesson.id === activeLesson?.id;
