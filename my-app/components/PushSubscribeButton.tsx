@@ -9,9 +9,16 @@ export const PushSubscribeButton = () => {
     const init = async () => {
       if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
 
-      const reg = await navigator.serviceWorker.ready;
-      const existing = await reg.pushManager.getSubscription();
+      // Enregistrer le SW s'il ne l'est pas encore
+      let reg = await navigator.serviceWorker.getRegistration();
+      if (!reg) {
+        reg = await navigator.serviceWorker.register("/sw.js");
+      }
 
+      // Attendre qu'il soit actif
+      await navigator.serviceWorker.ready;
+
+      const existing = await reg.pushManager.getSubscription();
       if (existing) {
         setSubscribed(true);
         return;
@@ -35,8 +42,7 @@ export const PushSubscribeButton = () => {
 
         setSubscribed(true);
       } catch (err) {
-        // L'utilisateur a refusé la permission ou une erreur s'est produite
-        console.error(err);
+        console.error("Subscribe error:", err);
       }
     };
 
