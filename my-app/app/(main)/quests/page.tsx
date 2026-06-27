@@ -8,6 +8,7 @@ import { StickyWrapper } from "@/components/sticky-wrapper";
 import { getUserProgress, getUserSubscription } from "@/db/queries";
 import { Promo } from "@/components/promo";
 import { quests } from "@/constants";
+import { ShareScoreCard } from "@/components/share-score-card";
 
 const getUserValue = (
   type: string, points: number, streak: number,
@@ -100,6 +101,7 @@ const QuestsPage = async () => {
           hasActiveSubscription={isPro}
           streak={userProgress.streak ?? 0}
         />
+        <ShareScoreCard />
         {!isPro && <Promo />}
       </StickyWrapper>
 
