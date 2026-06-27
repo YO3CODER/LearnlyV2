@@ -27,6 +27,18 @@ const MASCOTS = [
   "/ligue.svg",
 ];
 
+// Palettes soft — [centre, milieu, bord]
+const PALETTES = [
+  ["#ede9fe", "#f5f3ff", "#ffffff"], // violet
+  ["#fce7f3", "#fdf2f8", "#ffffff"], // rose
+  ["#d1fae5", "#ecfdf5", "#ffffff"], // emerald
+  ["#dbeafe", "#eff6ff", "#ffffff"], // blue
+  ["#fef3c7", "#fffbeb", "#ffffff"], // amber
+  ["#e0f2fe", "#f0f9ff", "#ffffff"], // sky
+  ["#f3e8ff", "#faf5ff", "#ffffff"], // purple
+  ["#ffedd5", "#fff7ed", "#ffffff"], // orange
+];
+
 async function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve) => {
     const img = new Image();
@@ -37,21 +49,36 @@ async function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
+async function loadFredoka(): Promise<void> {
+  try {
+    const fredoka = new FontFace(
+      "Fredoka",
+      "url(https://fonts.gstatic.com/s/fredoka/v14/X7nP4b87HvSqjb_WIi2yDCRwoQ.woff2)",
+    );
+    await fredoka.load();
+    document.fonts.add(fredoka);
+  } catch (_) { /* fallback sans-serif */ }
+}
+
 async function drawCard(data: ScoreCardData): Promise<Blob> {
   const canvas = document.createElement("canvas");
   canvas.width = W;
   canvas.height = H;
   const ctx = canvas.getContext("2d")!;
 
-  // ── Fond dégradé clair (style Duolingo) ────────────────────────────
+  // Charger Fredoka avant de dessiner
+  await loadFredoka();
+
+  // ── Fond dégradé soft aléatoire ─────────────────────────────────────
+  const palette = PALETTES[Math.floor(Math.random() * PALETTES.length)];
   const bg = ctx.createRadialGradient(W / 2, H * 0.3, 0, W / 2, H / 2, W * 0.8);
-  bg.addColorStop(0, "#ede9fe");  // violet-100
-  bg.addColorStop(0.6, "#f5f3ff"); // violet-50
-  bg.addColorStop(1, "#ffffff");
+  bg.addColorStop(0,   palette[0]);
+  bg.addColorStop(0.6, palette[1]);
+  bg.addColorStop(1,   palette[2]);
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
-  // ── Mascotte aléatoire ──────────────────────────────────────────────
+  // ── Mascotte aléatoire ───────────────────────────────────────────────
   const mascotSrc = MASCOTS[Math.floor(Math.random() * MASCOTS.length)];
   const mascotImg = await loadImage(mascotSrc);
   const mascotSize = 420;
@@ -61,73 +88,71 @@ async function drawCard(data: ScoreCardData): Promise<Blob> {
     ctx.drawImage(mascotImg, mascotX, mascotY, mascotSize, mascotSize);
   }
 
-  // ── XP total avec icône xp-bolt.svg ───────────────────────────────
-  const numY = mascotY + mascotSize + 20;
-
+  // ── XP : taille adaptive selon longueur ─────────────────────────────
   const xpText = data.points.toLocaleString();
-  ctx.font = "bold 160px sans-serif";
-  const xpTextW = ctx.measureText(xpText).width;
-  const boltSize = 120;
-  const xpGap = 24;
+  const boltSize = 110;
+  const xpGap = 20;
+
+  // Calcule la taille de police pour que le bloc [bolt + chiffre] tienne en W - 120px
+  let xpFontSize = 160;
+  ctx.font = `bold ${xpFontSize}px Fredoka, sans-serif`;
+  while (
+    boltSize + xpGap + ctx.measureText(xpText).width > W - 120 &&
+    xpFontSize > 60
+  ) {
+    xpFontSize -= 8;
+    ctx.font = `bold ${xpFontSize}px Fredoka, sans-serif`;
+  }
+
+  const xpTextW  = ctx.measureText(xpText).width;
   const xpTotalW = boltSize + xpGap + xpTextW;
   const xpStartX = W / 2 - xpTotalW / 2;
-  const xpBaseY = numY + 120;
+  const xpBaseY  = mascotY + mascotSize + xpFontSize + 10;
 
   // Icône bolt
   const boltImg = await loadImage("/xp-bolt.svg");
   if (boltImg.complete && boltImg.naturalWidth > 0) {
-    ctx.drawImage(boltImg, xpStartX, xpBaseY - boltSize + 10, boltSize, boltSize);
+    ctx.drawImage(boltImg, xpStartX, xpBaseY - boltSize + 12, boltSize, boltSize);
   }
 
-  // Chiffre XP
+  // Chiffre XP (contour + fill blanc)
   ctx.textAlign = "left";
-  ctx.lineWidth = 16;
+  ctx.lineJoin   = "round";
+  ctx.lineWidth  = 14;
   ctx.strokeStyle = "#7c3aed";
-  ctx.lineJoin = "round";
   ctx.strokeText(xpText, xpStartX + boltSize + xpGap, xpBaseY);
   ctx.fillStyle = "#ffffff";
   ctx.fillText(xpText, xpStartX + boltSize + xpGap, xpBaseY);
 
-  // ── Streak avec icône flamme.svg ────────────────────────────────────
-  const line1Y = numY + 200;
+  // ── Streak avec icône flamme + Fredoka ──────────────────────────────
+  const streakY    = xpBaseY + 90;
   const streakText = `${data.streak} jours de streak`;
-  ctx.font = "bold 52px sans-serif";
-  const streakTextW = ctx.measureText(streakText).width;
-  const flameSize = 56;
-  const flameGap = 16;
+  ctx.font = `700 52px Fredoka, sans-serif`;
+  const streakTextW  = ctx.measureText(streakText).width;
+  const flameSize    = 56;
+  const flameGap     = 14;
   const streakTotalW = flameSize + flameGap + streakTextW;
   const streakStartX = W / 2 - streakTotalW / 2;
 
   const flameImg = await loadImage("/flamme.svg");
   if (flameImg.complete && flameImg.naturalWidth > 0) {
-    ctx.drawImage(flameImg, streakStartX, line1Y - flameSize + 8, flameSize, flameSize);
+    ctx.drawImage(flameImg, streakStartX, streakY - flameSize + 8, flameSize, flameSize);
   }
 
   ctx.fillStyle = "#3b3054";
   ctx.lineWidth = 0;
-  ctx.fillText(streakText, streakStartX + flameSize + flameGap, line1Y);
+  ctx.fillText(streakText, streakStartX + flameSize + flameGap, streakY);
 
-
-
-  // ── Langue (si dispo) ───────────────────────────────────────────────
+  // ── Langue (si dispo) ────────────────────────────────────────────────
   ctx.textAlign = "center";
   if (data.courseTitle) {
-    ctx.font = "500 36px sans-serif";
+    ctx.font      = "500 36px Fredoka, sans-serif";
     ctx.fillStyle = "#9d8fc2";
-    ctx.fillText(data.courseTitle, W / 2, line1Y + 120);
+    ctx.fillText(data.courseTitle, W / 2, streakY + 80);
   }
 
-  // ── Branding Learnly (Fredoka) ──────────────────────────────────────
-  try {
-    const fredoka = new FontFace(
-      "Fredoka",
-      "url(https://fonts.gstatic.com/s/fredoka/v14/X7nP4b87HvSqjb_WIi2yDCRwoQ.woff2)",
-    );
-    await fredoka.load();
-    document.fonts.add(fredoka);
-  } catch (_) { /* fallback sans-serif si offline */ }
-
-  ctx.font = "700 72px Fredoka, sans-serif";
+  // ── Branding Learnly ─────────────────────────────────────────────────
+  ctx.font      = "700 72px Fredoka, sans-serif";
   ctx.fillStyle = "#38bdf8";
   ctx.fillText("Learnly", W / 2, H - 60);
 
@@ -138,7 +163,7 @@ async function drawCard(data: ScoreCardData): Promise<Blob> {
 
 export function useScoreCard() {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error,   setError  ] = useState<string | null>(null);
 
   const generate = useCallback(async (): Promise<Blob | null> => {
     setLoading(true);
@@ -161,8 +186,8 @@ export function useScoreCard() {
     const blob = await generate();
     if (!blob) return;
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
+    const a   = document.createElement("a");
+    a.href     = url;
     a.download = "learnly-score.png";
     a.click();
     URL.revokeObjectURL(url);
@@ -177,7 +202,7 @@ export function useScoreCard() {
       await navigator.share({
         files: [file],
         title: "Ma progression sur Learnly",
-        text: `${(await fetch("/api/score-card").then(r => r.json())).points} XP sur Learnly !`,
+        text:  "Regarde ma progression sur Learnly !",
       });
       return;
     }
