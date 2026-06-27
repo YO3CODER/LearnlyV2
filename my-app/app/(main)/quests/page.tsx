@@ -191,6 +191,11 @@ const QuestsPage = async () => {
             Les quêtes changent chaque jour à minuit
           </p>
 
+          {/* Boutons partage visibles uniquement sur mobile (lg:hidden) */}
+          <div className="lg:hidden mt-6 fade-up" style={{ animationDelay: "0.5s" }}>
+            <ShareScoreCard />
+          </div>
+
         </div>
       </FeedWrapper>
     </div>
