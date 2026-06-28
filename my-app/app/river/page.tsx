@@ -2,7 +2,7 @@
 
 import { useRive } from '@rive-app/react-canvas';
 import Image from 'next/image';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Sidebar } from '@/components/sidebar';
 import { MobileNavbar } from '@/components/mobile-navbar';
 
@@ -15,34 +15,225 @@ const gifs = [
   { src: '/4.gif', label: 'Action 4' },
 ];
 
-type GameId = 'piano' | 'expression' | 'gamification' | 'souris' | 'memory' | 'monde' | 'motdujour';
+type GameId = 'piano' | 'expression' | 'gamification' | 'souris' | 'memory' | 'monde' | 'motdujour' | 'enigmes';
+
+// ─── Énigmes ──────────────────────────────────────────────────────────────────
+const ENIGMES = [
+  { id: 1, texte: "En cuisine ou en médecine, elle trouve un usage. Graminée, elle délecte certains animaux. Édouard Manet l'a mise en scène dans un célèbre tableau. Qui est-elle ?", reponse: "ASPERGE", indice: "C'est un légume printanier vert." },
+  { id: 2, texte: "Je suis toujours devant vous mais ne peut jamais être vu. Qu'est-ce que je suis ?", reponse: "FUTUR", indice: "C'est une notion temporelle." },
+  { id: 3, texte: "Plus je sèche, plus je suis mouillée. Qu'est-ce que je suis ?", reponse: "SERVIETTE", indice: "On l'utilise après le bain." },
+  { id: 4, texte: "J'ai des villes sans maisons, des forêts sans arbres, des eaux sans poissons. Qu'est-ce que je suis ?", reponse: "CARTE", indice: "On me consulte pour se repérer." },
+  { id: 5, texte: "Je parle sans bouche, j'entends sans oreilles, je n'ai pas de corps mais prends vie avec le vent. Qu'est-ce que je suis ?", reponse: "ECO", indice: "Un phénomène sonore en montagne." },
+  { id: 6, texte: "Plus je grandis, moins on me voit. Qu'est-ce que je suis ?", reponse: "NUIT", indice: "Elle succède au jour." },
+  { id: 7, texte: "Je suis léger comme une plume, mais même l'homme le plus fort du monde ne peut me tenir plus de quelques minutes. Qu'est-ce que je suis ?", reponse: "SOUFFLE", indice: "On le retient sous l'eau." },
+  { id: 8, texte: "J'ai une tête et une queue mais pas de corps. Qu'est-ce que je suis ?", reponse: "PIECE", indice: "On la lance pour trancher un choix." },
+  { id: 9, texte: "Quel est le comble pour un électricien ?", reponse: "COURANT", indice: "Il est à la fois électrique et... actuel." },
+  { id: 10, texte: "Je suis plein de trous mais je retiens l'eau. Qu'est-ce que je suis ?", reponse: "EPONGE", indice: "On me trouve dans la salle de bain." },
+  { id: 11, texte: "Je cours tout le jour et je ne me fatigue pas. Je n'ai ni bras ni jambes. Qu'est-ce que je suis ?", reponse: "RIVIERE", indice: "L'eau y coule naturellement." },
+  { id: 12, texte: "On me coupe mais on ne me mange pas. On me peigne mais je n'ai pas de dents. Qu'est-ce que je suis ?", reponse: "CHEVEUX", indice: "Ils poussent sur la tête." },
+  { id: 13, texte: "Je suis à la fois blanc et noir, et je suis lu mais jamais dit. Qu'est-ce que je suis ?", reponse: "SILENCE", indice: "La musique en a besoin." },
+  { id: 14, texte: "Plus on m'enlève, plus je suis grande. Qu'est-ce que je suis ?", reponse: "FOSSE", indice: "On creuse pour m'agrandir." },
+  { id: 15, texte: "Je suis toujours en face de vous dans un miroir mais je ne suis pas vous. Qu'est-ce que je suis ?", reponse: "REFLET", indice: "Une image inversée." },
+];
+
+function getRandomEnigme() {
+  return ENIGMES[Math.floor(Math.random() * ENIGMES.length)];
+}
+
+function EnigmesGame({ onClose }: { onClose: () => void }) {
+  const [enigme, setEnigme] = useState(getRandomEnigme);
+  const [reponse, setReponse] = useState('');
+  const [statut, setStatut] = useState<'idle' | 'correct' | 'incorrect'>('idle');
+  const [showIndice, setShowIndice] = useState(false);
+  const [score, setScore] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [shake, setShake] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { inputRef.current?.focus(); }, [enigme]);
+
+  const normalize = (s: string) =>
+    s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+
+  const verifier = () => {
+    if (!reponse.trim()) return;
+    const correct = normalize(reponse) === normalize(enigme.reponse);
+    setStatut(correct ? 'correct' : 'incorrect');
+    setTotal(t => t + 1);
+    if (correct) setScore(s => s + 1);
+    else {
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+    }
+  };
+
+  const suivante = () => {
+    setEnigme(getRandomEnigme());
+    setReponse('');
+    setStatut('idle');
+    setShowIndice(false);
+  };
+
+  const handleKey = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') statut === 'idle' ? verifier() : suivante();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col bg-[#1a0a3c]" style={{
+      backgroundImage: 'radial-gradient(ellipse at 20% 50%, rgba(120,40,200,0.3) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(80,20,160,0.4) 0%, transparent 50%)',
+    }}>
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 sm:px-8 py-4 border-b border-white/10">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-violet-500 flex items-center justify-center text-lg">📖</div>
+          <div>
+            <p className="text-white font-bold text-sm leading-none" style={fredoka}>Livre des Énigmes</p>
+            <p className="text-violet-300 text-xs mt-0.5" style={fredoka}>Enigme #{enigme.id}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          {/* Score */}
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
+            <span className="text-emerald-400 font-bold text-sm" style={fredoka}>{score}</span>
+            <span className="text-white/40 text-xs">/</span>
+            <span className="text-white/60 text-sm" style={fredoka}>{total}</span>
+          </div>
+          <button onClick={suivante} style={fredoka}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/70 text-xs font-semibold border border-white/10 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
+            </svg>
+            Nouvelle
+          </button>
+          <button onClick={onClose} style={fredoka}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/10 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+            Fermer
+          </button>
+        </div>
+      </div>
+
+      {/* Contenu */}
+      <div className="flex-1 flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-lg flex flex-col gap-6">
+
+          {/* Carte énigme */}
+          <div className="relative rounded-2xl bg-violet-800/40 border border-violet-500/30 p-8 backdrop-blur-sm">
+            {/* Guillemets décoratifs */}
+            <div className="absolute top-4 left-6 text-5xl text-violet-400/30 font-serif leading-none select-none">"</div>
+            <p className="text-white text-center text-lg leading-relaxed font-medium relative z-10 pt-4" style={fredoka}>
+              {enigme.texte}
+            </p>
+          </div>
+
+          {/* Résultat correct */}
+          {statut === 'correct' && (
+            <div className="rounded-2xl bg-emerald-500/20 border border-emerald-400/40 p-5 flex flex-col items-center gap-2 text-center">
+              <div className="text-3xl">🎉</div>
+              <p className="text-emerald-300 font-bold text-lg" style={fredoka}>Bravo ! C'est correct !</p>
+              <p className="text-emerald-200/70 text-sm" style={fredoka}>La réponse était : <strong className="text-white">{enigme.reponse}</strong></p>
+              <button onClick={suivante} style={fredoka}
+                className="mt-2 px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-sm border-b-4 border-emerald-700 active:border-b-0 transition-all">
+                Enigme suivante →
+              </button>
+            </div>
+          )}
+
+          {/* Résultat incorrect */}
+          {statut === 'incorrect' && (
+            <div className="rounded-2xl bg-red-500/20 border border-red-400/40 p-5 flex flex-col items-center gap-2 text-center">
+              <div className="text-3xl">😅</div>
+              <p className="text-red-300 font-bold text-lg" style={fredoka}>Pas tout à fait...</p>
+              <p className="text-red-200/70 text-sm" style={fredoka}>La réponse était : <strong className="text-white">{enigme.reponse}</strong></p>
+              <button onClick={suivante} style={fredoka}
+                className="mt-2 px-6 py-2.5 rounded-xl bg-violet-500 hover:bg-violet-400 text-white font-bold text-sm border-b-4 border-violet-700 active:border-b-0 transition-all">
+                Essayer une autre →
+              </button>
+            </div>
+          )}
+
+          {/* Champ de réponse */}
+          {statut === 'idle' && (
+            <div className={`flex flex-col gap-3 ${shake ? 'animate-[shake_0.4s_ease]' : ''}`}>
+              <label className="text-white/60 text-sm text-center" style={fredoka}>Proposez un mot code :</label>
+              <div className="flex gap-2">
+                <input
+                  ref={inputRef}
+                  value={reponse}
+                  onChange={e => setReponse(e.target.value.toUpperCase())}
+                  onKeyDown={handleKey}
+                  placeholder="Votre réponse..."
+                  className="flex-1 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white font-semibold text-center text-lg placeholder:text-white/20 focus:outline-none focus:border-violet-400 focus:bg-white/15 transition-all"
+                  style={fredoka}
+                />
+                <button onClick={verifier} style={fredoka}
+                  className="px-6 py-3 rounded-xl bg-red-500 hover:bg-red-400 text-white font-bold border-b-4 border-red-700 active:border-b-0 transition-all">
+                  OK
+                </button>
+              </div>
+
+              {/* Indice */}
+              <button onClick={() => setShowIndice(v => !v)} style={fredoka}
+                className="text-violet-400 hover:text-violet-300 text-xs text-center underline underline-offset-2 transition-colors mt-1">
+                {showIndice ? 'Masquer l\'indice' : 'Je donne ma langue au chat 💡'}
+              </button>
+              {showIndice && (
+                <div className="rounded-xl bg-amber-500/10 border border-amber-400/20 px-4 py-3 text-amber-200 text-sm text-center" style={fredoka}>
+                  💡 {enigme.indice}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Score mobile */}
+          <div className="sm:hidden flex justify-center">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10">
+              <span className="text-emerald-400 font-bold text-sm" style={fredoka}>{score} correct{score > 1 ? 's' : ''}</span>
+              <span className="text-white/40 text-xs">sur</span>
+              <span className="text-white/60 text-sm" style={fredoka}>{total} essai{total > 1 ? 's' : ''}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes shake {
+          0%,100% { transform: translateX(0); }
+          20% { transform: translateX(-8px); }
+          40% { transform: translateX(8px); }
+          60% { transform: translateX(-5px); }
+          80% { transform: translateX(5px); }
+        }
+      `}</style>
+    </div>
+  );
+}
 
 // ─── Mots du Jour ─────────────────────────────────────────────────────────────
 const MOTS_5 = [
-  'CHIEN','MAISON','ARBRE','POMME','ROUGE','BLANC','NUAGE','PLAGE','LIVRE','FLEUR',
-  'NUIT','JOUR','LUNDI','MARDI','SOLEIL','LUNE','ETOILE','RIVIERE','FORET','PLUME',
-  'TABLE','CHAISE','FENTRE','PORTE','PIANO','VERRE','ASSIETTE','LAMPE','FLUTE','COEUR',
-  'TIGRE','LOUP','AIGLE','DAUPHIN','BISON','LAPIN','RENARD','HIBOU','LYNX','PANDA',
-  'SUCRE','BEURRE','FARINE','MIEL','CAFE','PAIN','FROMAGE','YAOURT','SOUPE','SALADE',
+  'CHIEN','ARBRE','POMME','ROUGE','BLANC','NUAGE','PLAGE','LIVRE','FLEUR',
+  'NUIT','JOUR','LUNDI','MARDI','SOLEIL','LUNE','ETOILE','PLUME',
+  'TABLE','CHAISE','PORTE','PIANO','VERRE','LAMPE','FLUTE','COEUR',
+  'TIGRE','LOUP','AIGLE','BISON','LAPIN','RENARD','HIBOU','LYNX','PANDA',
+  'SUCRE','BEURRE','FARINE','MIEL','CAFE','PAIN','SOUPE','SALADE',
 ];
 
 const MOTS_6 = [
-  'MAISON','JARDIN','SOLEIL','RIVIERE','FORÊT','CHEMIN','MOULIN','BALCON','FLEUVE','VALLEE',
-  'TIGRE','JAGUAR','REQUIN','CONDOR','PERROQUET','TORTUE','DAUPHIN','GIRAFE','LOUTRE','CASTOR',
-  'ORANGE','CITRON','CERISE','MANGUE','PAPAYE','ANANAS','BANANE','MELON','POIRE','FIGUE',
-  'GUITARE','VIOLON','CLOCHE','TROMPETTE','ACCORDEON','CYMBAL','ORGUE','HARPE','SITAR','LUTH',
-  'NUAGE','BRUME','ORAGE','TONNERRE','ECLAIR','GRELE','VERGLAS','GIVRE','BROUILLARD','AURORE',
+  'JARDIN','SOLEIL','CHEMIN','MOULIN','BALCON','FLEUVE','VALLEE',
+  'JAGUAR','REQUIN','CONDOR','TORTUE','GIRAFE','LOUTRE','CASTOR',
+  'ORANGE','CITRON','CERISE','MANGUE','BANANE','MELON','POIRE',
+  'GUITARE','VIOLON','CLOCHE','CYMBAL','ORGUE','HARPE','SITAR',
+  'NUAGE','BRUME','ORAGE','ECLAIR','GIVRE','AURORE',
 ];
 
 function getRandomMot(len: 5 | 6): string {
-  const list = len === 5 ? MOTS_5 : MOTS_6;
-  // Filtre par longueur exacte au cas où
-  const filtered = list.filter(m => m.replace('Ê','E').replace('Ô','O').replace('Î','I').replace('Â','A').replace('Û','U').length === len);
-  const pool = filtered.length > 0 ? filtered : list;
-  return pool[Math.floor(Math.random() * pool.length)].toUpperCase();
+  const list = (len === 5 ? MOTS_5 : MOTS_6).filter(m => m.length === len);
+  return list[Math.floor(Math.random() * list.length)].toUpperCase();
 }
 
-function normalize(s: string) {
+function normalizeStr(s: string) {
   return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
 }
 
@@ -83,9 +274,7 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
     setLost(false);
   };
 
-  const restart = () => {
-    if (wordLen) startGame(wordLen);
-  };
+  const restart = () => { if (wordLen) startGame(wordLen); };
 
   const submit = useCallback(() => {
     if (!wordLen || current.length !== wordLen) {
@@ -93,26 +282,19 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
       setTimeout(() => setShake(false), 500);
       return;
     }
-    const norm = normalize(current);
+    const norm = normalizeStr(current);
     const newGuesses = [...guesses, norm];
     setGuesses(newGuesses);
     setCurrent('');
-    if (norm === normalize(secret)) {
-      setWon(true);
-    } else if (newGuesses.length >= MAX_TRIES) {
-      setLost(true);
-    }
+    if (norm === normalizeStr(secret)) setWon(true);
+    else if (newGuesses.length >= MAX_TRIES) setLost(true);
   }, [current, guesses, secret, wordLen]);
 
   const pressKey = useCallback((key: string) => {
     if (won || lost || !wordLen) return;
-    if (key === '←') {
-      setCurrent(c => c.slice(0, -1));
-    } else if (key === 'OK') {
-      submit();
-    } else if (current.length < wordLen) {
-      setCurrent(c => c + key);
-    }
+    if (key === '←') setCurrent(c => c.slice(0, -1));
+    else if (key === 'OK') submit();
+    else if (current.length < wordLen) setCurrent(c => c + key);
   }, [won, lost, wordLen, current, submit]);
 
   useEffect(() => {
@@ -126,33 +308,20 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
     return () => window.removeEventListener('keydown', handler);
   }, [pressKey]);
 
-  // Calcule l'état de chaque lettre
   function evaluateGuess(guess: string, secret: string): LetterState[] {
-    const norm = normalize(secret);
-    const result: LetterState[] = Array(guess.length).fill('absent');
+    const norm = normalizeStr(secret);
+    const result: LetterState[] = Array(guess.length).fill('absent') as LetterState[];
     const secretArr = norm.split('');
-    const guessArr = normalize(guess).split('');
-
-    // Pass 1 : corrects
-    guessArr.forEach((l, i) => {
-      if (l === secretArr[i]) {
-        result[i] = 'correct';
-        secretArr[i] = '';
-      }
-    });
-    // Pass 2 : présents
+    const guessArr = normalizeStr(guess).split('');
+    guessArr.forEach((l, i) => { if (l === secretArr[i]) { result[i] = 'correct'; secretArr[i] = ''; } });
     guessArr.forEach((l, i) => {
       if (result[i] === 'correct') return;
       const idx = secretArr.indexOf(l);
-      if (idx !== -1) {
-        result[i] = 'present';
-        secretArr[idx] = '';
-      }
+      if (idx !== -1) { result[i] = 'present'; secretArr[idx] = ''; }
     });
     return result;
   }
 
-  // État des touches du clavier
   const keyStates: Record<string, LetterState> = {};
   guesses.forEach(g => {
     const states = evaluateGuess(g, secret);
@@ -164,7 +333,6 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
     });
   });
 
-  // ── Écran de choix ──
   if (!wordLen) {
     return (
       <div className="fixed inset-0 z-50 bg-gradient-to-br from-slate-900 via-zinc-900 to-slate-800 flex flex-col items-center justify-center gap-8">
@@ -206,11 +374,8 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
     );
   }
 
-  const totalRows = MAX_TRIES;
-
   return (
     <div className="fixed inset-0 z-50 bg-gradient-to-br from-slate-900 via-zinc-900 to-slate-800 flex flex-col">
-      {/* Header */}
       <div className="flex items-center justify-between px-4 sm:px-8 py-3 border-b border-white/10">
         <div className="flex items-center gap-3">
           <div className="flex gap-1">
@@ -243,33 +408,24 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      {/* Grille */}
       <div className="flex-1 flex items-center justify-center px-4 py-2 overflow-auto">
         <div className="flex flex-col gap-1.5">
-          {Array.from({ length: totalRows }).map((_, rowIdx) => {
+          {Array.from({ length: MAX_TRIES }).map((_, rowIdx) => {
             const isGuessed = rowIdx < guesses.length;
             const isCurrent = rowIdx === guesses.length;
             const guess = isGuessed ? guesses[rowIdx] : isCurrent ? current : '';
             const states = isGuessed ? evaluateGuess(guesses[rowIdx], secret) : null;
-
             return (
-              <div key={rowIdx}
-                className={`flex gap-1.5 ${isCurrent && shake ? 'animate-[shake_0.4s_ease]' : ''}`}>
+              <div key={rowIdx} className={`flex gap-1.5 ${isCurrent && shake ? 'animate-[shake_0.4s_ease]' : ''}`}>
                 {Array.from({ length: wordLen }).map((_, colIdx) => {
                   const letter = guess[colIdx] || '';
                   const state: LetterState = isGuessed
-                    ? (states![colIdx] || 'absent')
-                    : isCurrent && letter
-                    ? 'typing'
-                    : 'empty';
-
+                    ? (states![colIdx])
+                    : isCurrent && letter ? 'typing' : 'empty';
                   return (
                     <div key={colIdx}
                       className={`w-12 h-12 sm:w-14 sm:h-14 rounded-lg border-2 flex items-center justify-center font-bold text-xl sm:text-2xl transition-all duration-300 ${getLetterColor(state)}`}
-                      style={{
-                        ...fredoka,
-                        transitionDelay: isGuessed ? `${colIdx * 80}ms` : '0ms',
-                      }}>
+                      style={{ ...fredoka, transitionDelay: isGuessed ? `${colIdx * 80}ms` : '0ms' }}>
                       {letter}
                     </div>
                   );
@@ -280,7 +436,6 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      {/* Clavier */}
       <div className="px-2 pb-4 pt-2 flex flex-col gap-1.5 items-center">
         {KEYBOARD_ROWS.map((row, ri) => (
           <div key={ri} className="flex gap-1">
@@ -302,17 +457,12 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
         ))}
       </div>
 
-      {/* Win / Lose */}
       {(won || lost) && (
         <div className="fixed inset-0 z-10 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="bg-zinc-900 border border-white/10 rounded-3xl p-8 flex flex-col items-center gap-4 text-white text-center max-w-xs w-full mx-4">
             <div className="text-5xl">{won ? '🎉' : '😔'}</div>
             <h2 className="text-2xl font-bold" style={fredoka}>{won ? 'Bravo !' : 'Perdu !'}</h2>
-            {won && (
-              <p className="text-white/70 text-sm" style={fredoka}>
-                Trouvé en <strong>{guesses.length} essai{guesses.length > 1 ? 's' : ''}</strong> sur {MAX_TRIES} !
-              </p>
-            )}
+            {won && <p className="text-white/70 text-sm" style={fredoka}>Trouvé en <strong>{guesses.length} essai{guesses.length > 1 ? 's' : ''}</strong> sur {MAX_TRIES} !</p>}
             {lost && (
               <div>
                 <p className="text-white/70 text-sm mb-2" style={fredoka}>Le mot était :</p>
@@ -324,14 +474,8 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
               </div>
             )}
             <div className="flex gap-3 mt-2 w-full">
-              <button onClick={restart} style={fredoka}
-                className="flex-1 py-3 rounded-xl bg-violet-500 hover:bg-violet-400 text-white font-bold text-sm border-b-4 border-violet-700 active:border-b-0 transition-all">
-                Nouveau mot
-              </button>
-              <button onClick={() => setWordLen(null)} style={fredoka}
-                className="flex-1 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm border border-white/20 transition-all">
-                Changer
-              </button>
+              <button onClick={restart} style={fredoka} className="flex-1 py-3 rounded-xl bg-violet-500 hover:bg-violet-400 text-white font-bold text-sm border-b-4 border-violet-700 active:border-b-0 transition-all">Nouveau mot</button>
+              <button onClick={() => setWordLen(null)} style={fredoka} className="flex-1 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm border border-white/20 transition-all">Changer</button>
             </div>
           </div>
         </div>
@@ -362,9 +506,7 @@ const MEMORY_PAIRS = [
   { id: 'coeur',  label: 'Coeur',  emoji: '❤️' },
 ];
 
-type MemoryCard = {
-  uid: number; id: string; label: string; emoji: string; flipped: boolean; matched: boolean;
-};
+type MemoryCard = { uid: number; id: string; label: string; emoji: string; flipped: boolean; matched: boolean; };
 
 function shuffle<T>(arr: T[]): T[] { return [...arr].sort(() => Math.random() - 0.5); }
 
@@ -410,8 +552,12 @@ function MemoryGame({ onClose }: { onClose: () => void }) {
     }
   }, [cards, selected, locked]);
 
+  // Fix ESLint set-state-in-effect : setTimeout pour casser le cycle synchrone
   useEffect(() => {
-    if (cards.length > 0 && cards.every(c => c.matched)) { setWon(true); setRunning(false); }
+    if (cards.length > 0 && cards.every(c => c.matched)) {
+      const t = setTimeout(() => { setWon(true); setRunning(false); }, 0);
+      return () => clearTimeout(t);
+    }
   }, [cards]);
 
   const restart = () => { setCards(buildDeck()); setSelected([]); setLocked(false); setMoves(0); setWon(false); setTime(0); setRunning(true); };
@@ -510,7 +656,7 @@ function SingleRiveGame({ src, sm }: { src: string; sm: string }) {
 }
 
 // ─── Fullscreen Rive ──────────────────────────────────────────────────────────
-type RiveGameId = Exclude<GameId, 'memory' | 'monde' | 'motdujour'>;
+type RiveGameId = Exclude<GameId, 'memory' | 'monde' | 'motdujour' | 'enigmes'>;
 
 function FullscreenGame({ gameId, onClose }: { gameId: RiveGameId; onClose: () => void }) {
   const gameMap: Record<RiveGameId, { src: string; sm: string }> = {
@@ -566,6 +712,7 @@ function GameCard({ title, badge, badgeColor, borderColor, description, gradient
 export default function RiverPage() {
   const [activeGame, setActiveGame] = useState<GameId | null>(null);
   const close = () => setActiveGame(null);
+  const NON_RIVE = ['memory', 'monde', 'motdujour', 'enigmes'];
 
   return (
     <>
@@ -585,16 +732,16 @@ export default function RiverPage() {
         }
       `}</style>
 
-      {activeGame === 'memory'     && <MemoryGame    onClose={close} />}
-      {activeGame === 'monde'      && <MondeGame     onClose={close} />}
-      {activeGame === 'motdujour'  && <MotDuJourGame onClose={close} />}
-      {activeGame !== null && !['memory','monde','motdujour'].includes(activeGame) && (
+      {activeGame === 'memory'    && <MemoryGame    onClose={close} />}
+      {activeGame === 'monde'     && <MondeGame     onClose={close} />}
+      {activeGame === 'motdujour' && <MotDuJourGame onClose={close} />}
+      {activeGame === 'enigmes'   && <EnigmesGame   onClose={close} />}
+      {activeGame !== null && !NON_RIVE.includes(activeGame) && (
         <FullscreenGame gameId={activeGame as RiveGameId} onClose={close} />
       )}
 
       <div className="min-h-screen bg-background flex">
         <div className="hidden md:block md:w-[80px] flex-shrink-0"><Sidebar /></div>
-
         <div className="flex-1 pb-20 md:pb-0">
 
           {/* Hero */}
@@ -617,7 +764,7 @@ export default function RiverPage() {
                     <p className="text-purple-100 text-sm mb-4 leading-relaxed max-w-sm" style={fredoka}>Clique sur un jeu pour le lancer en plein ecran.</p>
                     <div className="flex gap-3 flex-wrap">
                       <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/30" style={fredoka}>
-                        <div className="text-2xl font-bold">7</div>
+                        <div className="text-2xl font-bold">8</div>
                         <div className="text-xs text-purple-100">Jeux</div>
                       </div>
                       <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/30" style={fredoka}>
@@ -639,7 +786,17 @@ export default function RiverPage() {
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-12">
             <section>
               <h2 className="text-base font-semibold text-muted-foreground uppercase tracking-wider mb-6" style={fredoka}>Jeux interactifs</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+                <GameCard
+                  title="Livre des Énigmes"
+                  badge="Énigmes"
+                  badgeColor="bg-white/20 text-white"
+                  borderColor="border-l-indigo-400"
+                  description="Résous des énigmes et devinettes. Trouve le mot code !"
+                  gradient="from-indigo-700 to-violet-900"
+                  onPlay={() => setActiveGame('enigmes')}
+                />
 
                 <GameCard
                   title="Mot du Jour"
@@ -685,7 +842,7 @@ export default function RiverPage() {
                   title="Grille d'expressions"
                   badge="Expressions"
                   badgeColor="bg-white/20 text-white"
-                  borderColor="border-l-violet-400"
+                  borderColor="border-l-fuchsia-400"
                   description="Explore les expressions animees"
                   gradient="from-purple-500 to-fuchsia-600"
                   onPlay={() => setActiveGame('expression')}
@@ -728,7 +885,6 @@ export default function RiverPage() {
             </section>
           </div>
         </div>
-
         <MobileNavbar />
       </div>
     </>
