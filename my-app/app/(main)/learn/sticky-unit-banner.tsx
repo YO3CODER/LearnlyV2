@@ -96,15 +96,25 @@ export const StickyUnitBannerMobile = ({ units }: Props) => {
           index={activeUnit.index}
         />
 
-        {/* Bouton Jeux — fixé juste en bas du banner */}
-        <div className="flex justify-start mt-2 pl-1">
+        {/* Boutons Jeux et MaitreLucas — fixés juste en bas du banner */}
+        <div className="flex justify-start gap-2 mt-2 pl-1">
           <Button
             asChild
             variant="primary"
             size="icon"
           >
             <a href="/river">
-              <img src="/game.svg" alt="Jeux" width={32} height={32} />
+              <img src="/game.svg" alt="Jeux" width={22} height={22} />
+            </a>
+          </Button>
+
+          <Button
+            asChild
+            variant="danger"
+            size="icon"
+          >
+            <a href="#">
+              <img src="/maitrelucas.svg" alt="MaitreLucas" width={22} height={22} />
             </a>
           </Button>
         </div>
