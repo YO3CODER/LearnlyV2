@@ -831,8 +831,8 @@ export default function RiverPage() {
                 />
 
                 <GameCard
-                  title="Jeu du Monde"
-                  badge="Géographie"
+                  title="Basketball interactif"
+                  badge="Basket"
                   badgeColor="bg-white/20 text-white"
                   borderColor="border-l-blue-400"
                   description="Explore la carte du monde et teste tes connaissances !"
