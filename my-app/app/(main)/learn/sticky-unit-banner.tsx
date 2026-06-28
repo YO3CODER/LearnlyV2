@@ -104,7 +104,7 @@ export const StickyUnitBannerMobile = ({ units }: Props) => {
             size="icon"
           >
             <a href="/river">
-              <img src="/game.svg" alt="Jeux" width={22} height={22} />
+              <img src="/game.svg" alt="Jeux" width={32} height={32} />
             </a>
           </Button>
         </div>
