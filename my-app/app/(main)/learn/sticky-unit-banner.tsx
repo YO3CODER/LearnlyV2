@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { UnitBanner } from "@/app/(main)/learn/unit-banner";
 
 type UnitInfo = {
@@ -74,6 +75,7 @@ export const StickyUnitBannerMobile = ({ units }: Props) => {
   useEffect(() => {
     const mobileHeader = document.querySelector("header");
     if (mobileHeader) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHeaderHeight(mobileHeader.offsetHeight);
     }
   }, []);
@@ -93,8 +95,23 @@ export const StickyUnitBannerMobile = ({ units }: Props) => {
           order={activeUnit.order}
           index={activeUnit.index}
         />
+
+        {/* Bouton Jeux — fixé juste en bas du banner */}
+        <div className="flex justify-start mt-2 pl-1">
+          <Button
+            asChild
+            variant="primary"
+            size="icon"
+          >
+            <a href="/river">
+              <img src="/game.svg" alt="Jeux" width={22} height={22} />
+            </a>
+          </Button>
+        </div>
       </div>
-      <div className="lg:hidden h-[80px]" />
+
+      {/* Espace réservé pour compenser le bouton ajouté */}
+      <div className="lg:hidden h-[110px]" />
     </>
   );
 };

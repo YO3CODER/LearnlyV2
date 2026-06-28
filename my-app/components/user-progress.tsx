@@ -36,6 +36,13 @@ export const UserProgress = ({
   return (
     <div className="flex items-center justify-end gap-x-1 w-full">
 
+      {/* Bouton Jeux - visible en grand écran seulement */}
+      <Link href="/river" className="hidden lg:block">
+        <Button variant="primary" size="icon">
+          <img src="/game.svg" alt="Jeux" width={22} height={22} />
+        </Button>
+      </Link>
+
       {/* Cours actif */}
       <Link href="/courses">
         <Button variant="ghost" className="px-2">
@@ -50,29 +57,29 @@ export const UserProgress = ({
       </Link>
 
       {/* Streak */}
-<Button variant="ghost" className="px-2 gap-x-1">
-  <Image
-    src="/flamme.svg"
-    height={22}
-    width={22}
-    alt="Streak"
-    className={cn(streak === 0 && "opacity-40 grayscale")}
-  />
-  <span className={cn(
-    "font-extrabold text-sm",
-    streak > 0 ? "text-orange-500" : "text-muted-foreground"
-  )}>
-    {streak}
-  </span>
-</Button>
+      <Button variant="ghost" className="px-2 gap-x-1">
+        <Image
+          src="/flamme.svg"
+          height={22}
+          width={22}
+          alt="Streak"
+          className={cn(streak === 0 && "opacity-40 grayscale")}
+        />
+        <span className={cn(
+          "font-extrabold text-sm",
+          streak > 0 ? "text-orange-500" : "text-muted-foreground"
+        )}>
+          {streak}
+        </span>
+      </Button>
 
-{/* Points */}
-<Link href="/shop">
-  <Button variant="ghost" className="px-2 gap-x-1">
-    <Image src="/xp-bolt.svg" height={22} width={22} alt="Points" />
-    <span className="font-extrabold text-sm text-yellow-300">{points}</span>
-  </Button>
-</Link>
+      {/* Points */}
+      <Link href="/shop">
+        <Button variant="ghost" className="px-2 gap-x-1">
+          <Image src="/xp-bolt.svg" height={22} width={22} alt="Points" />
+          <span className="font-extrabold text-sm text-yellow-300">{points}</span>
+        </Button>
+      </Link>
 
       {/* Hearts */}
       <Link href="/shop" onClick={handleHeartClick}>
