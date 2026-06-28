@@ -110,7 +110,7 @@ export const StickyUnitBannerMobile = ({ units }: Props) => {
 
           <Button
             asChild
-            variant="danger"
+            variant="default"
             size="icon"
           >
             <a href="#">
