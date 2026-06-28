@@ -75,6 +75,7 @@ function EnigmesGame({ onClose }: { onClose: () => void }) {
   };
 
   const handleKey = (e: React.KeyboardEvent) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     if (e.key === 'Enter') statut === 'idle' ? verifier() : suivante();
   };
 
@@ -122,7 +123,7 @@ function EnigmesGame({ onClose }: { onClose: () => void }) {
           {/* Carte énigme */}
           <div className="relative rounded-2xl bg-violet-800/40 border border-violet-500/30 p-8 backdrop-blur-sm">
             {/* Guillemets décoratifs */}
-            <div className="absolute top-4 left-6 text-5xl text-violet-400/30 font-serif leading-none select-none">"</div>
+            <div className="absolute top-4 left-6 text-5xl text-violet-400/30 font-serif leading-none select-none">&quot;</div>
             <p className="text-white text-center text-lg leading-relaxed font-medium relative z-10 pt-4" style={fredoka}>
               {enigme.texte}
             </p>
@@ -132,7 +133,7 @@ function EnigmesGame({ onClose }: { onClose: () => void }) {
           {statut === 'correct' && (
             <div className="rounded-2xl bg-emerald-500/20 border border-emerald-400/40 p-5 flex flex-col items-center gap-2 text-center">
               <div className="text-3xl">🎉</div>
-              <p className="text-emerald-300 font-bold text-lg" style={fredoka}>Bravo ! C'est correct !</p>
+              <p className="text-emerald-300 font-bold text-lg" style={fredoka}>Bravo ! C&apos;est correct !</p>
               <p className="text-emerald-200/70 text-sm" style={fredoka}>La réponse était : <strong className="text-white">{enigme.reponse}</strong></p>
               <button onClick={suivante} style={fredoka}
                 className="mt-2 px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-sm border-b-4 border-emerald-700 active:border-b-0 transition-all">
@@ -329,7 +330,8 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
       const prev = keyStates[l];
       const cur = states[i];
       if (prev === 'correct') return;
-      if (cur === 'correct' || prev !== 'correct') keyStates[l] = cur;
+      if (prev === 'present' && cur === 'absent') return;
+      keyStates[l] = cur;
     });
   });
 
