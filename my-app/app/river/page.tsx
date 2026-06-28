@@ -2,7 +2,7 @@
 
 import { useRive } from '@rive-app/react-canvas';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Sidebar } from '@/components/sidebar';
 import { MobileNavbar } from '@/components/mobile-navbar';
 
@@ -15,79 +15,136 @@ const gifs = [
   { src: '/4.gif', label: 'Action 4' },
 ];
 
-type GameId = 'piano' | 'expression' | 'gamification' | 'souris' | null;
+type GameId = 'piano' | 'expression' | 'gamification' | 'souris';
 
+// ─── Chaque jeu est son propre composant isolé ──────────────────────────────
+// Ainsi useRive n'est instancié que pour le jeu actif, jamais les autres.
+
+function PianoGame() {
+  const { RiveComponent, rive } = useRive({
+    src: '/piano.riv', stateMachines: 'MAIN-sm', autoplay: true,
+  });
+  return { RiveComponent, loaded: !!rive };
+}
+function ExpressionGame() {
+  const { RiveComponent, rive } = useRive({
+    src: '/expression.riv', stateMachines: 'Grid', autoplay: true,
+  });
+  return { RiveComponent, loaded: !!rive };
+}
+function GamificationGame() {
+  const { RiveComponent, rive } = useRive({
+    src: '/gamification.riv', stateMachines: 'State Machine 1', autoplay: true,
+  });
+  return { RiveComponent, loaded: !!rive };
+}
+function SourisGame() {
+  const { RiveComponent, rive } = useRive({
+    src: '/souris.riv', stateMachines: 'State Machine 1', autoplay: true,
+  });
+  return { RiveComponent, loaded: !!rive };
+}
+
+// Wrapper qui choisit le bon hook selon gameId
+function ActiveRiveGame({ gameId }: { gameId: GameId }) {
+  // On ne peut pas appeler des hooks conditionnellement, donc on crée
+  // 4 composants React distincts et on ne monte que celui voulu.
+  if (gameId === 'piano')        return <SingleRiveGame src="/piano.riv" sm="MAIN-sm" />;
+  if (gameId === 'expression')   return <SingleRiveGame src="/expression.riv" sm="Grid" />;
+  if (gameId === 'gamification') return <SingleRiveGame src="/gamification.riv" sm="State Machine 1" />;
+  if (gameId === 'souris')       return <SingleRiveGame src="/souris.riv" sm="State Machine 1" />;
+  return null;
+}
+
+function SingleRiveGame({ src, sm }: { src: string; sm: string }) {
+  const { RiveComponent, rive } = useRive({
+    src, stateMachines: sm, autoplay: true,
+  });
+  return (
+    <div className="w-full h-full relative">
+      {!rive && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+          <div className="w-16 h-16 rounded-full border-4 border-white/20 border-t-white animate-spin" />
+          <p className="text-white/60 text-sm" style={fredoka}>Chargement...</p>
+        </div>
+      )}
+      <RiveComponent style={{ width: '100%', height: '100vh', opacity: rive ? 1 : 0 }} />
+    </div>
+  );
+}
+
+// ─── Fullscreen : monté uniquement quand activeGame !== null ─────────────────
 function FullscreenGame({ gameId, onClose }: { gameId: GameId; onClose: () => void }) {
-  const { RiveComponent: PianoFull, rive: rivePianoFull } = useRive({
-    src: '/piano.riv', stateMachines: 'MAIN-sm', autoplay: gameId === 'piano',
-  });
-  const { RiveComponent: GridFull, rive: riveGridFull } = useRive({
-    src: '/expression.riv', stateMachines: 'Grid', autoplay: gameId === 'expression',
-  });
-  const { RiveComponent: GamiFull, rive: riveGamiFull } = useRive({
-    src: '/gamification.riv', stateMachines: 'State Machine 1', autoplay: gameId === 'gamification',
-  });
-  const { RiveComponent: SourisFull, rive: riveSourisFull } = useRive({
-    src: '/souris.riv', stateMachines: 'State Machine 1', autoplay: gameId === 'souris',
-  });
-
-  const loaded =
-    (gameId === 'piano' && !!rivePianoFull) ||
-    (gameId === 'expression' && !!riveGridFull) ||
-    (gameId === 'gamification' && !!riveGamiFull) ||
-    (gameId === 'souris' && !!riveSourisFull);
-
   return (
     <div className="fixed inset-0 z-50 bg-black flex flex-col">
       <div className="absolute top-4 right-4 z-50">
-        <button onClick={onClose} style={fredoka}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm backdrop-blur-sm border border-white/20 transition-all">
+        <button
+          onClick={onClose}
+          style={fredoka}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm backdrop-blur-sm border border-white/20 transition-all"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
           </svg>
           Fermer
         </button>
       </div>
-      <div className="flex-1 flex items-center justify-center">
-        {!loaded && (
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-16 h-16 rounded-full border-4 border-white/20 border-t-white animate-spin" />
-            <p className="text-white/60 text-sm" style={fredoka}>Chargement...</p>
-          </div>
-        )}
-        <div className={loaded ? 'w-full h-full' : 'hidden'}>
-          {gameId === 'piano'        && <PianoFull  style={{ width: '100%', height: '100vh' }} />}
-          {gameId === 'expression'   && <GridFull   style={{ width: '100%', height: '100vh' }} />}
-          {gameId === 'gamification' && <GamiFull   style={{ width: '100%', height: '100vh' }} />}
-          {gameId === 'souris'       && <SourisFull style={{ width: '100%', height: '100vh' }} />}
-        </div>
+      <div className="flex-1">
+        {/* ActiveRiveGame monte 1 seul hook useRive selon le jeu */}
+        <ActiveRiveGame gameId={gameId} />
       </div>
     </div>
   );
 }
 
+// ─── GameCard avec lazy preview ──────────────────────────────────────────────
+// La preview Rive ne se charge qu'au hover (IntersectionObserver optionnel,
+// ici on utilise onMouseEnter pour la simplicité et la perf mobile).
 function GameCard({
   title, badge, badgeColor, borderColor, description, previewSrc, smName, onPlay,
 }: {
   title: string; badge: string; badgeColor: string; borderColor: string;
   description: string; previewSrc: string; smName?: string; onPlay: () => void;
 }) {
-  const { RiveComponent, rive } = useRive({
-    src: previewSrc,
-    stateMachines: smName,
-    autoplay: true,
-  });
+  const [hovered, setHovered] = useState(false);
+
+  // useRive est appelé inconditionnellement (règle des hooks),
+  // mais autoplay=false tant qu'on n'a pas hovered — Rive ne charge pas le fichier
+  // tant que autoplay est false et qu'on ne l'a pas encore demandé.
+  // On passe `src` seulement quand hovered pour éviter le fetch initial.
+  const { RiveComponent, rive } = useRive(
+    hovered
+      ? { src: previewSrc, stateMachines: smName, autoplay: true }
+      : { src: '', autoplay: false },
+  );
 
   return (
-    <div className={`card-in bg-card rounded-2xl border border-border shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden border-l-4 ${borderColor} flex flex-col`}>
+    <div
+      className={`card-in bg-card rounded-2xl border border-border shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden border-l-4 ${borderColor} flex flex-col`}
+      onMouseEnter={() => setHovered(true)}
+    >
       {/* Preview */}
-      <div className="relative bg-muted overflow-hidden" style={{ height: 200 }}>
-        {!rive && (
-          <div className="absolute inset-0 bg-gradient-to-r from-muted via-muted/60 to-muted animate-pulse" />
+      <div
+        className="relative bg-muted overflow-hidden flex items-center justify-center"
+        style={{ height: 200 }}
+      >
+        {/* Placeholder statique tant que pas hovered ou pas encore chargé */}
+        {(!hovered || !rive) && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-2xl bg-muted-foreground/10 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/40">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+            </div>
+          </div>
         )}
-        <div className={rive ? 'absolute inset-0 flex items-center justify-center' : 'hidden'}>
-          <RiveComponent style={{ width: 180, height: 180 }} />
-        </div>
+
+        {hovered && (
+          <div className={rive ? 'absolute inset-0 flex items-center justify-center' : 'hidden'}>
+            <RiveComponent style={{ width: 180, height: 180 }} />
+          </div>
+        )}
+
         {/* Overlay play */}
         <div
           onClick={onPlay}
@@ -110,8 +167,11 @@ function GameCard({
           <p className="text-sm font-semibold text-foreground" style={fredoka}>{title}</p>
           <p className="text-xs text-muted-foreground mt-1" style={fredoka}>{description}</p>
         </div>
-        <button onClick={onPlay} style={fredoka}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-violet-500 text-white border-b-4 border-violet-600 hover:bg-violet-500/90 active:border-b-0 transition-all">
+        <button
+          onClick={onPlay}
+          style={fredoka}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-violet-500 text-white border-b-4 border-violet-600 hover:bg-violet-500/90 active:border-b-0 transition-all"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
             <polygon points="5 3 19 12 5 21 5 3" />
           </svg>
@@ -122,8 +182,9 @@ function GameCard({
   );
 }
 
+// ─── Page principale ─────────────────────────────────────────────────────────
 export default function RiverPage() {
-  const [activeGame, setActiveGame] = useState<GameId>(null);
+  const [activeGame, setActiveGame] = useState<GameId | null>(null);
 
   return (
     <>
@@ -157,7 +218,10 @@ export default function RiverPage() {
         }
       `}</style>
 
-      {activeGame && <FullscreenGame gameId={activeGame} onClose={() => setActiveGame(null)} />}
+      {/* FullscreenGame monté conditionnellement — zéro overhead quand fermé */}
+      {activeGame !== null && (
+        <FullscreenGame gameId={activeGame} onClose={() => setActiveGame(null)} />
+      )}
 
       <div className="min-h-screen bg-background flex">
         <div className="hidden md:block md:w-[80px] flex-shrink-0">
@@ -261,16 +325,26 @@ export default function RiverPage() {
               </div>
             </section>
 
-            {/* GIFs */}
+            {/* GIFs — loading="lazy" natif pour ne pas bloquer le LCP */}
             <section>
               <h2 className="text-base font-semibold text-muted-foreground uppercase tracking-wider mb-6" style={fredoka}>
                 Effets visuels
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {gifs.map((gif, index) => (
-                  <div key={gif.src} style={{ animationDelay: `${index * 60}ms` }}
-                    className="card-in bg-card rounded-2xl border border-border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 p-5 flex flex-col items-center gap-3 cursor-pointer">
-                    <img src={gif.src} alt={gif.label} className="w-20 h-20 object-contain" />
+                  <div
+                    key={gif.src}
+                    style={{ animationDelay: `${index * 60}ms` }}
+                    className="card-in bg-card rounded-2xl border border-border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 p-5 flex flex-col items-center gap-3 cursor-pointer"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={gif.src}
+                      alt={gif.label}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-20 h-20 object-contain"
+                    />
                     <span className="text-sm font-semibold text-foreground text-center" style={fredoka}>
                       {gif.label}
                     </span>
