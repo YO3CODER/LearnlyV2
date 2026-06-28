@@ -14,20 +14,29 @@ const gifs = [
   { src: '/4.gif', label: 'Action 4' },
 ];
 
+function RiveSkeleton({ width, height }: { width: number | string; height: number }) {
+  return (
+    <div
+      style={{ width, height }}
+      className="rounded-xl bg-gradient-to-r from-muted via-muted/60 to-muted animate-pulse"
+    />
+  );
+}
+
 export default function RiverPage() {
-  const { RiveComponent: GridComponent } = useRive({
+  const { RiveComponent: GridComponent, rive: riveGrid } = useRive({
     src: '/expression.riv',
     stateMachines: 'Grid',
     autoplay: true,
   });
 
-  const { RiveComponent: GamificationComponent } = useRive({
+  const { RiveComponent: GamificationComponent, rive: riveGamification } = useRive({
     src: '/gamification.riv',
     stateMachines: 'State Machine 1',
     autoplay: true,
   });
 
-  const { RiveComponent: PianoComponent } = useRive({
+  const { RiveComponent: PianoComponent, rive: rivePiano } = useRive({
     src: '/piano.riv',
     stateMachines: 'MAIN-sm',
     autoplay: true,
@@ -62,6 +71,9 @@ export default function RiverPage() {
           -webkit-text-fill-color: transparent;
           background-clip: text;
           animation: shimmer 3s linear infinite;
+        }
+        .rive-fade-in {
+          animation: fadeSlideIn 0.4s ease forwards;
         }
       `}</style>
 
@@ -134,7 +146,10 @@ export default function RiverPage() {
                   </p>
                 </div>
                 <div className="flex justify-center px-4 pb-5">
-                  <PianoComponent style={{ width: '100%', maxWidth: 600, height: 340 }} />
+                  {!rivePiano && <RiveSkeleton width="100%" height={340} />}
+                  <div className={rivePiano ? 'rive-fade-in w-full' : 'hidden'}>
+                    <PianoComponent style={{ width: '100%', maxWidth: 600, height: 340 }} />
+                  </div>
                 </div>
               </div>
             </section>
@@ -145,6 +160,7 @@ export default function RiverPage() {
                 Animations Rive
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
                 <div className="card-in bg-card rounded-2xl border border-border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 overflow-hidden border-l-4 border-l-violet-400">
                   <div className="px-5 pt-5 pb-2">
                     <span className="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 mb-2" style={fredoka}>
@@ -155,7 +171,10 @@ export default function RiverPage() {
                     </p>
                   </div>
                   <div className="flex justify-center px-4 pb-5">
-                    <GridComponent style={{ width: 280, height: 280 }} />
+                    {!riveGrid && <RiveSkeleton width={280} height={280} />}
+                    <div className={riveGrid ? 'rive-fade-in' : 'hidden'}>
+                      <GridComponent style={{ width: 280, height: 280 }} />
+                    </div>
                   </div>
                 </div>
 
@@ -169,9 +188,13 @@ export default function RiverPage() {
                     </p>
                   </div>
                   <div className="flex justify-center px-4 pb-5">
-                    <GamificationComponent style={{ width: 280, height: 280 }} />
+                    {!riveGamification && <RiveSkeleton width={280} height={280} />}
+                    <div className={riveGamification ? 'rive-fade-in' : 'hidden'}>
+                      <GamificationComponent style={{ width: 280, height: 280 }} />
+                    </div>
                   </div>
                 </div>
+
               </div>
             </section>
 
