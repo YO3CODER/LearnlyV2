@@ -17,35 +17,18 @@ const gifs = [
 
 type GameId = 'piano' | 'expression' | 'gamification' | 'souris' | null;
 
-function RiveSkeleton({ width, height }: { width: number | string; height: number }) {
-  return (
-    <div
-      style={{ width, height }}
-      className="rounded-xl bg-gradient-to-r from-muted via-muted/60 to-muted animate-pulse"
-    />
-  );
-}
-
-// Composant fullscreen overlay
 function FullscreenGame({ gameId, onClose }: { gameId: GameId; onClose: () => void }) {
   const { RiveComponent: PianoFull, rive: rivePianoFull } = useRive({
-    src: '/piano.riv',
-    stateMachines: 'MAIN-sm',
-    autoplay: gameId === 'piano',
+    src: '/piano.riv', stateMachines: 'MAIN-sm', autoplay: gameId === 'piano',
   });
   const { RiveComponent: GridFull, rive: riveGridFull } = useRive({
-    src: '/expression.riv',
-    stateMachines: 'Grid',
-    autoplay: gameId === 'expression',
+    src: '/expression.riv', stateMachines: 'Grid', autoplay: gameId === 'expression',
   });
   const { RiveComponent: GamiFull, rive: riveGamiFull } = useRive({
-    src: '/gamification.riv',
-    stateMachines: 'State Machine 1',
-    autoplay: gameId === 'gamification',
+    src: '/gamification.riv', stateMachines: 'State Machine 1', autoplay: gameId === 'gamification',
   });
   const { RiveComponent: SourisFull, rive: riveSourisFull } = useRive({
-    src: '/souris.riv',
-    autoplay: gameId === 'souris',
+    src: '/souris.riv', stateMachines: 'State Machine 1', autoplay: gameId === 'souris',
   });
 
   const loaded =
@@ -56,21 +39,15 @@ function FullscreenGame({ gameId, onClose }: { gameId: GameId; onClose: () => vo
 
   return (
     <div className="fixed inset-0 z-50 bg-black flex flex-col">
-      {/* Bouton fermer */}
       <div className="absolute top-4 right-4 z-50">
-        <button
-          onClick={onClose}
-          style={fredoka}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm backdrop-blur-sm border border-white/20 transition-all"
-        >
+        <button onClick={onClose} style={fredoka}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm backdrop-blur-sm border border-white/20 transition-all">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
           </svg>
           Fermer
         </button>
       </div>
-
-      {/* Animation fullscreen */}
       <div className="flex-1 flex items-center justify-center">
         {!loaded && (
           <div className="flex flex-col items-center gap-4">
@@ -79,63 +56,37 @@ function FullscreenGame({ gameId, onClose }: { gameId: GameId; onClose: () => vo
           </div>
         )}
         <div className={loaded ? 'w-full h-full' : 'hidden'}>
-          {gameId === 'piano' && <PianoFull style={{ width: '100%', height: '100vh' }} />}
-          {gameId === 'expression' && <GridFull style={{ width: '100%', height: '100vh' }} />}
-          {gameId === 'gamification' && <GamiFull style={{ width: '100%', height: '100vh' }} />}
-          {gameId === 'souris' && <SourisFull style={{ width: '100%', height: '100vh' }} />}
+          {gameId === 'piano'        && <PianoFull  style={{ width: '100%', height: '100vh' }} />}
+          {gameId === 'expression'   && <GridFull   style={{ width: '100%', height: '100vh' }} />}
+          {gameId === 'gamification' && <GamiFull   style={{ width: '100%', height: '100vh' }} />}
+          {gameId === 'souris'       && <SourisFull style={{ width: '100%', height: '100vh' }} />}
         </div>
       </div>
     </div>
   );
 }
 
-// Card preview pour chaque jeu
 function GameCard({
-  title,
-  badge,
-  badgeColor,
-  borderColor,
-  description,
-  previewSrc,
-  previewType,
-  onPlay,
+  title, badge, badgeColor, borderColor, description, previewSrc, smName, onPlay,
 }: {
-  title: string;
-  badge: string;
-  badgeColor: string;
-  borderColor: string;
-  description: string;
-  previewSrc: string;
-  previewType: 'riv' | 'gif' | 'svg';
-  onPlay: () => void;
+  title: string; badge: string; badgeColor: string; borderColor: string;
+  description: string; previewSrc: string; smName?: string; onPlay: () => void;
 }) {
-  const isRiv = previewType === 'riv';
-
   const { RiveComponent, rive } = useRive({
-    src: isRiv ? previewSrc : '',
-    autoplay: isRiv,
+    src: previewSrc,
+    stateMachines: smName,
+    autoplay: true,
   });
 
   return (
     <div className={`card-in bg-card rounded-2xl border border-border shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden border-l-4 ${borderColor} flex flex-col`}>
-      {/* Preview */}
       <div className="relative bg-muted flex items-center justify-center overflow-hidden" style={{ height: 200 }}>
-        {isRiv ? (
-          <>
-            {!rive && <div className="absolute inset-0 bg-gradient-to-r from-muted via-muted/60 to-muted animate-pulse" />}
-            <div className={rive ? 'w-full h-full' : 'hidden'}>
-              <RiveComponent style={{ width: '100%', height: 200 }} />
-            </div>
-          </>
-        ) : (
-          <img src={previewSrc} alt={title} className="w-32 h-32 object-contain" />
-        )}
-
-        {/* Overlay play au hover */}
-        <div
-          onClick={onPlay}
-          className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-all duration-200 flex items-center justify-center group cursor-pointer"
-        >
+        {!rive && <div className="absolute inset-0 bg-gradient-to-r from-muted via-muted/60 to-muted animate-pulse" />}
+        <div className={rive ? 'w-full h-full' : 'hidden'}>
+          <RiveComponent style={{ width: '100%', height: 200 }} />
+        </div>
+        <div onClick={onPlay}
+          className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-all duration-200 flex items-center justify-center group cursor-pointer">
           <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-200 shadow-xl">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#7c3aed">
               <polygon points="5 3 19 12 5 21 5 3" />
@@ -143,8 +94,6 @@ function GameCard({
           </div>
         </div>
       </div>
-
-      {/* Infos */}
       <div className="px-5 py-4 flex flex-col gap-3 flex-1">
         <div>
           <span className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full mb-1 ${badgeColor}`} style={fredoka}>
@@ -153,11 +102,8 @@ function GameCard({
           <p className="text-sm font-semibold text-foreground" style={fredoka}>{title}</p>
           <p className="text-xs text-muted-foreground mt-1" style={fredoka}>{description}</p>
         </div>
-        <button
-          onClick={onPlay}
-          style={fredoka}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-violet-500 text-white border-b-4 border-violet-600 hover:bg-violet-500/90 active:border-b-0 transition-all"
-        >
+        <button onClick={onPlay} style={fredoka}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-violet-500 text-white border-b-4 border-violet-600 hover:bg-violet-500/90 active:border-b-0 transition-all">
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
             <polygon points="5 3 19 12 5 21 5 3" />
           </svg>
@@ -203,10 +149,7 @@ export default function RiverPage() {
         }
       `}</style>
 
-      {/* Fullscreen overlay */}
-      {activeGame && (
-        <FullscreenGame gameId={activeGame} onClose={() => setActiveGame(null)} />
-      )}
+      {activeGame && <FullscreenGame gameId={activeGame} onClose={() => setActiveGame(null)} />}
 
       <div className="min-h-screen bg-background flex">
         <div className="hidden md:block md:w-[80px] flex-shrink-0">
@@ -261,7 +204,7 @@ export default function RiverPage() {
 
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-12">
 
-            {/* Jeux Rive */}
+            {/* Jeux */}
             <section>
               <h2 className="text-base font-semibold text-muted-foreground uppercase tracking-wider mb-6" style={fredoka}>
                 Jeux interactifs
@@ -274,7 +217,7 @@ export default function RiverPage() {
                   borderColor="border-l-red-400"
                   description="Joue du piano avec la mascotte"
                   previewSrc="/piano.riv"
-                  previewType="riv"
+                  smName="MAIN-sm"
                   onPlay={() => setActiveGame('piano')}
                 />
                 <GameCard
@@ -284,7 +227,7 @@ export default function RiverPage() {
                   borderColor="border-l-violet-400"
                   description="Explore les expressions animees"
                   previewSrc="/expression.riv"
-                  previewType="riv"
+                  smName="Grid"
                   onPlay={() => setActiveGame('expression')}
                 />
                 <GameCard
@@ -294,17 +237,17 @@ export default function RiverPage() {
                   borderColor="border-l-pink-400"
                   description="La mascotte des recompenses"
                   previewSrc="/gamification.riv"
-                  previewType="riv"
+                  smName="State Machine 1"
                   onPlay={() => setActiveGame('gamification')}
                 />
                 <GameCard
-                  title="Souris interactive"
-                  badge="Souris"
+                  title="Chauve-souris"
+                  badge="Chauve-souris"
                   badgeColor="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
                   borderColor="border-l-emerald-400"
-                  description="Animation de souris interactive"
+                  description="Animation de chauve-souris interactive"
                   previewSrc="/souris.riv"
-                  previewType="riv"
+                  smName="State Machine 1"
                   onPlay={() => setActiveGame('souris')}
                 />
               </div>
