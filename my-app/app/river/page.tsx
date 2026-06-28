@@ -80,13 +80,19 @@ function GameCard({
 
   return (
     <div className={`card-in bg-card rounded-2xl border border-border shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden border-l-4 ${borderColor} flex flex-col`}>
-      <div className="relative bg-muted flex items-center justify-center overflow-hidden" style={{ height: 200 }}>
-        {!rive && <div className="absolute inset-0 bg-gradient-to-r from-muted via-muted/60 to-muted animate-pulse" />}
-        <div className={rive ? 'w-full h-full' : 'hidden'}>
-          <RiveComponent style={{ width: '100%', height: 200 }} />
+      {/* Preview */}
+      <div className="relative bg-muted overflow-hidden" style={{ height: 200 }}>
+        {!rive && (
+          <div className="absolute inset-0 bg-gradient-to-r from-muted via-muted/60 to-muted animate-pulse" />
+        )}
+        <div className={rive ? 'absolute inset-0 flex items-center justify-center' : 'hidden'}>
+          <RiveComponent style={{ width: 180, height: 180 }} />
         </div>
-        <div onClick={onPlay}
-          className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-all duration-200 flex items-center justify-center group cursor-pointer">
+        {/* Overlay play */}
+        <div
+          onClick={onPlay}
+          className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-all duration-200 flex items-center justify-center group cursor-pointer"
+        >
           <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-200 shadow-xl">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#7c3aed">
               <polygon points="5 3 19 12 5 21 5 3" />
@@ -94,6 +100,8 @@ function GameCard({
           </div>
         </div>
       </div>
+
+      {/* Infos */}
       <div className="px-5 py-4 flex flex-col gap-3 flex-1">
         <div>
           <span className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full mb-1 ${badgeColor}`} style={fredoka}>
