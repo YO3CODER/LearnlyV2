@@ -345,8 +345,9 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
           </svg>
           Fermer
         </button>
-        <div className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
+        <div className="text-center px-4">
+          {/* Titre responsive : tuiles sur desktop, texte stylé sur mobile */}
+          <div className="hidden sm:flex items-center justify-center gap-2 mb-2 flex-wrap">
             {['M','O','T',' ','D','U',' ','J','O','U','R'].map((l, i) => (
               <div key={i} className={`w-9 h-9 rounded-lg flex items-center justify-center font-bold text-lg ${
                 l === ' ' ? 'bg-transparent' :
@@ -355,6 +356,11 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
                 'bg-violet-500 text-white'
               }`} style={fredoka}>{l}</div>
             ))}
+          </div>
+          <div className="sm:hidden flex items-center justify-center gap-2 mb-2">
+            <span className="text-emerald-400 font-bold text-3xl" style={fredoka}>MOT</span>
+            <span className="text-white/40 font-bold text-3xl" style={fredoka}>DU</span>
+            <span className="text-violet-400 font-bold text-3xl" style={fredoka}>JOUR</span>
           </div>
           <p className="text-white/60 text-sm mt-3" style={fredoka}>Choisis la difficulté</p>
         </div>
