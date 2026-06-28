@@ -113,7 +113,7 @@ export const StickyUnitBannerMobile = ({ units }: Props) => {
             variant="default"
             size="icon"
           >
-            <a href="#">
+            <a href="https://maitrelucas.fr/" target="_blank" rel="noopener noreferrer">
               <img src="/maitrelucas.svg" alt="MaitreLucas" width={22} height={22} />
             </a>
           </Button>
