@@ -24,6 +24,7 @@
     "@radix-ui/react-progress": "^1.1.8",
     "@radix-ui/react-separator": "^1.1.8",
     "@radix-ui/react-slot": "^1.2.4",
+    "@rive-app/react-canvas": "^4.29.3",
     "autoprefixer": "^10.5.0",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.10.0",
