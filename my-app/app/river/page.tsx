@@ -122,7 +122,6 @@ function EnigmesGame({ onClose }: { onClose: () => void }) {
 
           {/* Carte énigme */}
           <div className="relative rounded-2xl bg-violet-800/40 border border-violet-500/30 p-8 backdrop-blur-sm">
-            {/* Guillemets décoratifs */}
             <div className="absolute top-4 left-6 text-5xl text-violet-400/30 font-serif leading-none select-none">&quot;</div>
             <p className="text-white text-center text-lg leading-relaxed font-medium relative z-10 pt-4" style={fredoka}>
               {enigme.texte}
@@ -335,6 +334,7 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
     });
   });
 
+  // ── Écran de choix de difficulté ──
   if (!wordLen) {
     return (
       <div className="fixed inset-0 z-50 bg-gradient-to-br from-slate-900 via-zinc-900 to-slate-800 flex flex-col items-center justify-center gap-8">
@@ -376,33 +376,35 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
     );
   }
 
+  // ── Partie en cours ──
   return (
     <div className="fixed inset-0 z-50 bg-gradient-to-br from-slate-900 via-zinc-900 to-slate-800 flex flex-col">
-      <div className="flex items-center justify-between px-4 sm:px-8 py-3 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <div className="flex gap-1">
+      {/* Header */}
+      <div className="flex items-center justify-between px-3 sm:px-8 py-2 sm:py-3 border-b border-white/10 flex-shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex gap-0.5">
             {['M','O','T'].map((l,i) => (
-              <div key={i} className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold bg-emerald-500 text-white" style={fredoka}>{l}</div>
+              <div key={i} className="w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-[10px] sm:text-xs font-bold bg-emerald-500 text-white" style={fredoka}>{l}</div>
             ))}
           </div>
-          <span className="text-white font-bold text-base" style={fredoka}>du Jour</span>
-          <span className="text-white/40 text-xs" style={fredoka}>{wordLen} lettres · {MAX_TRIES} essais</span>
+          <span className="text-white font-bold text-sm sm:text-base" style={fredoka}>du Jour</span>
+          <span className="hidden sm:inline text-white/40 text-xs" style={fredoka}>{wordLen} lettres · {MAX_TRIES} essais</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <button onClick={() => setWordLen(null)} style={fredoka}
-            className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/70 text-xs font-semibold border border-white/10 transition-all">
+            className="px-2 sm:px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/70 text-xs font-semibold border border-white/10 transition-all">
             Changer
           </button>
           <button onClick={restart} style={fredoka}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/70 text-xs font-semibold border border-white/10 transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/70 text-xs font-semibold border border-white/10 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
             </svg>
-            Nouveau
+            <span className="hidden sm:inline">Nouveau</span>
           </button>
           <button onClick={onClose} style={fredoka}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/10 transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/10 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
             Fermer
@@ -410,15 +412,16 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center px-4 py-2 overflow-auto">
-        <div className="flex flex-col gap-1.5">
+      {/* Grille */}
+      <div className="flex-1 flex items-center justify-center px-2 py-1 overflow-hidden">
+        <div className="flex flex-col gap-1">
           {Array.from({ length: MAX_TRIES }).map((_, rowIdx) => {
             const isGuessed = rowIdx < guesses.length;
             const isCurrent = rowIdx === guesses.length;
             const guess = isGuessed ? guesses[rowIdx] : isCurrent ? current : '';
             const states = isGuessed ? evaluateGuess(guesses[rowIdx], secret) : null;
             return (
-              <div key={rowIdx} className={`flex gap-1.5 ${isCurrent && shake ? 'animate-[shake_0.4s_ease]' : ''}`}>
+              <div key={rowIdx} className={`flex gap-1 ${isCurrent && shake ? 'animate-[shake_0.4s_ease]' : ''}`}>
                 {Array.from({ length: wordLen }).map((_, colIdx) => {
                   const letter = guess[colIdx] || '';
                   const state: LetterState = isGuessed
@@ -426,7 +429,7 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
                     : isCurrent && letter ? 'typing' : 'empty';
                   return (
                     <div key={colIdx}
-                      className={`w-12 h-12 sm:w-14 sm:h-14 rounded-lg border-2 flex items-center justify-center font-bold text-xl sm:text-2xl transition-all duration-300 ${getLetterColor(state)}`}
+                      className={`w-9 h-9 sm:w-12 sm:h-12 rounded-lg border-2 flex items-center justify-center font-bold text-base sm:text-xl transition-all duration-300 ${getLetterColor(state)}`}
                       style={{ ...fredoka, transitionDelay: isGuessed ? `${colIdx * 80}ms` : '0ms' }}>
                       {letter}
                     </div>
@@ -438,7 +441,8 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      <div className="px-2 pb-4 pt-2 flex flex-col gap-1.5 items-center">
+      {/* Clavier */}
+      <div className="px-1 pb-3 pt-1 flex flex-col gap-1 items-center flex-shrink-0">
         {KEYBOARD_ROWS.map((row, ri) => (
           <div key={ri} className="flex gap-1">
             {row.map(key => {
@@ -446,10 +450,10 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
               const isSpecial = key === '←' || key === 'OK';
               return (
                 <button key={key} onClick={() => pressKey(key)} style={fredoka}
-                  className={`h-12 rounded-lg font-bold text-sm transition-all active:scale-95 ${
+                  className={`h-10 sm:h-12 rounded-lg font-bold text-xs sm:text-sm transition-all active:scale-95 ${
                     isSpecial
-                      ? 'px-3 bg-white/15 border border-white/20 text-white hover:bg-white/25 min-w-[48px]'
-                      : `w-9 border ${getLetterColor(state, true)} hover:brightness-110`
+                      ? 'px-2 sm:px-3 bg-white/15 border border-white/20 text-white hover:bg-white/25 min-w-[36px] sm:min-w-[48px]'
+                      : `w-7 sm:w-9 border ${getLetterColor(state, true)} hover:brightness-110`
                   }`}>
                   {key}
                 </button>
@@ -459,6 +463,7 @@ function MotDuJourGame({ onClose }: { onClose: () => void }) {
         ))}
       </div>
 
+      {/* Modal victoire / défaite */}
       {(won || lost) && (
         <div className="fixed inset-0 z-10 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="bg-zinc-900 border border-white/10 rounded-3xl p-8 flex flex-col items-center gap-4 text-white text-center max-w-xs w-full mx-4">
@@ -554,7 +559,6 @@ function MemoryGame({ onClose }: { onClose: () => void }) {
     }
   }, [cards, selected, locked]);
 
-  // Fix ESLint set-state-in-effect : setTimeout pour casser le cycle synchrone
   useEffect(() => {
     if (cards.length > 0 && cards.every(c => c.matched)) {
       const t = setTimeout(() => { setWon(true); setRunning(false); }, 0);
@@ -887,7 +891,9 @@ export default function RiverPage() {
             </section>
           </div>
         </div>
-        <MobileNavbar />
+
+        {/* MobileNavbar masquée pendant un jeu actif */}
+        {!activeGame && <MobileNavbar />}
       </div>
     </>
   );
