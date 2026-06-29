@@ -51,7 +51,7 @@ export const Promo = () => {
           size="icon"
         >
           <a href="https://maitrelucas.fr/" target="_blank" rel="noopener noreferrer">
-            <img src="/maitrelucas1.svg" alt="MaitreLucas" width={22} height={22} />
+            <img src="/maitrelucas.svg" alt="MaitreLucas" width={22} height={22} />
           </a>
         </Button>
       </div>
