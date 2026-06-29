@@ -15,11 +15,11 @@ export const Promo = () => {
             width={26}
           />
           <h3 className="font-bold text-lg">
-            Upgrade to Pro
+            Passer à Pro
           </h3>
         </div>
         <p className="text-muted-foreground">
-          Get unlimited hearts and more!
+          Obtenez des cœurs illimités et plus !
         </p>
       </div>
       <Button
@@ -29,9 +29,32 @@ export const Promo = () => {
         size="lg"
       >
         <Link href="/shop">
-          Upgrade today
+          Mettre à niveau maintenant
         </Link>
       </Button>
+
+      {/* Boutons Jeux et MaitreLucas */}
+      <div className="flex justify-start gap-2 pt-2">
+        <Button
+          asChild
+          variant="primary"
+          size="icon"
+        >
+          <a href="/river">
+            <img src="/game.svg" alt="Jeux" width={22} height={22} />
+          </a>
+        </Button>
+
+        <Button
+          asChild
+          variant="default"
+          size="icon"
+        >
+          <a href="https://maitrelucas.fr/" target="_blank" rel="noopener noreferrer">
+            <img src="/maitrelucas1.svg" alt="MaitreLucas" width={22} height={22} />
+          </a>
+        </Button>
+      </div>
     </div>
   );
 };
