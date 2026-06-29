@@ -15,7 +15,7 @@ const gifs = [
   { src: '/4.gif', label: 'Action 4' },
 ];
 
-type GameId = 'piano' | 'expression' | 'gamification' | 'souris' | 'memory' | 'monde' | 'motdujour' | 'enigmes';
+type GameId = 'piano' | 'expression' | 'gamification' | 'souris' | 'memory' | 'monde' | 'motdujour' | 'enigmes' | 'soccer';
 
 // ─── Énigmes ──────────────────────────────────────────────────────────────────
 const ENIGMES = [
@@ -651,6 +651,16 @@ function MondeGame({ onClose }: { onClose: () => void }) {
   );
 }
 
+// ─── Soccer Legends 2021 (ouverture externe) ─────────────────────────────────────────────
+function SoccerGame({ onClose }: { onClose: () => void }) {
+  useEffect(() => {
+    window.open('https://www.crazygames.com/fr/game/soccer-legends-2021', '_blank');
+    onClose();
+  }, [onClose]);
+
+  return null;
+}
+
 // ─── Composant Rive unique ────────────────────────────────────────────────────
 function SingleRiveGame({ src, sm }: { src: string; sm: string }) {
   const { RiveComponent, rive } = useRive({ src, stateMachines: sm, autoplay: true });
@@ -668,7 +678,7 @@ function SingleRiveGame({ src, sm }: { src: string; sm: string }) {
 }
 
 // ─── Fullscreen Rive ──────────────────────────────────────────────────────────
-type RiveGameId = Exclude<GameId, 'memory' | 'monde' | 'motdujour' | 'enigmes'>;
+type RiveGameId = Exclude<GameId, 'memory' | 'monde' | 'motdujour' | 'enigmes' | 'soccer'>;
 
 function FullscreenGame({ gameId, onClose }: { gameId: RiveGameId; onClose: () => void }) {
   const gameMap: Record<RiveGameId, { src: string; sm: string }> = {
@@ -724,7 +734,7 @@ function GameCard({ title, badge, badgeColor, borderColor, description, gradient
 export default function RiverPage() {
   const [activeGame, setActiveGame] = useState<GameId | null>(null);
   const close = () => setActiveGame(null);
-  const NON_RIVE = ['memory', 'monde', 'motdujour', 'enigmes'];
+  const NON_RIVE = ['memory', 'monde', 'motdujour', 'enigmes', 'soccer'];
 
   return (
     <>
@@ -748,6 +758,7 @@ export default function RiverPage() {
       {activeGame === 'monde'     && <MondeGame     onClose={close} />}
       {activeGame === 'motdujour' && <MotDuJourGame onClose={close} />}
       {activeGame === 'enigmes'   && <EnigmesGame   onClose={close} />}
+      {activeGame === 'soccer'    && <SoccerGame    onClose={close} />}
       {activeGame !== null && !NON_RIVE.includes(activeGame) && (
         <FullscreenGame gameId={activeGame as RiveGameId} onClose={close} />
       )}
@@ -776,7 +787,7 @@ export default function RiverPage() {
                     <p className="text-purple-100 text-sm mb-4 leading-relaxed max-w-sm" style={fredoka}>Clique sur un jeu pour le lancer en plein ecran.</p>
                     <div className="flex gap-3 flex-wrap">
                       <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/30" style={fredoka}>
-                        <div className="text-2xl font-bold">8</div>
+                        <div className="text-2xl font-bold">9</div>
                         <div className="text-xs text-purple-100">Jeux</div>
                       </div>
                       <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/30" style={fredoka}>
@@ -878,6 +889,16 @@ export default function RiverPage() {
                   description="Animation de chauve-souris interactive"
                   gradient="from-emerald-500 to-teal-600"
                   onPlay={() => setActiveGame('souris')}
+                />
+
+                <GameCard
+                  title="Soccer Legends 2021"
+                  badge="Football"
+                  badgeColor="bg-white/20 text-white"
+                  borderColor="border-l-orange-400"
+                  description="Joue au football et deviens une légende du soccer !"
+                  gradient="from-orange-500 to-red-600"
+                  onPlay={() => setActiveGame('soccer')}
                 />
               </div>
             </section>
